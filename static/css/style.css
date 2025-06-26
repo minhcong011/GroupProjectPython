@@ -16,7 +16,7 @@ body {
   text-align: center;
 }
 
-h2 {
+h3 {
   color: #1976d2;
   margin-bottom: 24px;
 }
@@ -24,7 +24,14 @@ h2 {
 form {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 16px;
+}
+
+label {
+  text-align: left;
+  font-size: 15px;
+  color: #1976d2;
+  margin-bottom: 4px;
 }
 
 input[type="text"],
@@ -37,9 +44,7 @@ input[type="password"] {
   transition: border 0.2s;
 }
 
-input[type="text"]:focus,
-input[type="email"]:focus,
-input[type="password"]:focus {
+input:focus {
   border: 1.5px solid #66a6ff;
   outline: none;
 }
@@ -62,15 +67,13 @@ button:hover {
   transform: translateY(-2px) scale(1.03);
 }
 
-.button-group {
-  display: flex;
-  justify-content: center;
-  gap: 16px;
-  margin-top: 20px;
+a {
+  color: #1976d2;
+  text-decoration: none;
 }
 
-a {
-  text-decoration: none;
+a:hover {
+  text-decoration: underline;
 }
 
 .messages {
@@ -87,4 +90,17 @@ a {
   margin-bottom: 8px;
   border-radius: 6px;
   font-size: 15px;
+}
+
+/* Responsive */
+@media (max-width: 500px) {
+  .container {
+    max-width: 95vw;
+    padding: 24px 8px 16px 8px;
+  }
+  button {
+    width: 100%;
+    padding: 12px 0;
+    font-size: 15px;
+  }
 }

@@ -21,26 +21,23 @@ h2 {
   margin-bottom: 24px;
 }
 
-form {
-  display: flex;
-  flex-direction: column;
-  gap: 18px;
-}
-
-button {
+.btn, button {
+  display: inline-block;
   background: linear-gradient(90deg, #66a6ff 0%, #89f7fe 100%);
   color: #fff;
   border: none;
   border-radius: 8px;
-  padding: 12px;
+  padding: 12px 24px;
   font-size: 16px;
   font-weight: bold;
   cursor: pointer;
   transition: background 0.2s, transform 0.1s;
   margin-top: 10px;
+  text-decoration: none;
+  text-align: center;
 }
 
-button:hover {
+.btn:hover, button:hover {
   background: linear-gradient(90deg, #89f7fe 0%, #66a6ff 100%);
   transform: translateY(-2px) scale(1.03);
 }
@@ -50,10 +47,6 @@ button:hover {
   justify-content: center;
   gap: 16px;
   margin-top: 20px;
-}
-
-a {
-  text-decoration: none;
 }
 
 .messages {
@@ -70,4 +63,21 @@ a {
   margin-bottom: 8px;
   border-radius: 6px;
   font-size: 15px;
+}
+
+/* Responsive */
+@media (max-width: 500px) {
+  .container {
+    max-width: 95vw;
+    padding: 24px 8px 16px 8px;
+  }
+  .btn, button {
+    width: 100%;
+    padding: 12px 0;
+    font-size: 15px;
+  }
+  .button-group {
+    flex-direction: column;
+    gap: 10px;
+  }
 }

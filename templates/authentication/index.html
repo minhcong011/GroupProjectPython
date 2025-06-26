@@ -3,7 +3,8 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Home Page</title>
+  <title>Trang chủ </title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="{% static 'css/index.css' %}">
 </head>
 <body>
@@ -13,13 +14,13 @@
       <h2>Chào mừng, {{ user.first_name }}!</h2>
       <form method="post" action="{% url 'signout' %}">
         {% csrf_token %}
-        <button type="submit">Sign Out</button>
+        <button type="submit" class="btn">Đăng xuất</button>
       </form>
     {% else %}
       <h2>Welcome! Please Sign In or Sign Up</h2>
       <div class="button-group">
-        <a href="{% url 'signup' %}"><button>Sign Up</button></a>
-        <a href="{% url 'signin' %}"><button>Sign In</button></a>
+        <a href="{% url 'signup' %}" class="btn">Sign Up</a>
+        <a href="{% url 'signin' %}" class="btn">Sign In</a>
       </div>
     {% endif %}
 
