@@ -1,0 +1,36 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Home Page</title>
+  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+</head>
+<body>
+
+  <div class="container">
+    {% if user.is_authenticated %}
+      <h2>Chào mừng, {{ user.first_name }}!</h2>
+      <form method="post" action="{% url 'signout' %}">
+        {% csrf_token %}
+        <button type="submit">Sign Out</button>
+      </form>
+    {% else %}
+      <h2>Welcome! Please Sign In or Sign Up</h2>
+      <div class="button-group">
+        <a href="{% url 'signup' %}"><button>Sign Up</button></a>
+        <a href="{% url 'signin' %}"><button>Sign In</button></a>
+      </div>
+    {% endif %}
+
+    {% if messages %}
+      <ul class="messages">
+        {% for message in messages %}
+          <li>{{ message }}</li>
+        {% endfor %}
+      </ul>
+    {% endif %}
+  </div>
+
+</body>
+</html>
