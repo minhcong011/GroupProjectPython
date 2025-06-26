@@ -1,6 +1,7 @@
 from django.shortcuts import render, redirect
 from django.contrib import messages
 from django.contrib.auth.models import User
+from .models import Account
 from django.contrib.auth import authenticate, login, logout
 from django.core.mail import send_mail
 from django.conf import settings
@@ -17,12 +18,14 @@ def send_otp_to_email(email, otp):
 
 def signup(request):
     if request.method == "POST":
+        account_type = request.POST.get('account_type') 
         username = request.POST.get('username')
         fname = request.POST.get('fname')
         lname = request.POST.get('lname')
         email = request.POST.get('email')
         pass1 = request.POST.get('pass1')
         pass2 = request.POST.get('pass2')
+        is_teacher = (account_type == 'teacher')
 
         if pass1 != pass2:
             messages.error(request, "Passwords do not match.")
@@ -43,6 +46,7 @@ def signup(request):
             'lname': lname,
             'email': email,
             'pass1': pass1,
+            'is_teacher': is_teacher,
         }
 
         return redirect('verify_otp')
@@ -68,6 +72,11 @@ def verify_otp(request):
             request.session.pop('otp')
             request.session.pop('temp_user')
 
+            #Tạo user phân để check phân quyền
+            username = user_data['username']
+            is_teacher = user_data['is_teacher']
+            
+            Account.objects.create(username=username, is_teacher=is_teacher)
             messages.success(request, "Account created. Please sign in.")
             return redirect('signin')
         else:
