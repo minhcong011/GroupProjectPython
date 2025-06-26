@@ -6,41 +6,39 @@ body {
   padding: 0;
 }
 
-.container {
+.otp-container {
   background: #fff;
-  max-width: 400px;
-  margin: 60px auto;
-  padding: 40px 30px 30px 30px;
-  border-radius: 16px;
+  max-width: 370px;
+  margin: 70px auto;
+  padding: 36px 28px 28px 28px;
+  border-radius: 14px;
   box-shadow: 0 8px 32px 0 rgba(102, 166, 255, 0.15);
   text-align: center;
 }
 
 h2 {
   color: #1976d2;
-  margin-bottom: 24px;
+  margin-bottom: 22px;
 }
 
 form {
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 16px;
 }
 
-input[type="text"],
-input[type="email"],
-input[type="password"] {
+input[type="text"] {
   padding: 12px;
-  border: 1px solid #bdbdbd;
+  border: 1px solid #66a6ff;
   border-radius: 8px;
-  font-size: 16px;
+  font-size: 17px;
+  text-align: center;
+  letter-spacing: 4px;
   transition: border 0.2s;
 }
 
-input[type="text"]:focus,
-input[type="email"]:focus,
-input[type="password"]:focus {
-  border: 1.5px solid #66a6ff;
+input[type="text"]:focus {
+  border: 1.5px solid #89f7fe;
   outline: none;
 }
 
@@ -62,19 +60,8 @@ button:hover {
   transform: translateY(-2px) scale(1.03);
 }
 
-.button-group {
-  display: flex;
-  justify-content: center;
-  gap: 16px;
-  margin-top: 20px;
-}
-
-a {
-  text-decoration: none;
-}
-
 .messages {
-  margin-top: 18px;
+  margin-top: 16px;
   padding: 0;
   list-style: none;
 }
