@@ -19,6 +19,7 @@ INSTALLED_APPS = [
     
     'authentication',  # <-- Thêm app của bạn vào đây
     'cv', # Thêm app cv
+    'core'
 ]
 
 # ==================== MIDDLEWARE ====================
