@@ -1,0 +1,150 @@
+body {
+  background: linear-gradient(120deg, #b2f0ff 0%, #e3f0ff 60%, #a0c4ff 100%);
+  font-family: 'Segoe UI', Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+}
+
+.container {
+  max-width: 900px;
+  margin: 60px auto 0 auto;
+  background: #fafdff;
+  border-radius: 14px;
+  box-shadow: 0 2px 12px rgba(60, 60, 120, 0.10);
+  padding: 36px 32px 28px 32px;
+  text-align: center;
+}
+
+h3 {
+  color: #1976d2;
+  margin-bottom: 30px;
+  font-size: 1.8rem;
+  font-weight: 600;
+}
+
+.signup-columns {
+  display: flex;
+  gap: 32px;
+  justify-content: space-between;
+  align-items: flex-start;
+  padding-left: 32px;
+  padding-right: 32px;
+  /* Đảm bảo khoảng trắng hai bên đều nhau */
+}
+
+.signup-col {
+  flex: 1 1 0;
+  max-width: 50%;
+  padding-left: 16px;
+  padding-right: 16px;
+  box-sizing: border-box;
+}
+
+label {
+  display: block;
+  text-align: left;
+  margin: 14px 0 6px 2px;
+  color: #1976d2;
+  font-weight: 500;
+}
+
+input[type="text"], input[type="password"], input[type="email"] {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1.5px solid #bcdffb;
+  border-radius: 6px;
+  margin-bottom: 12px;
+  font-size: 1rem;
+  background: #f4faff;
+  transition: border 0.2s;
+}
+input[type="text"]:focus, input[type="password"]:focus, input[type="email"]:focus {
+  border: 1.5px solid #1976d2;
+  outline: none;
+}
+
+select {
+  width: 100%;
+  padding: 10px 14px;
+  border: 1.5px solid #bcdffb;
+  border-radius: 6px;
+  margin-bottom: 12px;
+  font-size: 1rem;
+  background: #f4faff;
+  transition: border 0.2s;
+}
+select:focus {
+  border: 1.5px solid #1976d2;
+  outline: none;
+}
+
+button, .btn {
+  background: linear-gradient(90deg, #1976d2 60%, #66a6ff 100%);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 10px 28px;
+  font-size: 1rem;
+  font-weight: 500;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.2s, color 0.2s;
+  box-shadow: 0 1px 4px rgba(60, 60, 120, 0.07);
+  margin-top: 10px;
+  margin-bottom: 10px;
+  display: inline-block;
+}
+button:hover, .btn:hover {
+  background: #1976d2;
+  color: #ffd700;
+}
+.account-type-group {
+  display: flex;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.messages {
+  margin-top: 18px;
+  padding: 0;
+  list-style: none;
+}
+.messages li {
+  background: #e3f2fd;
+  color: #1976d2;
+  border-left: 4px solid #66a6ff;
+  padding: 10px 14px;
+  margin-bottom: 8px;
+  border-radius: 6px;
+  font-size: 15px;
+  text-align: left;
+}
+
+a {
+  color: #1976d2;
+  text-decoration: none;
+  transition: color 0.2s;
+}
+a:hover {
+  color: #1256a0;
+  text-decoration: underline;
+}
+
+@media (max-width: 900px) {
+  .signup-columns {
+    flex-direction: column;
+    gap: 0;
+    padding-left: 0;
+    padding-right: 0;
+  }
+  .signup-col {
+    max-width: 100%;
+    padding-left: 0;
+    padding-right: 0;
+  }
+  .container {
+    max-width: 420px;
+    padding: 18px 6px 16px 6px;
+  }
+}

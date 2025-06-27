@@ -1,0 +1,93 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Trang chủ Sinh viên</title>
+  <link rel="stylesheet" href="{% static 'css/indexsv.css' %}">
+</head>
+<body>
+  <!-- Header -->
+  <div class="header">
+    <div class="logo">
+      <img src="{% static 'img/dtu-logo.png' %}" alt="DTU Logo">
+      <span class="title">PERL & PYTHON</span>
+    </div>
+    <div class="nav">
+      <a href="{% url 'student_home' %}">Trang chủ</a>
+      <a href="#">Khóa học</a>
+      <a href="#">Bài tập</a>
+      <a href="#">IDE Online</a>
+      <a href="#">Chatbot AI</a>
+      <span class="lang">Xin chào, {{ user.first_name }} | <a href="{% url 'signout' %}">Đăng xuất</a></span>
+    </div>
+  </div>
+  <!-- Banner -->
+  <div class="banner">
+    <span>
+      <b>Hệ thống học tập môn PERL & PYTHON</b>
+      <span class="course-code">CS466</span>
+    </span>
+    <span class="right">
+      {{ now|date:"l, d/m/Y" }}
+    </span>
+  </div>
+  <div class="layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-user">
+        {{ user.first_name }} {{ user.last_name }}
+      </div>
+      <nav>
+        <ul>
+          <li><a href="#">Thông tin cá nhân</a></li>
+          <li><a href="#">Khóa học</a></li>
+          <li><a href="#">Bài giảng</a></li>
+          <li><a href="#">Bài tập</a></li>
+          <li><a href="#">Nộp bài</a></li>
+          <li><a href="#">IDE Online</a></li>
+          <li><a href="#">Chatbot AI</a></li>
+          <li><a href="#">Thông báo</a></li>
+          <li><a href="#">Đánh giá khóa học</a></li>
+          <li><a href="#">Tài liệu học tập</a></li>
+        </ul>
+      </nav>
+    </aside>
+    <!-- Main Content -->
+    <main class="main-content">
+      <div class="section">
+        <h2>
+          <span class="info-icon">&#9432;</span> Chào mừng bạn đến với hệ thống học tập môn PERL & PYTHON!
+        </h2>
+        <ul>
+          <li><b>•</b> Truy cập <b>Khóa học</b> để xem các chương trình học, bài giảng và mục tiêu môn học.</li>
+          <li><b>•</b> Vào <b>Bài tập</b> để làm bài tập lập trình, trắc nghiệm hoặc upload file.</li>
+          <li><b>•</b> Sử dụng <b>IDE Online</b> để thực hành code trực tuyến với Perl hoặc Python, xem kết quả ngay trên trình duyệt.</li>
+          <li><b>•</b> Nhận phản hồi, điểm số và góp ý từ hệ thống hoặc giảng viên sau khi nộp bài.</li>
+          <li><b>•</b> Chatbot AI hỗ trợ giải đáp thắc mắc về bài học, code, lý thuyết môn học.</li>
+          <li><b>•</b> Xem <b>Thông báo</b> để cập nhật deadline, bài mới, sự kiện quan trọng.</li>
+          <li><b>•</b> Đánh giá khóa học, gửi góp ý để cải thiện chất lượng môn học.</li>
+          <li><b>•</b> Tải về tài liệu học tập, slide, PDF, video hỗ trợ môn học.</li>
+        </ul>
+      </div>
+      <div class="section section-rules">
+        <h2>Nội quy sử dụng hệ thống</h2>
+        <ul>
+          <li><b>1.</b> Bảo mật tài khoản, không chia sẻ mật khẩu cho người khác.</li>
+          <li><b>2.</b> Không sử dụng hệ thống cho mục đích gian lận, phá hoại hoặc spam.</li>
+          <li><b>3.</b> Tuân thủ quy định về nộp bài, deadline, và các quy tắc học tập của nhà trường.</li>
+          <li><b>4.</b> Tôn trọng các thành viên khác trong hệ thống.</li>
+        </ul>
+      </div>
+      {% if messages %}
+      <ul class="messages">
+        {% for message in messages %}
+          <li>{{ message }}</li>
+        {% endfor %}
+      </ul>
+      {% endif %}
+    </main>
+  </div>
+</body>
+</html>

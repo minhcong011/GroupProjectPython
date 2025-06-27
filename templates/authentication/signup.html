@@ -5,42 +5,53 @@
   <meta charset="UTF-8">
   <title>Sign Up</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  <link rel="stylesheet" href="{% static 'css/signup.css' %}">
 </head>
 <body>
   <div class="container">
     <h3>Sign Up</h3>
 
-    {% if messages %}
-      <ul class="messages">
-        {% for message in messages %}
-          <li>{{ message }}</li>
-        {% endfor %}
-      </ul>
-    {% endif %}
+    {# Đã bỏ phần hiển thị messages #}
 
     <form action="{% url 'signup' %}" method="post">
       {% csrf_token %}
+      <div class="signup-columns">
+        <div class="signup-col">
+          <label for="username">Username</label>
+          <input type="text" id="username" name="username" required>
 
-      <label for="username">Username</label>
-      <input type="text" id="username" name="username" required>
+          <label for="fname">First Name</label>
+          <input type="text" id="fname" name="fname" required>
 
-      <label for="fname">First Name</label>
-      <input type="text" id="fname" name="fname" required>
+          <label for="lname">Last Name</label>
+          <input type="text" id="lname" name="lname" required>
 
-      <label for="lname">Last Name</label>
-      <input type="text" id="lname" name="lname" required>
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" required>
+        </div>
+        <div class="signup-col">
+          <label for="pass1">Password</label>
+          <input type="password" id="pass1" name="pass1" required>
 
-      <label for="email">Email</label>
-      <input type="email" id="email" name="email" required>
+          <label for="pass2">Confirm Password</label>
+          <input type="password" id="pass2" name="pass2" required>
 
-      <label for="pass1">Password</label>
-      <input type="password" id="pass1" name="pass1" required>
-
-      <label for="pass2">Confirm Password</label>
-      <input type="password" id="pass2" name="pass2" required>
-
-      <button type="submit">Sign Up</button>
+          <label>Account Type</label>
+          <div class="account-type-group">
+            <label>
+              <input type="radio" name="account_type" value="student" checked required> Student
+            </label>
+            <label style="margin-left: 18px;">
+              <input type="radio" name="account_type" value="teacher" required> Teacher
+            </label>
+          </div>
+          <div style="height: 48px;"></div> 
+        </div>
+      </div>
+      <button type="submit" style="width: 100%; margin-top: 18px;">Sign Up</button>
     </form>
 
-    <p>Already have an account? <a href="{% url 'signin' %}">Sign In</a></p>
+    <p style="margin-top: 18px;">Already have an account? <a href="{% url 'signin' %}">Sign In</a></p>
+  </div>
+</body>
+</html>

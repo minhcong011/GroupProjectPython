@@ -5,20 +5,12 @@
   <meta charset="UTF-8">
   <title>Sign In</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <link rel="stylesheet" href="{% static 'css/style.css' %}">
+  <link rel="stylesheet" href="{% static 'css/signin.css' %}">
 </head>
 <body>
 
   <div class="container">
     <h3>Sign In</h3>
-
-    {% if messages %}
-      <ul class="messages">
-        {% for message in messages %}
-          <li>{{ message }}</li>
-        {% endfor %}
-      </ul>
-    {% endif %}
 
     <form action="{% url 'signin' %}" method="post">
       {% csrf_token %}
@@ -29,7 +21,17 @@
       <label for="pass1">Password</label>
       <input type="password" id="pass1" name="pass1" required>
 
+      <div style="text-align:left; margin: 10px 0;">
+        <label>
+          <input type="checkbox" name="remember_me" value="on" style="vertical-align: middle; margin-right: 6px;">
+          Remember me
+        </label>
+      </div>
+
       <button type="submit">Sign In</button>
     </form>
 
-    <p>Don't have an account? <a href="{% url 'signup' %}">Sign
+    <p>Don't have an account? <a href="{% url 'signup' %}">Sign Up</a></p>
+  </div>
+</body>
+</html>
