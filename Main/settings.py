@@ -1,4 +1,6 @@
 from pathlib import Path
+import os
+
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
@@ -90,3 +92,5 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'phuockhoamai@gmail.com'        # <-- Thay bằng Gmail của bạn
 EMAIL_HOST_PASSWORD = 'ajxzihidyzkcfrsa'         # <-- App Password của bạn
+MEDIA_URL = '/uploads/'
+MEDIA_ROOT = os.path.join(BASE_DIR, 'uploads')

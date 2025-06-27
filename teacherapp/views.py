@@ -6,10 +6,10 @@ from django.contrib import messages
 # Create your views here.
 @login_required
 def create_lecture(request):
-    print('faskdjfhs')
     if request.method == 'POST':
         form = LectureForm(request.POST, request.FILES)
         if form.is_valid():
+            print('faskdjfhs')
             lecture = form.save(commit=False)
             lecture.created_by = request.user
             lecture.save()

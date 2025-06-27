@@ -22,7 +22,7 @@ class Lecture(models.Model):
     description = models.TextField()
     video_url = models.URLField(blank=True, null=True)
     pdf_file = models.FileField(upload_to='uploads/pdfs/', blank=True, null=True)
-    slide_file = models.FileField(upload_to='uploads/slides/', blank=True, null=True)
+    slide_file = models.FileField(upload_to='uploads/pdfs/', blank=True, null=True)
     subject = models.CharField(max_length=100, choices=[("Perl", "Perl"), ("Python", "Python")])
     created_by = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
