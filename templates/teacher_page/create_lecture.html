@@ -7,13 +7,13 @@
 </head>
 <body>
     <div class="container">
-        <h2>Create Lecture</h2>
+        <h2>Tạo bài giảng</h2>
         <form method="POST" enctype="multipart/form-data">
             {% csrf_token %}
             {{ form.as_p }}
-            <button type="submit">Save Lecture</button>
+            <button type="submit">Lưu bài giảng</button>
         </form>
-        <a href="{% url 'lecture_list' %}">Back to lecture list</a>
+        <a href="{% url 'lecture_list' %}">Trở lại Menu bài giảng</a>
     </div>
 </body>
 </html>

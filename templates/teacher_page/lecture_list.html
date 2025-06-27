@@ -1,10 +1,12 @@
+{% load static %}
 <!DOCTYPE html>
 <html>
 <head>
     <title>Your Lectures</title>
+    <link rel="stylesheet" href="{% static 'css/lecture_list.css' %}">
 </head>
 <body>
-    <h2>Lecture List</h2>
+    <h2>Bài giảng của bạn</h2>
     <ul>
         {% for lecture in lectures %}
             <li>
@@ -15,9 +17,9 @@
                 {% if lecture.slide_file %}<a href="{{ lecture.slide_file.url }}">Slides</a>{% endif %}
             </li>
         {% empty %}
-            <li>No lectures found.</li>
+            <li>Không có bài giảng</li>
         {% endfor %}
     </ul>
-    <a href="{% url 'create_lecture' %}">+ Add New Lecture</a>
+    <a href="{% url 'create_lecture' %}">+ Thêm bài giảng mới</a>
 </body>
 </html>
