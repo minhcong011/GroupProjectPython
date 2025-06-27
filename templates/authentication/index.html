@@ -1,37 +1,53 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <title>Trang chủ </title>
+  <title>Trang chủ</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="{% static 'css/index.css' %}">
+  <style>
+    html, body { height: 100%; }
+    body { display: flex; flex-direction: column; min-height: 100vh; }
+    .container { flex: 1 0 auto; }
+    .footer { flex-shrink: 0; }
+  </style>
 </head>
 <body>
 
+  <div class="main-header">
+    <div class="header-title">HỆ THỐNG HỌC TẬP PERL & PYTHON TÍCH HỢP AI</div>
+    <div class="header-right">
+      {% if not user.is_authenticated %}
+        <a href="{% url 'signup' %}" class="btn">Sign Up</a>
+        <a href="{% url 'signin' %}" class="btn">Sign In</a>
+      {% endif %}
+    </div>
+  </div>
+
   <div class="container">
+    <div class="intro-section">
+      <h2>Giới thiệu về dự án</h2>
+      <p>
+        Đây là hệ thống hỗ trợ học tập cho môn PERL & PYTHON, tích hợp các chức năng như quản lý khóa học, làm bài tập, thực hành code trực tuyến và hỗ trợ AI giúp sinh viên nâng cao kỹ năng lập trình.<br>
+        Người dùng có thể đăng ký tài khoản, đăng nhập để truy cập các chức năng học tập, nhận hỗ trợ từ AI và nhiều tiện ích khác.
+      </p>
+      <h2>Về chúng tôi</h2>
+      <p>
+        Chúng tôi là Nhóm 4, gồm những sinh viên đam mê công nghệ và lập trình, mong muốn xây dựng một nền tảng học tập hiện đại, thân thiện và hiệu quả cho mọi người.<br>
+        Dự án này không chỉ giúp sinh viên tiếp cận kiến thức về PERL & PYTHON một cách dễ dàng mà còn tạo môi trường thực hành, trao đổi và phát triển kỹ năng giải quyết vấn đề thực tế.<br>
+        Với sự hỗ trợ của AI, chúng tôi hy vọng sẽ mang lại trải nghiệm học tập cá nhân hóa, thông minh và truyền cảm hứng sáng tạo cho tất cả người dùng.
+      </p>
+    </div>
     {% if user.is_authenticated %}
       <h2>Chào mừng, {{ user.first_name }}!</h2>
       <form method="post" action="{% url 'signout' %}">
         {% csrf_token %}
         <button type="submit" class="btn">Đăng xuất</button>
       </form>
-    {% else %}
-      <h2>Welcome! Please Sign In or Sign Up</h2>
-      <div class="button-group">
-        <a href="{% url 'signup' %}" class="btn">Sign Up</a>
-        <a href="{% url 'signin' %}" class="btn">Sign In</a>
-      </div>
-    {% endif %}
-
-    {% if messages %}
-      <ul class="messages">
-        {% for message in messages %}
-          <li>{{ message }}</li>
-        {% endfor %}
-      </ul>
     {% endif %}
   </div>
 
-</body>
-</html>
+  <footer class="footer">
+    Nhóm 4 - Dự án môn học PERL & PYTHON
+  </footer>
