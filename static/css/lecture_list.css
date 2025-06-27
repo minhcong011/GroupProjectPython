@@ -1,60 +1,97 @@
-body {
-    font-family: Arial, sans-serif;
-    background-color: #f5f8fa;
-    margin: 0;
-    padding: 20px;
-    color: #333;
-}
 
-h2 {
+.page-title {
     text-align: center;
-    color: #2c3e50;
-    margin-bottom: 30px;
+    margin: 40px 0 30px;
+    font-size: 26px;
+    font-weight: 600;
+    color: #0d47a1;
 }
 
-ul {
-    list-style: none;
-    padding: 0;
+.lecture-list {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 20px;
 }
 
-li {
-    background-color: #ffffff;
+.lecture-card {
+    background: #fff;
     border: 1px solid #ddd;
-    padding: 20px;
-    margin-bottom: 15px;
-    border-radius: 8px;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+    border-radius: 12px;
+    padding: 20px 24px;
+    margin-bottom: 20px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.04);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-li strong {
-    font-size: 18px;
-    color: #34495e;
+.lecture-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.06);
 }
 
-li a {
+.lecture-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.lecture-header h3 {
+    font-size: 20px;
+    margin: 0;
+    font-weight: 600;
+}
+
+.subject {
+    font-size: 15px;
+    color: #607d8b;
+    font-style: italic;
+}
+
+.description {
+    margin: 10px 0;
+    font-size: 16px;
+    color: #455a64;
+}
+
+.resources {
+    margin-top: 8px;
+}
+
+.btn-link {
     display: inline-block;
-    margin-right: 10px;
-    color: #3498db;
+    margin-right: 12px;
+    color: #1976d2;
+    font-weight: 500;
     text-decoration: none;
-    font-weight: bold;
+    font-size: 15px;
 }
 
-li a:hover {
+.btn-link:hover {
     text-decoration: underline;
+    color: #0d47a1;
 }
 
-a[href*="create_lecture"] {
-    display: inline-block;
-    margin-top: 30px;
-    padding: 10px 20px;
+.no-lecture {
+    text-align: center;
+    font-size: 18px;
+    color: #999;
+    margin-top: 60px;
+}
+
+.btn-add {
+    display: block;
+    width: fit-content;
+    margin: 40px auto;
     background-color: #2ecc71;
     color: white;
+    padding: 12px 24px;
+    border-radius: 8px;
     text-decoration: none;
-    border-radius: 5px;
     font-weight: bold;
-    text-align: center;
+    font-size: 16px;
+    transition: 0.3s ease;
 }
 
-a[href*="create_lecture"]:hover {
+.btn-add:hover {
     background-color: #27ae60;
 }
