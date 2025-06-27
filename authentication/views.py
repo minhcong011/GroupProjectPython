@@ -93,7 +93,7 @@ def signin(request):
         user = authenticate(username=username, password=password)
         if user is not None:
             login(request, user)
-            return redirect('home')
+            return redirect('/cv/')  # Đăng nhập xong chuyển sang trang "Tôi"
         else:
             messages.error(request, "Invalid credentials.")
             return redirect('signin')

@@ -18,6 +18,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     
     'authentication',  # <-- Thêm app của bạn vào đây
+    'cv', # Thêm app cv
 ]
 
 # ==================== MIDDLEWARE ====================
