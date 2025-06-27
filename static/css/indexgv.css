@@ -1,6 +1,5 @@
-/* Tổng thể */
 body {
-  background: linear-gradient(90deg, #89f7fe 0%, #66a6ff 100%);
+  background: linear-gradient(120deg, #e3f0ff 0%, #f8fbff 100%);
   font-family: 'Segoe UI', Arial, sans-serif;
   margin: 0;
   padding: 0;
@@ -8,8 +7,8 @@ body {
 }
 
 /* Header */
-.dtu-header {
-  background: linear-gradient(90deg, #66a6ff 0%, #89f7fe 100%);
+.header {
+  background: linear-gradient(90deg, #2d3a4e 60%, #1976d2 100%);
   color: #fff;
   min-height: 90px;
   display: flex;
@@ -17,47 +16,51 @@ body {
   justify-content: space-between;
   padding: 0 32px;
 }
-.dtu-header .logo {
+.logo {
   display: flex;
   align-items: center;
   gap: 18px;
 }
-.dtu-header .logo img {
+.logo img {
   height: 54px;
   background: #fff;
   border-radius: 8px;
   padding: 4px;
 }
-.dtu-header .nav {
+.title {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+.nav {
   display: flex;
   gap: 28px;
   align-items: center;
   font-size: 1.08rem;
 }
-.dtu-header .nav a {
+.nav a {
   color: #fff;
   text-decoration: none;
   font-weight: 500;
   transition: color 0.2s;
 }
-.dtu-header .nav a:hover {
+.nav a:hover {
   color: #ffd700;
 }
-.dtu-header .lang {
+.lang {
   margin-left: 18px;
   font-size: 0.95rem;
 }
-.dtu-header .lang a {
+.lang a {
   color: #fff;
   margin-left: 6px;
   text-decoration: none;
 }
-.dtu-header .lang a:hover {
+.lang a:hover {
   text-decoration: underline;
 }
 
 /* Banner */
-.dtu-banner {
+.banner {
   background: #f8f8f8;
   padding: 12px 32px;
   color: #1976d2;
@@ -68,7 +71,16 @@ body {
   align-items: center;
   justify-content: space-between;
 }
-.dtu-banner .right {
+.banner .course-code {
+  margin-left: 18px;
+  color: #1976d2;
+  font-weight: normal;
+  background: #fff;
+  padding: 4px 10px;
+  border-radius: 6px;
+  border: 1px solid #1976d2;
+}
+.banner .right {
   color: #222;
   font-size: 0.98rem;
   font-weight: normal;
@@ -81,14 +93,14 @@ body {
 
 /* Sidebar */
 .sidebar {
-  background: linear-gradient(90deg, #89f7fe 0%, #66a6ff 100%);
+  background: #f5f5f5;
   color: #222;
   min-width: 230px;
   border-right: 1px solid #e0e0e0;
   padding: 0;
 }
 .sidebar-user {
-  background: linear-gradient(90deg, #66a6ff 0%, #89f7fe 100%);
+  background: #1976d2;
   color: #fff;
   padding: 18px 20px;
   font-weight: bold;

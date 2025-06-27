@@ -8,8 +8,8 @@ from django.conf import settings
 import random
 
 def home(request):
-    fname = request.user.first_name if request.user.is_authenticated else ""
-    return render(request, "authentication/index.html", {"fname": fname})
+    # Trang landing, ai cũng vào được
+    return render(request, "authentication/index.html")
 
 def send_otp_to_email(email, otp):
     subject = 'Xác thực tài khoản Django'
@@ -35,7 +35,7 @@ def signup(request):
             messages.error(request, "Username already exists.")
             return redirect('signup')
 
-        # Cho phép nhiều account dùng cùng email
+        # Gửi OTP xác thực email
         otp = str(random.randint(100000, 999999))
         send_otp_to_email(email, otp)
 
@@ -60,6 +60,12 @@ def verify_otp(request):
         user_data = request.session.get('temp_user')
 
         if entered_otp == session_otp and user_data:
+            # Kiểm tra nếu username đã tồn tại -> tránh lỗi IntegrityError
+            if User.objects.filter(username=user_data['username']).exists():
+                messages.error(request, "Username already exists.")
+                return redirect('signup')
+
+            # Tạo người dùng
             user = User.objects.create_user(
                 username=user_data['username'],
                 email=user_data['email'],
@@ -69,16 +75,27 @@ def verify_otp(request):
             user.last_name = user_data['lname']
             user.save()
 
+            # Lưu vào bảng Account (phân quyền và xác thực email)
+            is_teacher = user_data.get('is_teacher', False)
+            Account.objects.create(
+                username=user.username,
+                is_teacher=is_teacher,
+                email=user.email,
+                is_email_verified=True,  # Đánh dấu đã xác thực email
+                first_name=user.first_name,
+                last_name=user.last_name
+            )
+
+            # Xoá dữ liệu session
             request.session.pop('otp')
             request.session.pop('temp_user')
 
-            #Tạo user phân để check phân quyền
-            username = user_data['username']
-            is_teacher = user_data['is_teacher']
-            
-            Account.objects.create(username=username, is_teacher=is_teacher)
-            messages.success(request, "Account created. Please sign in.")
-            return redirect('signin')
+            # Đăng nhập luôn sau khi xác thực OTP thành công
+            login(request, user)
+            if is_teacher:
+                return redirect('teacher_home')
+            else:
+                return redirect('student_home')
         else:
             messages.error(request, "Invalid OTP.")
             return redirect('verify_otp')
@@ -86,19 +103,63 @@ def verify_otp(request):
     return render(request, "authentication/verify_otp.html")
 
 def signin(request):
+    # Nếu đã đăng nhập, tự động chuyển trang theo quyền
+    if request.user.is_authenticated:
+        try:
+            account = Account.objects.get(username=request.user.username)
+            if account.is_teacher:
+                return redirect('teacher_home')
+            else:
+                return redirect('student_home')
+        except Account.DoesNotExist:
+            logout(request)
+            return redirect('signin')
+
     if request.method == "POST":
         username = request.POST.get('username')
         password = request.POST.get('pass1')
 
         user = authenticate(username=username, password=password)
         if user is not None:
+            try:
+                account = Account.objects.get(username=user.username)
+                if not account.is_email_verified:
+                    messages.error(request, "Please verify your email before signing in.")
+                    return redirect('signin')
+            except Account.DoesNotExist:
+                messages.error(request, "Account data error. Please contact admin.")
+                return redirect('signin')
+
             login(request, user)
-            return redirect('/cv/')  # Đăng nhập xong chuyển sang trang "Tôi"
+            if account.is_teacher:
+                return redirect('teacher_home')
+            else:
+                return redirect('student_home')
         else:
             messages.error(request, "Invalid credentials.")
             return redirect('signin')
 
     return render(request, "authentication/signin.html")
+
+def teacher_home(request):
+    # Chỉ cho phép giáo viên truy cập
+    try:
+        account = Account.objects.get(username=request.user.username)
+        if not account.is_teacher:
+            return redirect('student_home')
+    except Account.DoesNotExist:
+        return redirect('signin')
+    return render(request, "authentication/indexgv.html")
+
+def student_home(request):
+    # Chỉ cho phép học sinh truy cập
+    try:
+        account = Account.objects.get(username=request.user.username)
+        if account.is_teacher:
+            return redirect('teacher_home')
+    except Account.DoesNotExist:
+        return redirect('signin')
+    return render(request, "authentication/indexsv.html")
 
 def signout(request):
     if request.method == "POST":

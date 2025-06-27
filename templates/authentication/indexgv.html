@@ -1,0 +1,241 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Trang chủ Giảng viên | Hệ thống học tập Perl & Python</title>
+  <link rel="stylesheet" href="{% static 'css/indexgv.css' %}">
+</head>
+<body>
+  <!-- Header -->
+  <div class="header">
+    <div class="logo">
+      <img src="{% static 'img/dtu-logo.png' %}" alt="DTU Logo">
+      <span class="title">PERL & PYTHON</span>
+    </div>
+    <div class="nav">
+      <a href="{% url 'teacher_home' %}">Trang chủ</a>
+      <a href="#">Quản lý khóa học</a>
+      <a href="#">Quản lý bài giảng</a>
+      <a href="#">Quản lý bài tập</a>
+      <a href="#">Chấm điểm</a>
+      <a href="#">Thống kê</a>
+      <a href="#">AI Hỗ trợ</a>
+      <span class="lang">Xin chào, {{ user.first_name }} | <a href="{% url 'signout' %}">Đăng xuất</a></span>
+    </div>
+  </div>
+  <!-- Banner -->
+  <div class="banner">
+    <span>
+      <b>Hệ thống học tập môn PERL & PYTHON</b>
+      <span class="course-code">CS466</span>
+    </span>
+    <span class="right">
+      {{ now|date:"l, d/m/Y" }}
+    </span>
+  </div>
+  <div class="layout">
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <div class="sidebar-user">
+        {{ user.first_name }} {{ user.last_name }}
+      </div>
+      <nav>
+        <ul>
+          <li><a href="#">Thông tin cá nhân</a></li>
+          <li><a href="#">Quản lý khóa học</a></li>
+          <li><a href="#">Quản lý bài giảng</a></li>
+          <li><a href="#">Quản lý bài tập</a></li>
+          <li><a href="#">Chấm điểm</a></li>
+          <li><a href="#">Thống kê & Báo cáo</a></li>
+          <li><a href="#">AI Hỗ trợ</a></li>
+          <li><a href="#">Thông báo</a></li>
+          <li><a href="#">Tài liệu giảng dạy</a></li>
+        </ul>
+      </nav>
+    </aside>
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- 1. Chào mừng & Thông tin giảng viên -->
+      <div class="section" style="display:flex;align-items:center;gap:24px;">
+        <img src="{% static 'img/teacher-avatar.png' %}" alt="Avatar" style="width:72px;height:72px;border-radius:50%;border:3px solid #1976d2;">
+        <div>
+          <h2 style="margin:0 0 6px 0;">👋 Xin chào, GV. {{ user.last_name }} {{ user.first_name }}!</h2>
+          <div style="color:#1976d2;font-weight:500;">Giảng viên bộ môn Perl/Python</div>
+          <a href="#" class="btn" style="margin-top:8px;">Xem hồ sơ</a>
+        </div>
+      </div>
+
+      <!-- 2. Danh sách các khóa học đang quản lý -->
+      <div class="section">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <h2>📚 Khóa học đang quản lý</h2>
+          <a href="#" class="btn">+ Tạo khóa học mới</a>
+        </div>
+        <div class="course-list">
+          <!-- Ví dụ 3 khóa học -->
+          <div class="course-card">
+            <div class="course-title">Python nâng cao</div>
+            <div>Sinh viên: <b>45</b></div>
+            <div>Tiến độ TB: <b>82%</b></div>
+            <a href="#" class="btn small">Vào khóa học</a>
+          </div>
+          <div class="course-card">
+            <div class="course-title">Nhập môn Perl</div>
+            <div>Sinh viên: <b>38</b></div>
+            <div>Tiến độ TB: <b>76%</b></div>
+            <a href="#" class="btn small">Vào khóa học</a>
+          </div>
+          <div class="course-card">
+            <div class="course-title">Python cơ bản</div>
+            <div>Sinh viên: <b>52</b></div>
+            <div>Tiến độ TB: <b>90%</b></div>
+            <a href="#" class="btn small">Vào khóa học</a>
+          </div>
+        </div>
+      </div>
+
+      <!-- 3. Bài giảng gần đây -->
+      <div class="section">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <h2>📝 Bài giảng gần đây</h2>
+          <a href="#" class="btn">+ Thêm bài giảng</a>
+        </div>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Chương/Bài</th>
+              <th>Ngày cập nhật</th>
+              <th>Thao tác</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Chương 2 - Hàm & Module Python</td>
+              <td>25/06/2025</td>
+              <td>
+                <a href="#" class="btn small">Xem</a>
+                <a href="#" class="btn small">Chỉnh sửa</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Chương 1 - Biến & Kiểu dữ liệu Perl</td>
+              <td>22/06/2025</td>
+              <td>
+                <a href="#" class="btn small">Xem</a>
+                <a href="#" class="btn small">Chỉnh sửa</a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 4. Bài tập đang mở -->
+      <div class="section">
+        <div style="display:flex;justify-content:space-between;align-items:center;">
+          <h2>🧪 Bài tập đang mở</h2>
+          <a href="#" class="btn">+ Tạo bài tập mới</a>
+        </div>
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Tên bài</th>
+              <th>Hạn nộp</th>
+              <th>Đã nộp</th>
+              <th>Thao tác</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>Bài tập 1: Hàm Python</td>
+              <td>30/06/2025</td>
+              <td>40/45</td>
+              <td>
+                <a href="#" class="btn small">Xem</a>
+                <a href="#" class="btn small">Chấm điểm</a>
+                <a href="#" class="btn small">Đóng bài</a>
+              </td>
+            </tr>
+            <tr>
+              <td>Quiz Perl cơ bản</td>
+              <td>28/06/2025</td>
+              <td>35/38</td>
+              <td>
+                <a href="#" class="btn small">Xem</a>
+                <a href="#" class="btn small">Chấm điểm</a>
+                <a href="#" class="btn small">Đóng bài</a>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <!-- 5. Báo cáo nhanh về lớp học -->
+      <div class="section">
+        <h2>📊 Báo cáo nhanh về lớp học</h2>
+        <div class="report-grid">
+          <div class="report-item">
+            <div class="report-title">Điểm TB lớp</div>
+            <div class="report-value">7.8</div>
+          </div>
+          <div class="report-item">
+            <div class="report-title">Tỉ lệ hoàn thành</div>
+            <div class="report-value">88%</div>
+          </div>
+          <div class="report-item">
+            <div class="report-title">Bài chưa chấm</div>
+            <div class="report-value">5</div>
+          </div>
+        </div>
+        <div style="margin-top:16px;">
+          <a href="#" class="btn small">Xem báo cáo chi tiết</a>
+          <a href="#" class="btn small">Xuất PDF/Excel</a>
+        </div>
+      </div>
+
+      <!-- 6. Thông báo hệ thống / Từ sinh viên -->
+      <div class="section">
+        <h2>📬 Thông báo & Thắc mắc</h2>
+        <ul class="messages">
+          <li>Hệ thống sẽ bảo trì từ 22:00 ngày 30/06/2025.</li>
+          <li>Sinh viên Nguyễn Văn A: "Thầy cho em hỏi về bài tập 2..." <a href="#" class="btn small">Trả lời</a></li>
+        </ul>
+        <a href="#" class="btn small">Xem tất cả thông báo</a>
+      </div>
+
+      <!-- 7. AI hỗ trợ giảng viên -->
+      <div class="section">
+        <h2>🤖 AI hỗ trợ giảng viên</h2>
+        <div style="display:flex;gap:16px;flex-wrap:wrap;">
+          <a href="#" class="btn">Tạo câu hỏi bằng AI</a>
+          <a href="#" class="btn">Phân tích tiến độ</a>
+        </div>
+        <div style="margin-top:10px;color:#888;font-size:0.98rem;">
+          Sử dụng AI để sinh quiz, đánh giá năng lực sinh viên, hỗ trợ chấm điểm nhanh hơn.
+        </div>
+      </div>
+
+      <!-- 8. Tìm kiếm nhanh -->
+      <div class="section">
+        <h2>🔍 Tìm kiếm nhanh</h2>
+        <form style="display:flex;gap:12px;flex-wrap:wrap;">
+          <input type="text" placeholder="Tìm bài học, bài tập, sinh viên..." style="flex:1;padding:10px 14px;border:1px solid #bcdffb;border-radius:6px;">
+          <select style="padding:10px 14px;border:1px solid #bcdffb;border-radius:6px;">
+            <option>Tất cả khóa học</option>
+            <option>Python nâng cao</option>
+            <option>Nhập môn Perl</option>
+          </select>
+          <select style="padding:10px 14px;border:1px solid #bcdffb;border-radius:6px;">
+            <option>Tất cả loại nội dung</option>
+            <option>Bài học</option>
+            <option>Bài tập</option>
+            <option>Sinh viên</option>
+          </select>
+          <button type="submit" class="btn small">Tìm kiếm</button>
+        </form>
+      </div>
+    </main>
+  </div>
+</body>
+</html>
