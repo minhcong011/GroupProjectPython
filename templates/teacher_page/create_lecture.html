@@ -1,0 +1,19 @@
+{% load static %}
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Create Lecture</title>
+    <link rel="stylesheet" href="/static/css/create_lecture.css">
+</head>
+<body>
+    <div class="container">
+        <h2>Create Lecture</h2>
+        <form method="POST" enctype="multipart/form-data">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <button type="submit">Save Lecture</button>
+        </form>
+        <a href="{% url 'lecture_list' %}">Back to lecture list</a>
+    </div>
+</body>
+</html>

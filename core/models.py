@@ -1,4 +1,5 @@
 from django.db import models
+from django.contrib.auth.models import User
 
 class Account(models.Model):
     username = models.CharField(max_length=150, unique=True)
@@ -15,3 +16,16 @@ class Account(models.Model):
 
     def __str__(self):
         return self.username
+    
+class Lecture(models.Model):
+    title = models.CharField(max_length=255)
+    description = models.TextField()
+    video_url = models.URLField(blank=True, null=True)
+    pdf_file = models.FileField(upload_to='uploads/pdfs/', blank=True, null=True)
+    slide_file = models.FileField(upload_to='uploads/slides/', blank=True, null=True)
+    subject = models.CharField(max_length=100, choices=[("Perl", "Perl"), ("Python", "Python")])
+    created_by = models.ForeignKey(User, on_delete=models.CASCADE)
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.title

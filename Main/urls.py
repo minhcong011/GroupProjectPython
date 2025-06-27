@@ -21,4 +21,5 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('authentication.urls')),
     path('', include('cv.urls')),  # Thêm đường dẫn cho module cv
+    path('', include('teacherapp.urls')),
 ]
