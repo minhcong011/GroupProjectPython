@@ -1,0 +1,183 @@
+body {
+    margin: 0;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    background: #f4f6fa;
+}
+
+.sidebar {
+    width: 240px;
+    background: #222d32;
+    color: #fff;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 100vh;
+    box-shadow: 2px 0 8px rgba(0,0,0,0.05);
+    z-index: 100;
+}
+.sidebar-header {
+    padding: 24px 16px 16px 16px;
+    border-bottom: 1px solid #2c3b41;
+}
+.logo {
+    font-size: 1.6em;
+    font-weight: bold;
+    margin-bottom: 10px;
+    color: #6ec1e4;
+}
+.user-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 1em;
+}
+.user-avatar {
+    font-size: 1.3em;
+}
+.user-status.online {
+    color: #4caf50;
+    font-size: 0.9em;
+}
+.sidebar-menu {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    margin-top: 20px;
+}
+.sidebar-menu li {
+    padding: 12px 24px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+.sidebar-menu li.active, .sidebar-menu li:hover {
+    background: #1a2226;
+    color: #6ec1e4;
+}
+
+.main-content {
+    margin-left: 240px;
+    padding: 32px 40px 24px 40px;
+}
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 24px;
+}
+.header h2 {
+    margin: 0;
+    font-size: 1.6em;
+    color: #222d32;
+}
+.header-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.header-actions input[type="text"] {
+    padding: 8px 12px;
+    border: 1px solid #bfc9d4;
+    border-radius: 4px;
+    font-size: 1em;
+    outline: none;
+    transition: border 0.2s;
+}
+.header-actions input[type="text"]:focus {
+    border: 1.5px solid #6ec1e4;
+}
+.add-class-btn {
+    background: #6ec1e4;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    padding: 8px 18px;
+    font-size: 1em;
+    cursor: pointer;
+    transition: background 0.2s;
+    margin-left: 8px;
+}
+.add-class-btn:hover {
+    background: #4fa3c7;
+}
+.edit-btn, .delete-btn {
+    padding: 5px 14px;
+    border: none;
+    border-radius: 4px;
+    font-size: 0.95em;
+    margin: 0 2px;
+    cursor: pointer;
+    transition: background 0.2s, color 0.2s;
+}
+.edit-btn {
+    background: #ffeb3b;
+    color: #222d32;
+}
+.edit-btn:hover {
+    background: #ffe066;
+}
+.delete-btn {
+    background: #f44336;
+    color: #fff;
+}
+.delete-btn:hover {
+    background: #d32f2f;
+}
+
+.class-table {
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    border-radius: 8px;
+    overflow: hidden;
+}
+.class-table th, .class-table td {
+    padding: 10px 8px;
+    text-align: center;
+    border-bottom: 1px solid #e0e6ed;
+    font-size: 1em;
+}
+.class-table th {
+    background: #127be4;
+    color: #222d32;
+    font-weight: 600;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+.class-table tr:last-child td {
+    border-bottom: none;
+}
+.class-table tr:hover {
+    background: #f5fafd;
+}
+
+@media (max-width: 900px) {
+    .sidebar {
+        width: 60px;
+    }
+    .main-content {
+        margin-left: 60px;
+        padding: 20px 8px 8px 8px;
+    }
+    .sidebar-header, .sidebar-menu li {
+        text-align: center;
+        padding-left: 0;
+        padding-right: 0;
+    }
+    .sidebar-menu li {
+        font-size: 0.95em;
+    }
+}
+@media (max-width: 600px) {
+    .main-content {
+        padding: 8px 2px;
+    }
+    .header h2 {
+        font-size: 1.1em;
+    }
+    .class-table th, .class-table td {
+        font-size: 0.9em;
+        padding: 6px 2px;
+    }
+}
