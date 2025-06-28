@@ -1,0 +1,43 @@
+<!-- filepath: d:\GitHub\GroupProjectPython\templates\student_page\IDE_Onl.html -->
+{% load static %}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>IDE Online</title>
+  <link rel="stylesheet" href="{% static 'css/IDE_Onl.css' %}">
+</head>
+<body>
+  <!-- Header -->
+  <div class="header">
+    <div class="logo">
+      <img src="{% static 'image/PvsP.jpg' %}" alt="Perl/Python Logo">
+      <span class="title">PERL & PYTHON</span>
+    </div>
+    <div class="nav">
+      <a href="{% url 'student_home' %}">Trang chủ</a>
+      <a href="{% url 'studentapp:khoa_hoc' %}">Khóa học</a>
+      <a href="{% url 'studentapp:assignment_list' %}">Bài tập</a>
+      <a href="{% url 'studentapp:ide_online' %}">IDE Online</a>
+      <a href="{% url 'studentapp:chatbot' %}">Chatbot AI</a>
+      <span class="lang">Xin chào, {{ user.first_name }} | <a href="{% url 'signout' %}">Đăng xuất</a></span>
+    </div>
+  </div>
+  <!-- Banner -->
+  <div class="banner">
+    <span>
+      <b>Hệ thống học tập môn PERL & PYTHON</b>
+      <span class="course-code">CS466</span>
+    </span>
+    <span class="right">
+      {{ now|date:"l, d/m/Y" }}
+    </span>
+  </div>
+  <!-- Main Content -->
+  <div class="assignment-list-container">
+    <h2>IDE Online</h2>
+    <p>Chức năng IDE Online sẽ được phát triển tại đây.</p>
+    <!-- Bạn có thể thêm giao diện code editor, nút chạy code, ... -->
+  </div>
+</body>
+</html>

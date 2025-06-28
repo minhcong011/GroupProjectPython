@@ -6,6 +6,10 @@ from django.contrib.auth import authenticate, login, logout
 from django.core.mail import send_mail
 from django.conf import settings
 import random
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+
+
 
 def home(request):
     return render(request, "authentication/index.html")
@@ -138,6 +142,7 @@ def signin(request):
 
     return render(request, "authentication/signin.html")
 
+    
 def teacher_home(request):
     if not request.user.is_authenticated:
         return redirect('signin')

@@ -22,8 +22,11 @@ from django.conf import settings
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('authentication.urls')),
-    path('', include('cv.urls')),  # Thêm đường dẫn cho module cv
+    path('', include('cv.urls')), 
     path('', include('teacherapp.urls')),
+    path('', include('authentication.urls')),
+    path('student/', include(('studentapp.urls', 'studentapp'), namespace='studentapp')),
+    
    
 
 ]  + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

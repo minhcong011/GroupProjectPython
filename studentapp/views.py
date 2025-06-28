@@ -1,0 +1,38 @@
+from django.shortcuts import render, redirect
+from django.utils import timezone
+
+def assignment_list(request):
+    
+    return render(request, "student_page/assignment_list.html")
+
+def ide_online(request):
+    return render(request, "student_page/IDE_Onl.html")
+
+def khoa_hoc(request):
+    return render(request, "student_page/Khoa_hoc.html") 
+
+def chatbot(request):
+    return render(request, "student_page/Chat_bot.html")
+
+from django.shortcuts import render, redirect
+from django.utils import timezone
+
+def nop_bai(request):
+    context = {}
+    if request.method == "POST":
+        if 'code' in request.POST:
+            
+            code = request.POST.get('code')
+            language = request.POST.get('language')
+            
+            context['message'] = "Đã nhận code. (Chưa xử lý lưu/chấm thực tế)"
+        elif 'file' in request.FILES:
+            
+            file = request.FILES['file']
+            
+            context['submitted_file'] = {
+                'name': file.name,
+                'time': timezone.now()
+            }
+            context['message'] = "Đã nhận file. (Chưa xử lý lưu thực tế)"
+    return render(request, "student_page/nop_bai.html", context)
