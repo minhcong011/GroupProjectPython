@@ -1,0 +1,58 @@
+body {
+    background: linear-gradient(120deg, #e3f0ff 0%, #f8fbff 100%);
+    font-family: 'Segoe UI', Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+  }
+.header {
+    background: linear-gradient(90deg, #2d3a4e 60%, #1976d2 100%);
+    color: #fff;
+    min-height: 90px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 32px;
+  }
+  .logo {
+    display: flex;
+    align-items: center;
+    gap: 18px;
+  }
+  .logo img {
+    height: 54px;
+    background: #fff;
+    border-radius: 8px;
+    padding: 4px;
+  }
+  .title {
+    font-size: 1.5rem;
+    font-weight: bold;
+  }
+  .nav {
+    display: flex;
+    gap: 28px;
+    align-items: center;
+    font-size: 1.08rem;
+  }
+  .nav a {
+    color: #fff;
+    text-decoration: none;
+    font-weight: 500;
+    transition: color 0.2s;
+  }
+  .nav a:hover {
+    color: #ffd700;
+  }
+  .lang {
+    margin-left: 18px;
+    font-size: 0.95rem;
+  }
+  .lang a {
+    color: #fff;
+    margin-left: 6px;
+    text-decoration: none;
+  }
+  .lang a:hover {
+    text-decoration: underline;
+  }

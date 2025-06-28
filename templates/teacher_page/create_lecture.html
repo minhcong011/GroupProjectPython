@@ -1,19 +1,20 @@
+{% extends 'teacher_page/gv_base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Create Lecture</title>
-    <link rel="stylesheet" href="/static/css/create_lecture.css">
-</head>
-<body>
-    <div class="container">
-        <h2>Tạo bài giảng</h2>
-        <form method="POST" enctype="multipart/form-data">
-            {% csrf_token %}
-            {{ form.as_p }}
-            <button type="submit">Lưu bài giảng</button>
-        </form>
-        <a href="{% url 'lecture_list' %}">Trở lại Menu bài giảng</a>
-    </div>
-</body>
-</html>
+
+{% block title %}Tạo bài giảng{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="/static/css/create_lecture.css">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h2>Tạo bài giảng</h2>
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit">Lưu bài giảng</button>
+    </form>
+    <a href="{% url 'lecture_list' %}">Trở lại Menu bài giảng</a>
+</div>
+{% endblock %}

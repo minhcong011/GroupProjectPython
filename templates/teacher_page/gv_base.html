@@ -1,0 +1,38 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Trang giảng viên{% endblock %}</title>
+    {% block extra_css %}{% endblock %}
+    <link rel="stylesheet" href="{% static 'css/gv_header.css' %}">
+</head>
+<body>
+    <!-- Header dùng CSS riêng -->
+    <header class="header">
+        <div class="logo">
+            <img src="{% static 'img/dtu-logo.png' %}" alt="DTU Logo">
+            <span class="gv-title">PERL & PYTHON</span>
+        </div>
+        <nav class="nav">
+            <a href="{% url 'teacher_home' %}">Trang chủ</a>
+            <a href="#">Quản lý khóa học</a>
+            <a href="#">Quản lý bài giảng</a>
+            <a href="#">Quản lý bài tập</a>
+            <a href="#">Chấm điểm</a>
+            <a href="#">Thống kê</a>
+            <a href="#">AI Hỗ trợ</a>
+            <span class="lang">
+                Xin chào, {{ user.first_name }} |
+                <a href="{% url 'signout' %}">Đăng xuất</a>
+            </span>
+        </nav>
+    </header>
+
+    <!-- Nội dung trang con -->
+    <main class="content">
+        {% block content %}{% endblock %}
+    </main>
+</body>
+</html>

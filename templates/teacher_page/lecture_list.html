@@ -1,25 +1,40 @@
+{% extends 'teacher_page/gv_base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Your Lectures</title>
-    <link rel="stylesheet" href="{% static 'css/lecture_list.css' %}">
-</head>
-<body>
-    <h2>Bài giảng của bạn</h2>
-    <ul>
-        {% for lecture in lectures %}
-            <li>
-                <strong>{{ lecture.title }}</strong> - {{ lecture.subject }} <br>
-                {{ lecture.description }}<br>
-                {% if lecture.video_url %}<a href="{{ lecture.video_url }}">Video</a>{% endif %}
-                {% if lecture.pdf_file %}<a href="{{ lecture.pdf_file.url }}">PDF</a>{% endif %}
-                {% if lecture.slide_file %}<a href="{{ lecture.slide_file.url }}">Slides</a>{% endif %}
-            </li>
-        {% empty %}
-            <li>Không có bài giảng</li>
-        {% endfor %}
-    </ul>
-    <a href="{% url 'create_lecture' %}">+ Thêm bài giảng mới</a>
-</body>
-</html>
+
+{% block title %}Danh sách bài giảng{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/lecture_list.css' %}">
+{% endblock %}
+
+{% block content %}
+<h2 class="page-title">📚 Bài giảng của bạn</h2>
+
+<div class="lecture-list">
+    {% for lecture in lectures %}
+        <div class="lecture-card">
+            <div class="lecture-header">
+                <h3>{{ lecture.title }}</h3>
+                <span class="subject">{{ lecture.subject }}</span>
+            </div>
+            <p class="description">{{ lecture.description }}</p>
+            <div class="resources">
+                {% if lecture.video_url %}
+                    <a href="{{ lecture.video_url }}" class="btn-link" target="_blank">🎥 Video</a>
+                {% endif %}
+                {% if lecture.pdf_file %}
+                    <a href="{{ lecture.pdf_file.url }}" class="btn-link" target="_blank">📄 PDF</a>
+                {% endif %}
+                {% if lecture.slide_file %}
+                    <a href="{{ lecture.slide_file.url }}" class="btn-link" target="_blank">📊 Slides</a>
+                {% endif %}
+            </div>
+        </div>
+    {% empty %}
+        <p class="no-lecture">Không có bài giảng nào.</p>
+    {% endfor %}
+</div>
+
+<a href="{% url 'create_lecture' %}" class="btn-add">+ Thêm bài giảng mới</a>
+{% endblock %}
+

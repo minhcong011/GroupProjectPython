@@ -83,11 +83,9 @@ def verify_otp(request):
 
             request.session.pop('otp')
             request.session.pop('temp_user')
-            login(request, user)
-            if is_teacher:
-                return redirect('teacher_home')
-            else:
-                return redirect('student_home')
+            # KHÔNG tự động đăng nhập
+            messages.success(request, "Email verified successfully. Please sign in.")
+            return redirect('home')
         else:
             messages.error(request, "Invalid OTP.")
             return redirect('verify_otp')

@@ -39,15 +39,11 @@
         Với sự hỗ trợ của AI, chúng tôi hy vọng sẽ mang lại trải nghiệm học tập cá nhân hóa, thông minh và truyền cảm hứng sáng tạo cho tất cả người dùng.
       </p>
     </div>
-    {% if user.is_authenticated %}
-      <h2>Chào mừng, {{ user.first_name }}!</h2>
-      <form method="post" action="{% url 'signout' %}">
-        {% csrf_token %}
-        <button type="submit" class="btn">Đăng xuất</button>
-      </form>
-    {% endif %}
+    {# Đã loại bỏ button Đăng xuất khi vào trang index #}
   </div>
 
   <footer class="footer">
     Nhóm 4 - Dự án môn học PERL & PYTHON
   </footer>
+</body>
+</html>
