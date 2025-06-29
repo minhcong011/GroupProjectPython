@@ -4,12 +4,13 @@ body {
     margin: 0;
     background: linear-gradient(135deg, #a8e0ff 0%, #8ec5fc 100%);
     min-height: 100vh;
-    display: flex;
+    /* XÓA các dòng dưới để header luôn nằm trên cùng */
+    /* display: flex;
     justify-content: center;
-    align-items: center;
+    align-items: center; */
 }
 
-.container {
+.container, .cv-container {
     display: flex;
     background-color: #fff;
     border-radius: 18px;
@@ -17,6 +18,7 @@ body {
     width: 100%;
     max-width: 1200px;
     overflow: hidden;
+    margin: 32px auto 0 auto; /* căn giữa và cách header 32px */
 }
 
 .sidebar {
@@ -24,6 +26,7 @@ body {
     padding: 20px;
     border-right: 1px solid #eee;
     background: linear-gradient(135deg, #a8e0ff 0%, #8ec5fc 100%);
+    min-height: 600px;
 }
 
 .menu-item {
@@ -34,6 +37,8 @@ body {
     color: #2c3e50;
     transition: background-color 0.2s, color 0.2s;
     font-weight: 500;
+    display: block;
+    text-decoration: none;
 }
 
 .menu-item:hover, .menu-item.active {
