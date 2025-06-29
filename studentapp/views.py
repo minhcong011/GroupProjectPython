@@ -36,3 +36,5 @@ def nop_bai(request):
             }
             context['message'] = "Đã nhận file. (Chưa xử lý lưu thực tế)"
     return render(request, "student_page/nop_bai.html", context)
+def cvsv_edit(request):
+    return render(request, "student_page/cvsv.html")
