@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="{% static 'css/nop_bai.css' %}">
 </head>
 <body>
-  <!-- Header giữ nguyên -->
+
   <div class="header">
     <div class="logo">
       <img src="{% static 'image/PvsP.jpg' %}" alt="Perl/Python Logo">
@@ -24,7 +24,7 @@
       <span class="lang">Xin chào, {{ user.first_name }} | <a href="{% url 'signout' %}">Đăng xuất</a></span>
     </div>
   </div>
-  <!-- Banner -->
+
   <div class="banner">
     <span>
       <b>Hệ thống học tập môn PERL & PYTHON</b>
@@ -34,7 +34,7 @@
       {{ now|date:"l, d/m/Y" }}
     </span>
   </div>
-  <!-- Main Content -->
+  
   <div class="nopbai-layout">
     <div class="nopbai-left">
       <button class="action-btn" onclick="window.location.href='{% url 'studentapp:assignment_list' %}'">🔙 Quay lại danh sách bài tập</button>
