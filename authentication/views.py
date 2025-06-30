@@ -120,19 +120,36 @@ def signin(request):
                     messages.error(request, "Account data error. Please contact admin.")
                     return redirect('signin')
 
-                # Tạo OTP và gửi email
-                otp = str(random.randint(100000, 999999))
-                send_otp_to_email(user.email, otp)
-                
-                # Lưu thông tin tạm vào session
-                request.session['login_otp'] = otp
-                request.session['temp_login'] = {
-                    'username': username,
-                    'remember_me': remember_me == "on"
-                }
-                
-                messages.success(request, f"Mã OTP đã được gửi đến email {user.email}")
-                return render(request, "authentication/signin_otp.html")
+                # Kiểm tra nếu user đã bật 2FA
+                if account.two_factor_enabled:
+                    # Tạo OTP và gửi email
+                    otp = str(random.randint(100000, 999999))
+                    send_otp_to_email(user.email, otp)
+                    
+                    # Lưu thông tin tạm vào session
+                    request.session['login_otp'] = otp
+                    request.session['temp_login'] = {
+                        'username': username,
+                        'remember_me': remember_me == "on"
+                    }
+                    
+                    messages.success(request, f"Mã OTP đã được gửi đến email {user.email}")
+                    return render(request, "authentication/signin_otp.html")
+                else:
+                    # Đăng nhập trực tiếp nếu chưa bật 2FA
+                    login(request, user)
+                    
+                    # Xử lý remember me
+                    if remember_me == "on":
+                        request.session.set_expiry(60 * 60 * 24 * 30)  
+                    else:
+                        request.session.set_expiry(0)
+                    
+                    # Chuyển hướng theo vai trò
+                    if account.is_teacher:
+                        return redirect('teacher_home')
+                    else:
+                        return redirect('student_home')
             else:
                 messages.error(request, "Tên đăng nhập hoặc mật khẩu không đúng.")
                 return redirect('signin')

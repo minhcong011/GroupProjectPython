@@ -1,0 +1,145 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thông tin cá nhân - PERL & PYTHON</title>
+    <link rel="stylesheet" href="{% static 'css/profile.css' %}">
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="logo">
+            <img src="{% static 'image/headerIcon.jpg' %}" alt="Perl/Python Logo">
+            <span class="title">PERL & PYTHON</span>
+        </div>
+        <div class="nav">
+            {% if user.is_authenticated %}
+                {% if request.user.account.is_teacher %}
+                    <a href="{% url 'teacher_home' %}">Trang chủ</a>
+                    <a href="{% url 'course_management' %}">Quản lý khóa học</a>
+                    <a href="{% url 'lecture_list' %}">Quản lý bài giảng</a>
+                {% else %}
+                    <a href="{% url 'student_home' %}">Trang chủ</a>
+                    <a href="{% url 'studentapp:khoa_hoc' %}">Khóa học</a>
+                    <a href="{% url 'studentapp:assignment_list' %}">Bài tập</a>
+                    <a href="{% url 'studentapp:ide_online' %}">IDE Online</a>
+                    <a href="{% url 'studentapp:chatbot' %}">Chatbot AI</a>
+                {% endif %}
+                <span class="lang">Xin chào, {{ user.first_name }} | <a href="{% url 'signout' %}">Đăng xuất</a></span>
+            {% endif %}
+        </div>
+    </div>
+
+    <!-- Banner -->
+    <div class="banner">
+        <span>
+            <b>Hệ thống học tập môn PERL & PYTHON</b>
+            <span class="course-code">CS466</span>
+        </span>
+        <span class="right">
+            {{ now|date:"l, d/m/Y" }}
+        </span>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-container">
+        <!-- Sidebar -->
+        <div class="sidebar">
+            <a href="{% url 'cv:profile' %}" class="menu-item active">Hồ sơ</a>
+            <a href="{% url 'cv:password_2fa' %}" class="menu-item">Mật khẩu</a>
+            <div class="menu-item">Thông báo</div>
+            <div class="menu-item">Thanh toán</div>
+            <div class="menu-item">Lịch sử đơn hàng</div>
+        </div>
+
+        <!-- Main Content -->
+        <div class="main-content">
+            <h1>Thông tin cá nhân</h1>
+
+            <form method="post" enctype="multipart/form-data">
+                {% csrf_token %}
+                <div class="profile-form">
+                    <!-- Avatar Section -->
+                    <div class="profile-image-section">
+                        <div class="profile-avatar">
+                            {% if account.avatar %}
+                                <img src="{{ account.avatar.url }}" alt="Avatar">
+                            {% else %}
+                                <img src="{% static '#' %}" alt="Avatar mặc định">
+                            {% endif %}
+                        </div>
+                        <input type="file" name="avatar" id="avatar" accept="image/*" style="display: none;">
+                        <label for="avatar" class="upload-link">Tải lên hình ảnh mới</label>
+                    </div>
+
+                    <!-- Form Fields -->
+                    <div class="form-fields">
+                        <div class="form-group">
+                            <label for="email">E-mail</label>
+                            <input type="email" id="email" name="email" value="{{ account.email|default:'' }}" required>
+                        </div>
+                        
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="first_name">Tên</label>
+                                <input type="text" id="first_name" name="first_name" value="{{ account.first_name|default:'' }}" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="last_name">Họ</label>
+                                <input type="text" id="last_name" name="last_name" value="{{ account.last_name|default:'' }}" required>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="username">Tên đăng nhập</label>
+                            <input type="text" id="username" name="username" value="{{ account.username }}" readonly>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="company">Địa chỉ/Công ty</label>
+                            <input type="text" id="company" name="company" value="{{ account.company|default:'' }}">
+                        </div>
+
+                        <div class="form-group">
+                            <label for="title">Chức vụ/Chuyên ngành</label>
+                            <input type="text" id="title" name="title" value="{{ account.title|default:'' }}">
+                        </div>
+
+                        <div class="form-row">
+                            <div class="form-group">
+                                <label for="phone_number">Số điện thoại</label>
+                                <input type="text" id="phone_number" name="phone_number" value="{{ account.phone_number|default:'' }}">
+                            </div>
+                            <div class="form-group">
+                                <label for="timezone">Múi giờ</label>
+                                <select id="timezone" name="timezone">
+                                    <option value="Asia/Ho_Chi_Minh" {% if account.timezone == 'Asia/Ho_Chi_Minh' %}selected{% endif %}>Việt Nam (GMT+7)</option>
+                                    <option value="UTC" {% if account.timezone == 'UTC' %}selected{% endif %}>UTC (GMT+0)</option>
+                                </select>
+                            </div>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Vai trò</label>
+                            <input type="text" value="{% if account.is_teacher %}Giảng viên{% else %}Sinh viên{% endif %}" readonly>
+                        </div>
+
+                        <div class="form-group">
+                            <label>Trạng thái email</label>
+                            <input type="text" value="{% if account.is_email_verified %}Đã xác thực{% else %}Chưa xác thực{% endif %}" readonly>
+                        </div>
+
+                        <button type="submit" class="save-changes-btn">Lưu thay đổi</button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <footer class="footer">
+        Nhóm 4 - Dự án môn học PERL & PYTHON
+    </footer>
+</body>
+</html>
