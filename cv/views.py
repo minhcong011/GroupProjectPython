@@ -27,7 +27,11 @@ def cv_edit(request):
         'timezone': account.timezone if account else '',
         'phone_number': account.phone_number if account else '',
     }
-    return render(request, 'cv/cv.html', context)
+    # Phân loại tài khoản để render đúng template
+    if hasattr(account, 'is_teacher') and account.is_teacher:
+        return render(request, 'cv/cv_teacher.html', context)
+    else:
+        return render(request, 'cv/cv_student.html', context)
 
 @login_required
 def password_2fa(request):
