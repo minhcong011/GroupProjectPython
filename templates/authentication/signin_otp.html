@@ -1,0 +1,35 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Xác thực OTP - Đăng nhập</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="{% static 'css/verify_otp.css' %}">
+</head>
+<body>
+  <div class="otp-container">
+    <h3>Xác thực OTP</h3>
+     
+    <p>Mã OTP đã được gửi đến email của bạn. Vui lòng kiểm tra hộp thư và nhập mã để hoàn tất đăng nhập.</p>
+    
+    <form method="post">
+      {% csrf_token %}
+      <input type="hidden" name="verify_otp" value="1">
+      
+      <label for="otp">Mã OTP (6 chữ số):</label>
+      <input type="text" name="otp" id="otp" placeholder="000000" maxlength="6" required>
+      
+      <button type="submit">Xác thực</button>
+    </form>
+    
+    <div class="links">
+      <a href="{% url 'signin' %}">← Quay lại đăng nhập</a>
+    </div>
+  </div>
+
+  <footer class="footer">
+    Nhóm 4 - Dự án môn học PERL & PYTHON
+  </footer>
+</body>
+</html>
