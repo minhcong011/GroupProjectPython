@@ -6,6 +6,10 @@ from django.contrib.auth import authenticate, login, logout
 from django.core.mail import send_mail
 from django.conf import settings
 import random
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+
+
 
 def home(request):
     return render(request, "authentication/index.html")
@@ -83,11 +87,9 @@ def verify_otp(request):
 
             request.session.pop('otp')
             request.session.pop('temp_user')
-            login(request, user)
-            if is_teacher:
-                return redirect('teacher_home')
-            else:
-                return redirect('student_home')
+
+            messages.success(request, "Email verified successfully. Please sign in.")
+            return redirect('home')
         else:
             messages.error(request, "Invalid OTP.")
             return redirect('verify_otp')
@@ -109,8 +111,8 @@ def signin(request):
     if request.method == "POST":
         username = request.POST.get('username')
         password = request.POST.get('pass1')
-        remember_me = request.POST.get('remember_me')  # Lấy giá trị checkbox
-        print("remember_me:", remember_me)  # Debug: kiểm tra giá trị checkbox
+        remember_me = request.POST.get('remember_me')  
+        print("remember_me:", remember_me)  
 
         user = authenticate(username=username, password=password)
         if user is not None:
@@ -124,11 +126,11 @@ def signin(request):
                 return redirect('signin')
 
             login(request, user)
-            # Xử lý ghi nhớ đăng nhập
+           
             if remember_me == "on":
-                request.session.set_expiry(60 * 60 * 24 * 30)  # 30 ngày
+                request.session.set_expiry(60 * 60 * 24 * 30)  
             else:
-                request.session.set_expiry(0)  # Hết hạn khi đóng trình duyệt
+                request.session.set_expiry(0)  
 
             if account.is_teacher:
                 return redirect('teacher_home')
@@ -140,6 +142,7 @@ def signin(request):
 
     return render(request, "authentication/signin.html")
 
+    
 def teacher_home(request):
     if not request.user.is_authenticated:
         return redirect('signin')

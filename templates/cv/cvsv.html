@@ -1,16 +1,16 @@
-{% extends 'teacher_page/gv_base.html' %}
+{% extends 'student_page/student_base.html' %}
 {% load static %}
 
 {% block title %}Chỉnh sửa Hồ sơ{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/cv.css' %}">
+<link rel="stylesheet" href="{% static 'css/cvsv.css' %}">
 {% endblock %}
 
 {% block content %}
 <div class="cv-container">
     <div class="sidebar">
-        <a href="/cv/" class="menu-item{% if request.path == '/cv/' %} active{% endif %}">Hồ sơ</a>
+        <a href="/cvsv/" class="menu-item{% if request.path == '/cvsv/' %} active{% endif %}">Hồ sơ</a>
         <a href="/cv/password/" class="menu-item{% if request.path == '/cv/password/' %} active{% endif %}">Mật khẩu</a>
         <div class="menu-item">Thông báo</div>
         <div class="menu-item">Thanh toán</div>

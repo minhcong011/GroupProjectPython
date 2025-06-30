@@ -6,22 +6,14 @@
   <title>Trang chủ</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <link rel="stylesheet" href="{% static 'css/index.css' %}">
-  <style>
-    html, body { height: 100%; }
-    body { display: flex; flex-direction: column; min-height: 100vh; }
-    .container { flex: 1 0 auto; }
-    .footer { flex-shrink: 0; }
-  </style>
 </head>
 <body>
 
   <div class="main-header">
     <div class="header-title">HỆ THỐNG HỌC TẬP PERL & PYTHON TÍCH HỢP AI</div>
     <div class="header-right">
-      {% if not user.is_authenticated %}
-        <a href="{% url 'signup' %}" class="btn">Sign Up</a>
-        <a href="{% url 'signin' %}" class="btn">Sign In</a>
-      {% endif %}
+      <a href="{% url 'signup' %}" class="btn">Sign Up</a>
+      <a href="{% url 'signin' %}" class="btn">Sign In</a>
     </div>
   </div>
 
@@ -39,15 +31,10 @@
         Với sự hỗ trợ của AI, chúng tôi hy vọng sẽ mang lại trải nghiệm học tập cá nhân hóa, thông minh và truyền cảm hứng sáng tạo cho tất cả người dùng.
       </p>
     </div>
-    {% if user.is_authenticated %}
-      <h2>Chào mừng, {{ user.first_name }}!</h2>
-      <form method="post" action="{% url 'signout' %}">
-        {% csrf_token %}
-        <button type="submit" class="btn">Đăng xuất</button>
-      </form>
-    {% endif %}
   </div>
 
   <footer class="footer">
     Nhóm 4 - Dự án môn học PERL & PYTHON
   </footer>
+</body>
+</html>

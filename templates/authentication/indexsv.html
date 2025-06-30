@@ -11,15 +11,15 @@
   <!-- Header -->
   <div class="header">
     <div class="logo">
-      <img src="{% static 'img/dtu-logo.png' %}" alt="DTU Logo">
+      <img src="{% static 'image/PvsP.jpg' %}" alt="Perl/Python Logo">
       <span class="title">PERL & PYTHON</span>
     </div>
     <div class="nav">
       <a href="{% url 'student_home' %}">Trang chủ</a>
-      <a href="#">Khóa học</a>
-      <a href="#">Bài tập</a>
-      <a href="#">IDE Online</a>
-      <a href="#">Chatbot AI</a>
+      <a href="{% url 'studentapp:khoa_hoc' %}">Khóa học</a>
+      <a href="{% url 'studentapp:assignment_list' %}">Bài tập</a>
+      <a href="{% url 'studentapp:ide_online' %}">IDE Online</a>
+      <a href="{% url 'studentapp:chatbot' %}">Chatbot AI</a>
       <span class="lang">Xin chào, {{ user.first_name }} | <a href="{% url 'signout' %}">Đăng xuất</a></span>
     </div>
   </div>
@@ -41,13 +41,13 @@
       </div>
       <nav>
         <ul>
-          <li><a href="#">Thông tin cá nhân</a></li>
-          <li><a href="#">Khóa học</a></li>
+          <li><a href="{% url 'cvsv_edit' %}">Thông tin cá nhân</a></li>
+          <li><a href="{% url 'studentapp:khoa_hoc' %}">Khóa học</a></li>
           <li><a href="#">Bài giảng</a></li>
-          <li><a href="#">Bài tập</a></li>
-          <li><a href="#">Nộp bài</a></li>
-          <li><a href="#">IDE Online</a></li>
-          <li><a href="#">Chatbot AI</a></li>
+          <li><a href="{% url 'studentapp:assignment_list' %}">Bài tập</a></li>
+          <li><a href="{% url 'studentapp:nop_bai' %}">Nộp bài</a></li>
+          <li><a href="{% url 'studentapp:ide_online' %}">IDE Online</a></li>
+          <li><a href="{% url 'studentapp:chatbot' %}">Chatbot AI</a></li>
           <li><a href="#">Thông báo</a></li>
           <li><a href="#">Đánh giá khóa học</a></li>
           <li><a href="#">Tài liệu học tập</a></li>
@@ -80,13 +80,6 @@
           <li><b>4.</b> Tôn trọng các thành viên khác trong hệ thống.</li>
         </ul>
       </div>
-      {% if messages %}
-      <ul class="messages">
-        {% for message in messages %}
-          <li>{{ message }}</li>
-        {% endfor %}
-      </ul>
-      {% endif %}
     </main>
   </div>
 </body>

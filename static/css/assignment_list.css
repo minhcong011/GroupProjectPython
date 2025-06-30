@@ -1,0 +1,188 @@
+body {
+  background: linear-gradient(120deg, #e3f0ff 0%, #f8fbff 100%);
+  font-family: 'Segoe UI', Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+}
+
+/* Header */
+.header {
+  background: linear-gradient(90deg, #2d3a4e 60%, #1976d2 100%);
+  color: #fff;
+  min-height: 90px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 32px;
+}
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+.logo img {
+  height: 54px;
+  background: #fff;
+  border-radius: 8px;
+  padding: 4px;
+}
+.title {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+.nav {
+  display: flex;
+  gap: 28px;
+  align-items: center;
+  font-size: 1.08rem;
+}
+.nav a {
+  color: #fff;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+.nav a:hover {
+  color: #ffd700;
+}
+.lang {
+  margin-left: 18px;
+  font-size: 0.95rem;
+}
+.lang a {
+  color: #fff;
+  margin-left: 6px;
+  text-decoration: none;
+}
+.lang a:hover {
+  text-decoration: underline;
+}
+
+/* Banner */
+.banner {
+  background: linear-gradient(90deg, #e3f0ff 60%, #b3d1fa 100%);
+  color: #22304a;
+  padding: 16px 32px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 1.08rem;
+  font-weight: 500;
+  border-bottom: 1px solid #dbeafe;
+}
+.banner .course-code {
+  background: #1976d2;
+  color: #fff;
+  border-radius: 6px;
+  padding: 2px 10px;
+  margin-left: 10px;
+  font-size: 0.98rem;
+}
+.banner .right {
+  font-size: 1rem;
+  color: #1976d2;
+}
+
+/* Assignment List Container */
+.assignment-list-container {
+  max-width: 950px;
+  margin: 40px auto;
+  background: #fff;
+  border-radius: 12px;
+  box-shadow: 0 2px 16px #22304a18;
+  padding: 36px 32px 32px 32px;
+  animation: fadeIn 0.7s;
+}
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(30px);}
+  to { opacity: 1; transform: translateY(0);}
+}
+.assignment-list-container h2 {
+  color: #1976d2;
+  margin-bottom: 24px;
+  font-size: 1.6rem;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+}
+
+/* Table */
+.assignment-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 1.05rem;
+  background: #f8fbff;
+  border-radius: 8px;
+  overflow: hidden;
+}
+.assignment-table th, .assignment-table td {
+  padding: 13px 10px;
+  border-bottom: 1px solid #e3eaf3;
+  text-align: left;
+}
+.assignment-table th {
+  background: #90caf9; /* Xanh nhạt, đẹp mắt */
+  color: #22304a;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  border-top-left-radius: 10px;
+  border-top-right-radius: 10px;
+}
+.assignment-table tr:nth-child(even) {
+  background: #f5faff;
+}
+.assignment-table tr:hover {
+  background: #e3eaf3;
+  transition: background 0.2s;
+}
+.assignment-table td {
+  color: #22304a;
+}
+
+/* Status */
+.submitted {
+  color: #1cb36b;
+  font-weight: bold;
+}
+.not-submitted {
+  color: #e53935;
+  font-weight: bold;
+}
+
+/* Action Button */
+.action-btn {
+  background: linear-gradient(90deg, #2583d4 60%, #344056 100%);
+  color: #fff;
+  padding: 6px 18px;
+  border-radius: 5px;
+  text-decoration: none;
+  font-weight: 500;
+  border: none;
+  transition: background 0.2s, box-shadow 0.2s;
+  box-shadow: 0 2px 8px #22304a22;
+  display: inline-block;
+}
+.action-btn:hover {
+  background: linear-gradient(90deg, #344056 60%, #2583d4 100%);
+  box-shadow: 0 4px 16px #2583d455;
+}
+
+/* Responsive */
+@media (max-width: 700px) {
+  .assignment-list-container {
+    padding: 16px 4px;
+  }
+  .header, .banner {
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 12px;
+  }
+  .nav {
+    gap: 12px;
+    font-size: 1rem;
+  }
+  .assignment-table th, .assignment-table td {
+    padding: 8px 4px;
+    font-size: 0.98rem;
+  }
+}

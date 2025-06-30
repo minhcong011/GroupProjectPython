@@ -7,22 +7,12 @@
   <link rel="stylesheet" href="{% static 'css/verify_otp.css' %}">
 </head>
 <body>
-
-  <div class="container">
+  <div class="otp-container">
     <h3>Verify OTP</h3>
-
-    {% if messages %}
-      <ul class="messages">
-        {% for message in messages %}
-          <li>{{ message }}</li>
-        {% endfor %}
-      </ul>
-    {% endif %}
-
     <form action="{% url 'verify_otp' %}" method="post">
       {% csrf_token %}
-      <label for="otp">Enter OTP:</label><br>
-      <input type="text" id="otp" name="otp" required><br><br>
+      <label for="otp">Enter OTP:</label>
+      <input type="text" id="otp" name="otp" maxlength="6" required>
       <button type="submit">Verify</button>
     </form>
   </div>

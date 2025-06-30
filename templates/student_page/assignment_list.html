@@ -1,0 +1,58 @@
+{% extends 'student_page/student_base.html' %}
+{% load static %}
+
+{% block title %}Danh sách bài tập{% endblock %}
+
+{% block banner %}
+<div class="banner">
+  <span>
+    <b>Hệ thống học tập môn PERL & PYTHON</b>
+    <span class="course-code">CS466</span>
+  </span>
+  <span class="right">
+    {{ now|date:"l, d/m/Y" }}
+  </span>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="assignment-list-container">
+  <h2>Danh sách bài tập</h2>
+  <table class="assignment-table">
+    <thead>
+      <tr>
+        <th>Tên bài tập</th>
+        <th>Loại</th>
+        <th>Deadline</th>
+        <th>Trạng thái</th>
+        <th>Thao tác</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for assignment in assignments %}
+      <tr>
+        <td>{{ assignment.title }}</td>
+        <td>{{ assignment.type }}</td>
+        <td>{{ assignment.deadline }}</td>
+        <td>
+          {% if assignment.submitted %}
+            <span class="submitted">Đã nộp</span>
+          {% else %}
+            <span class="not-submitted">Chưa nộp</span>
+          {% endif %}
+        </td>
+        <td>
+          <a href="{% url 'studentapp:do_assignment' assignment.id %}" class="action-btn">
+            {% if assignment.submitted %}Xem bài{% else %}Làm bài{% endif %}
+          </a>
+        </td>
+      </tr>
+      {% empty %}
+      <tr>
+        <td colspan="5">Không có bài tập nào.</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endblock %}

@@ -1,0 +1,210 @@
+body {
+  background: linear-gradient(120deg, #e3f0ff 0%, #f8fbff 100%);
+  font-family: 'Segoe UI', Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  min-height: 100vh;
+}
+
+/* Header */
+.header {
+  background: linear-gradient(90deg, #2d3a4e 60%, #1976d2 100%);
+  color: #fff;
+  min-height: 90px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 32px;
+}
+.logo {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+.logo img {
+  height: 54px;
+  background: #fff;
+  border-radius: 8px;
+  padding: 4px;
+}
+.title {
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+.nav {
+  display: flex;
+  gap: 28px;
+  align-items: center;
+  font-size: 1.08rem;
+}
+.nav a {
+  color: #fff;
+  text-decoration: none;
+  font-weight: 500;
+  transition: color 0.2s;
+}
+.nav a:hover {
+  color: #ffd700;
+}
+.lang {
+  margin-left: 18px;
+  font-size: 0.95rem;
+}
+.lang a {
+  color: #fff;
+  margin-left: 6px;
+  text-decoration: none;
+}
+.lang a:hover {
+  text-decoration: underline;
+}
+
+/* Layout */
+.nopbai-layout {
+  display: flex;
+  justify-content: center;
+  width: 100vw;
+  max-width: 100vw;
+  margin: 0;
+  background: #fff;
+  border-radius: 0;
+  box-shadow: none;
+  padding: 0 0 60px 0;
+  min-height: 90vh;
+  align-items: flex-start;
+}
+.nopbai-left {
+  flex: 1;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 60px 0 0 0;
+  box-sizing: border-box;
+}
+
+/* Tiêu đề chính */
+.main-title {
+  margin-top: 24px;
+  color: #1976d2;
+  font-size: 1.18rem;
+  font-weight: 600;
+  margin-bottom: 18px;
+}
+
+/* Thông tin bài tập và upload */
+.info,
+.info-full {
+  background: #f5faff;
+  border-radius: 12px;
+  padding: 28px 36px;
+  font-size: 1.08rem;
+  color: #22304a;
+  box-shadow: 0 1px 12px #1976d211;
+  margin-bottom: 18px;
+  width: 96vw;
+  max-width: 1200px;
+  margin-left: auto;
+  margin-right: auto;
+}
+.nopbai-left pre {
+  background: #e3f0ff;
+  padding: 10px;
+  border-radius: 6px;
+  font-size: 1rem;
+  margin: 8px 0 0 0;
+}
+
+/* Upload title màu đen */
+.upload-title {
+  color: #222;
+  font-size: 1.08rem;
+  margin: 0 0 10px 0;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+}
+
+/* Form upload file */
+label {
+  display: block;
+  margin: 10px 0 6px 0;
+  font-weight: 500;
+  color: #22304a;
+}
+input[type="file"] {
+  margin-bottom: 10px;
+  font-size: 1rem;
+}
+.note {
+  color: #1976d2;
+  font-size: 0.98rem;
+  margin: 8px 0;
+}
+.btn-group {
+  margin-top: 8px;
+  display: flex;
+  gap: 12px;
+}
+.action-btn {
+  background: linear-gradient(90deg, #2583d4 60%, #344056 100%);
+  color: #fff;
+  padding: 7px 20px;
+  border-radius: 5px;
+  text-decoration: none;
+  font-weight: 500;
+  border: none;
+  transition: background 0.2s, box-shadow 0.2s;
+  box-shadow: 0 2px 8px #22304a22;
+  display: inline-block;
+  cursor: pointer;
+}
+.action-btn:hover {
+  background: linear-gradient(90deg, #344056 60%, #2583d4 100%);
+  box-shadow: 0 4px 16px #2583d455;
+}
+.submitted-file {
+  margin-top: 12px;
+  background: #e3f0ff;
+  border-radius: 6px;
+  padding: 10px;
+  color: #388e3c;
+  font-weight: 500;
+}
+
+/* Responsive */
+@media (max-width: 1200px) {
+  .nopbai-layout {
+    max-width: 98vw;
+  }
+  .nopbai-left {
+    padding-left: 2vw;
+    padding-right: 2vw;
+  }
+  .info,
+  .info-full {
+    max-width: 98vw;
+    width: 98vw;
+    padding-left: 2vw;
+    padding-right: 2vw;
+  }
+}
+@media (max-width: 900px) {
+  .nopbai-layout {
+    flex-direction: column;
+    padding: 0;
+    gap: 18px;
+    width: 100vw;
+    min-width: 0;
+    max-width: 100vw;
+  }
+  .nopbai-left {
+    width: 100%;
+    max-width: 100%;
+    padding: 24px 2vw 0 2vw;
+  }
+  .info,
+  .info-full {
+    width: 99vw;
+    max-width: 99vw;
+    padding-left: 2vw;
+    padding-right: 2vw;
+  }
+}

@@ -1,0 +1,68 @@
+<!-- filepath: d:\GitHub\GroupProjectPython\templates\student_page\nop_bai.html -->
+{% load static %}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Nộp bài tập</title>
+  <link rel="stylesheet" href="{% static 'css/assignment_list.css' %}">
+  <link rel="stylesheet" href="{% static 'css/nop_bai.css' %}">
+</head>
+<body>
+
+  <div class="header">
+    <div class="logo">
+      <img src="{% static 'image/PvsP.jpg' %}" alt="Perl/Python Logo">
+      <span class="title">PERL & PYTHON</span>
+    </div>
+    <div class="nav">
+      <a href="{% url 'student_home' %}">Trang chủ</a>
+      <a href="{% url 'studentapp:khoa_hoc' %}">Khóa học</a>
+      <a href="{% url 'studentapp:assignment_list' %}">Bài tập</a>
+      <a href="{% url 'studentapp:ide_online' %}">IDE Online</a>
+      <a href="{% url 'studentapp:chatbot' %}">Chatbot AI</a>
+      <span class="lang">Xin chào, {{ user.first_name }} | <a href="{% url 'signout' %}">Đăng xuất</a></span>
+    </div>
+  </div>
+
+  <div class="banner">
+    <span>
+      <b>Hệ thống học tập môn PERL & PYTHON</b>
+      <span class="course-code">CS466</span>
+    </span>
+    <span class="right">
+      {{ now|date:"l, d/m/Y" }}
+    </span>
+  </div>
+  
+  <div class="nopbai-layout">
+    <div class="nopbai-left">
+      <button class="action-btn" onclick="window.location.href='{% url 'studentapp:assignment_list' %}'">🔙 Quay lại danh sách bài tập</button>
+      <h2 class="main-title">Tiêu đề bài tập: Bài 3 – Hàm kiểm tra số nguyên tố</h2>
+      <div class="info info-full">
+        <b>Deadline:</b> 01/07/2025 - 23:59<br>
+        <b>Môn học:</b> Python Cơ bản<br>
+        <b>Giảng viên:</b> Nguyễn Văn A
+        <hr>
+        <b>Đề bài:</b><br>
+        Viết một hàm kiểm tra một số nguyên <b>n</b> có phải là số nguyên tố không.<br>
+        In ra <b>"YES"</b> nếu đúng, <b>"NO"</b> nếu không.
+        <hr style="margin:18px 0;">
+        <h2 class="upload-title">Upload file để nộp bài</h2>
+        <form method="post" action="" enctype="multipart/form-data" style="margin-bottom: 18px;">
+          {% csrf_token %}
+          <label for="file"><b>Chọn tệp để nộp:</b></label>
+          <input type="file" id="file" name="file" accept=".py,.pl,.zip">
+          <div class="note">Hỗ trợ .py, .pl, .zip (tối đa 5MB)</div>
+          <div class="btn-group">
+            <button type="submit" class="action-btn">Upload</button>
+          </div>
+        </form>
+        <b>Trạng thái hiện tại:</b><br>
+        <span style="color:#e6b800;">Chưa nộp (đang soạn thảo)</span><br>
+        <span style="color:#1976d2;">Lần lưu gần nhất: 10:22 sáng, 26/06/2025</span>
+      </div>
+    </div>
+  </div>
+</body>
+</html>
