@@ -23,3 +23,6 @@ def create_lecture(request):
 def lecture_list(request):
     lectures = Lecture.objects.filter(created_by=request.user)
     return render(request, 'teacher_page/lecture_list.html', {'lectures': lectures})
+
+def course_management(request):
+    return render(request, 'teacher_page/course_management.html')
