@@ -1,0 +1,60 @@
+{% load static %}
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/edit_course.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="main-content">
+    <h2>Chỉnh sửa khóa học: {{ course.name }}</h2>
+    <form method="POST" action="{% url 'edit_course' course.id %}">
+        {% csrf_token %}
+
+        <div class="form-group">
+            <label for="name">Tên khóa học:</label>
+            {{ form.name }}
+        </div>
+        <div class="form-group">
+            <label for="status">Trạng thái:</label>
+            {{ form.status }}
+        </div>
+        <div class="form-group">
+            <label for="teacher">Giáo viên:</label>
+            {{ form.teacher }}
+        </div>
+        <div class="form-group">
+            <label for="fee">Học phí:</label>
+            {{ form.fee }}
+        </div>
+        <div class="form-group">
+            <label for="start_date">Ngày bắt đầu:</label>
+            {{ form.start_date }}
+        </div>
+        <div class="form-group">
+            <label for="end_date">Ngày kết thúc:</label>
+            {{ form.end_date }}
+        </div>
+        <div class="form-group">
+            <label for="schedule">Lịch học:</label>
+            {{ form.schedule }}
+        </div>
+        <div class="form-group">
+            <label for="sessions">Số buổi:</label>
+            {{ form.sessions }}
+        </div>
+        <div class="form-group">
+            <label for="curriculum">Giáo trình:</label>
+            {{ form.curriculum }}
+        </div>
+        <div class="form-group">
+            <label for="note">Ghi chú:</label>
+            {{ form.note }}
+        </div>
+        <div class="form-group">
+            <label for="participants">Số người:</label>
+            {{ form.participants }}
+        </div>
+
+        <button type="submit" class="add-class-btn">Lưu thay đổi</button>
+    </form>
+</div>
+{% endblock %}
