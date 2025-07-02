@@ -7,8 +7,6 @@
 
 {% block content %}
 
-
-<!-- Đã xóa sidebar và sidebar-menu, chỉ giữ lại phần main-content và các chức năng -->
 <div class="main-content">
     <div class="page-header">
         <h2>Danh sách các khóa học</h2>
@@ -28,163 +26,179 @@
                 <th>Ngày kết thúc</th>
                 <th>Lịch học</th>
                 <th>Số buổi</th>
-                <th>Số buổi đã học</th>
                 <th>Giáo trình</th>
                 <th>Ghi chú</th>
-                <th>sô người tham gia</th>
+                <th>Số người tham gia</th>
                 <th>Tính năng</th>
             </tr>
         </thead>
         <tbody>
+            {% for course in courses %}
             <tr>
-                <td>Python 1A</td>
-                <td>Đang hiện</td>
-                <td> Minh Đăng</td>
-                <td>10,500,000</td>
-                <td>27-02-2025</td>
-                <td>25-05-2025</td>
-                <td>Thứ 2-thứ 7 18:00-19:30</td>
-                <td>4-5</td>
-                <td>24</td>
-                <td>13</td>
-                <td>Đây là chương trình học Python chuẩn quốc tế</td>
-                <td>1000</td>
+                <td>{{ course.name }}</td>
+                <td>{{ course.status }}</td>
+                <td>{{ course.teacher }}</td>
+                <td>{{ course.fee }}</td>
+                <td>{{ course.start_date|date:"d-m-Y" }}</td>
+                <td>{{ course.end_date|date:"d-m-Y" }}</td>
+                <td>{{ course.schedule }}</td>
+                <td>{{ course.sessions }}</td>
+                <td>{{ course.curriculum }}</td>
+                <td>{{ course.note }}</td>
+                <td>{{ course.participants }}</td>
                 <td>
-                    <button class="edit-btn">Sửa</button>
-                    <button class="delete-btn">Xóa</button>
+                    <a href="{% url 'edit_course' course.id %}"><button class="edit-btn">Sửa</button></a>
+                    <button class="delete-btn" onclick="openDeleteModal({{ course.id }})">Xóa</button>
                 </td>
             </tr>
-            <!-- Thêm các dòng khác tương tự -->
+            {% endfor %}
         </tbody>
     </table>
 </div>
-<!-- Modal cho Tạo mới/Sửa lớp học -->
+
+<!-- Modal cho Tạo mới -->
 <div id="classModal" class="modal" style="display:none;">
-    <div class="modal-content">
+    <div class="modal-content scrollable">
         <span class="close-modal" id="closeModal">&times;</span>
         <h3 id="modalTitle">Tạo mới lớp học</h3>
-        <form id="classForm">
-            <input type="text" id="className" placeholder="Tên khóa học" required><br>
-            <input type="text" id="status" placeholder="Trạng thái" required><br>
-            <input type="text" id="teacher" placeholder="Giáo viên" required><br>
-            <input type="number" id="fee" placeholder="Học phí" required><br>
-            <input type="date" id="startDate" placeholder="Ngày bắt đầu"><br>
-            <input type="date" id="endDate" placeholder="Ngày kết thúc"><br>
-            <input type="text" id="schedule" placeholder="Lịch học"><br>
-            <input type="number" id="sessions" placeholder="Số buổi"><br>
-            <input type="number" id="sessionsDone" placeholder="Số buổi đã học"><br>
-            <input type="text" id="curriculum" placeholder="Giáo trình"><br>
-            <input type="text" id="note" placeholder="Ghi chú"><br>
-            <input type="number" id="participants" placeholder="Số người tham gia"><br>
+        <form id="classForm" method="POST" action="{% url 'create_course' %}">
+            {% csrf_token %}
+
+            <div class="form-group">
+                <label for="name">Tên khóa học:</label>
+                {{ form.name }}
+            </div>
+            <div class="form-group">
+                <label for="status">Trạng thái:</label>
+                {{ form.status }}
+            </div>
+            <div class="form-group">
+                <label for="teacher">Giáo viên:</label>
+                {{ form.teacher }}
+            </div>
+            <div class="form-group">
+                <label for="fee">Học phí:</label>
+                {{ form.fee }}
+            </div>
+            <div class="form-group">
+                <label for="start_date">Ngày bắt đầu:</label>
+                {{ form.start_date }}
+            </div>
+            <div class="form-group">
+                <label for="end_date">Ngày kết thúc:</label>
+                {{ form.end_date }}
+            </div>
+            <div class="form-group">
+                <label for="schedule">Lịch học:</label>
+                {{ form.schedule }}
+            </div>
+            <div class="form-group">
+                <label for="sessions">Số buổi:</label>
+                {{ form.sessions }}
+            </div>
+            <div class="form-group">
+                <label for="curriculum">Giáo trình:</label>
+                {{ form.curriculum }}
+            </div>
+            <div class="form-group">
+                <label for="note">Ghi chú:</label>
+                {{ form.note }}
+            </div>
+            <div class="form-group">
+                <label for="participants">Số người:</label>
+                {{ form.participants }}
+            </div>
+
             <button type="submit" id="saveBtn">Lưu</button>
         </form>
     </div>
 </div>
+
+<!-- Modal xác nhận xóa -->
+<div id="deleteModal" class="modal" style="display:none;">
+    <div class="modal-content">
+        <span class="close-modal" onclick="document.getElementById('deleteModal').style.display='none'">&times;</span>
+        <h3>Xác nhận xóa</h3>
+        <p>Bạn có chắc muốn xóa khóa học này?</p>
+        <form method="POST" id="deleteForm">
+            {% csrf_token %}
+            <button type="submit" class="delete-btn">Xác nhận</button>
+        </form>
+    </div>
+</div>
+
 <script>
-// Hiển thị modal tạo mới
 const addBtn = document.querySelector('.add-class-btn');
 const modal = document.getElementById('classModal');
 const closeModal = document.getElementById('closeModal');
-const modalTitle = document.getElementById('modalTitle');
-const classForm = document.getElementById('classForm');
-let editingRow = null;
 
 addBtn.onclick = function() {
-    modalTitle.textContent = 'Tạo mới lớp học';
-    classForm.reset();
-    editingRow = null;
     modal.style.display = 'block';
 };
 closeModal.onclick = function() {
     modal.style.display = 'none';
 };
 window.onclick = function(event) {
-    if (event.target == modal) modal.style.display = 'none';
+    if (event.target.classList.contains('modal')) event.target.style.display = 'none';
 };
 
-// Sửa lớp học
-const editBtns = document.querySelectorAll('.edit-btn');
-editBtns.forEach(function(btn) {
-    btn.onclick = function() {
-        const row = btn.closest('tr');
-        editingRow = row;
-        modalTitle.textContent = 'Sửa lớp học';
-        document.getElementById('className').value = row.children[0].textContent.trim();
-        document.getElementById('status').value = row.children[1].textContent.trim();
-        document.getElementById('teacher').value = row.children[2].textContent.trim();
-        document.getElementById('fee').value = row.children[3].textContent.trim().replace(/[^\d]/g, '');
-        document.getElementById('startDate').value = row.children[4].textContent.trim().split('-').reverse().join('-');
-        document.getElementById('endDate').value = row.children[5].textContent.trim().split('-').reverse().join('-');
-        document.getElementById('schedule').value = row.children[6].textContent.trim();
-        document.getElementById('sessions').value = row.children[7].textContent.trim();
-        document.getElementById('sessionsDone').value = row.children[8].textContent.trim();
-        document.getElementById('curriculum').value = row.children[9].textContent.trim();
-        document.getElementById('note').value = row.children[10].textContent.trim();
-        document.getElementById('participants').value = row.children[11].textContent.trim();
-        modal.style.display = 'block';
-    };
-});
-
-// Lưu lớp học (tạo mới hoặc sửa)
-classForm.onsubmit = function(e) {
-    e.preventDefault();
-    const values = [
-        document.getElementById('className').value,
-        document.getElementById('status').value,
-        document.getElementById('teacher').value,
-        document.getElementById('fee').value,
-        document.getElementById('startDate').value ? document.getElementById('startDate').value.split('-').reverse().join('-') : '',
-        document.getElementById('endDate').value ? document.getElementById('endDate').value.split('-').reverse().join('-') : '',
-        document.getElementById('schedule').value,
-        document.getElementById('sessions').value,
-        document.getElementById('sessionsDone').value,
-        document.getElementById('curriculum').value,
-        document.getElementById('note').value,
-        document.getElementById('participants').value
-    ];
-    if (editingRow) {
-        for (let i = 0; i < values.length; i++) {
-            editingRow.children[i].textContent = values[i];
-        }
-    } else {
-        const table = document.querySelector('.class-table tbody');
-        const newRow = table.insertRow();
-        let html = '';
-        for (let i = 0; i < values.length; i++) {
-            html += `<td>${values[i]}</td>`;
-        }
-        html += `<td><button class='edit-btn'>Sửa</button> <button class='delete-btn'>Xóa</button></td>`;
-        newRow.innerHTML = html;
-        newRow.querySelector('.edit-btn').onclick = editBtns[0].onclick;
-        newRow.querySelector('.delete-btn').onclick = deleteHandler;
-    }
-    modal.style.display = 'none';
-};
-
-// Xóa lớp học
-function deleteHandler() {
-    if (confirm('Bạn có chắc muốn xóa lớp này?')) {
-        this.closest('tr').remove();
-    }
+function openDeleteModal(courseId) {
+    document.getElementById('deleteForm').action = `/courses/delete/${courseId}/`;
+    document.getElementById('deleteModal').style.display = 'block';
 }
-const deleteBtns = document.querySelectorAll('.delete-btn');
-deleteBtns.forEach(function(btn) {
-    btn.onclick = deleteHandler;
-});
 </script>
+
 <style>
 .modal {
     position: fixed; z-index: 999; left: 0; top: 0; width: 100vw; height: 100vh;
     background: rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center;
 }
 .modal-content {
-    background: #fff; padding: 24px 32px; border-radius: 8px; min-width: 300px; position: relative;
+    background: #fff; padding: 24px 32px; border-radius: 8px; min-width: 300px; max-height: 80vh; overflow-y: auto; position: relative;
+}
+.scrollable {
+    max-height: 80vh;
+    overflow-y: auto;
 }
 .close-modal {
     position: absolute; right: 12px; top: 8px; font-size: 1.5em; cursor: pointer; color: #888;
 }
-#classForm input { width: 90%; margin: 8px 0; padding: 8px; border: 1px solid #ccc; border-radius: 4px; }
-#saveBtn { background: #6ec1e4; color: #fff; border: none; border-radius: 4px; padding: 8px 18px; font-size: 1em; cursor: pointer; margin-top: 8px; }
-#saveBtn:hover { background: #4fa3c7; }
+#classForm input, #classForm textarea, #classForm select,
+#editForm input, #editForm textarea, #editForm select {
+    width: 90%; margin: 8px 0; padding: 8px; border: 1px solid #ccc; border-radius: 4px;
+}
+#saveBtn {
+    background: #6ec1e4; color: #fff; border: none; border-radius: 4px;
+    padding: 8px 18px; font-size: 1em; cursor: pointer; margin-top: 8px;
+}
+#saveBtn:hover {
+    background: #4fa3c7;
+}
+.form-group {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+}
+.form-group label {
+    width: 130px;
+    font-weight: 500;
+    font-size: 1em;
+    margin-right: 10px;
+}
+.form-group input,
+.form-group textarea,
+.form-group select {
+    flex: 1;
+    padding: 8px 10px;
+    font-size: 1em;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-family: 'Segoe UI', Arial, sans-serif;
+}
+.form-group textarea {
+    height: 35px;
+    resize: none;
+}
 </style>
 {% endblock %}
+

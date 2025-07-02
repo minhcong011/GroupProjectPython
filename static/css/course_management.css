@@ -130,4 +130,35 @@ body {
         font-size: 0.85em;
         padding: 5px 2px;
     }
+    .form-group {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+}
+
+.form-group label {
+    width: 120px; /* hoặc tuỳ chỉnh theo nhu cầu */
+    font-weight: 500;
+    font-size: 1em;
+    margin-right: 10px;
+}
+
+.form-group textarea {
+    flex: 1;
+    height: 35px;
+    padding: 6px 10px;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    font-size: 1em;
+    border: 1px solid #cfd8dc;
+    border-radius: 5px;
+    resize: none;
+    background: #fff;
+    transition: border 0.2s;
+}
+
+.form-group textarea:focus {
+    border: 1.5px solid #6ec1e4;
+    outline: none;
+}
+
 }

@@ -1,0 +1,70 @@
+.main-content {
+    max-width: 800px;
+    margin: 40px auto;
+    background-color: #fff;
+    padding: 32px;
+    border-radius: 12px;
+    box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
+    font-family: 'Segoe UI', sans-serif;
+    font-size: 16px;
+}
+
+.main-content h2 {
+    font-size: 28px;
+    margin-bottom: 24px;
+    text-align: center;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 6px;
+    font-size: 16px;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    width: 100%;
+    padding: 10px 14px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    box-sizing: border-box;
+    height: 45px; /* Đặt chiều cao cố định cho cả input và textarea */
+}
+
+.form-group textarea {
+    height: 120px;             
+    resize: vertical;          
+    overflow: auto;             
+    line-height: 1.5;          
+}
+
+
+.form-group input:focus,
+.form-group textarea:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: #4a90e2;
+    box-shadow: 0 0 5px rgba(74, 144, 226, 0.3);
+}
+
+.add-class-btn {
+    background-color: #4CAF50;
+    color: white;
+    padding: 12px 24px;
+    font-size: 16px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+.add-class-btn:hover {
+    background-color: #45a049;
+}
