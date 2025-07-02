@@ -1,5 +1,5 @@
 
-<<<<<<< HEAD
+
 from django.db import models
 from django.contrib.auth.models import User
 
@@ -36,7 +36,7 @@ class CauHoi(models.Model):
 
     def __str__(self):
         return self.noi_dung
-=======
+
 class Course(models.Model):
     name = models.CharField(max_length=200)
     status = models.CharField(max_length=50)
@@ -53,4 +53,4 @@ class Course(models.Model):
     def __str__(self):
         return self.name
 
->>>>>>> 7254af187da9d1a8f38958f8a3b8016e68ba2424
+
