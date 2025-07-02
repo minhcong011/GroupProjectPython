@@ -9,5 +9,4 @@ urlpatterns = [
     path('khoa-hoc/', views.khoa_hoc, name='khoa_hoc'),  
     path('chatbot/', views.chatbot, name='chatbot'), 
     path('nop-bai/', views.nop_bai, name='nop_bai'),
-    path('cvsv/', views.cvsv_edit, name='cvsv_edit')
 ]

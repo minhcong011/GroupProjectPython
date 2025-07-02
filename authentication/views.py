@@ -15,8 +15,8 @@ def home(request):
     return render(request, "authentication/index.html")
 
 def send_otp_to_email(email, otp):
-    subject = 'Xác thực tài khoản Django'
-    message = f'Mã xác thực của bạn là: {otp}'
+    subject = 'Mã xác thực đăng nhập - PERL & PYTHON'
+    message = f'Mã xác thực đăng nhập của bạn là: {otp}\n\nMã này có hiệu lực trong 5 phút.'
     send_mail(subject, message, settings.EMAIL_HOST_USER, [email])
 
 def signup(request):
@@ -38,63 +38,29 @@ def signup(request):
             messages.error(request, "Username already exists.")
             return redirect('signup')
 
-        otp = str(random.randint(100000, 999999))
-        send_otp_to_email(email, otp)
+        # Tạo tài khoản trực tiếp không cần OTP
+        user = User.objects.create_user(
+            username=username,
+            email=email,
+            password=pass1
+        )
+        user.first_name = fname
+        user.last_name = lname
+        user.save()
 
-        request.session['otp'] = otp
-        request.session['temp_user'] = {
-            'username': username,
-            'fname': fname,
-            'lname': lname,
-            'email': email,
-            'pass1': pass1,
-            'is_teacher': is_teacher,
-        }
+        Account.objects.create(
+            username=user.username,
+            is_teacher=is_teacher,
+            email=user.email,
+            is_email_verified=True,
+            first_name=user.first_name,
+            last_name=user.last_name
+        )
 
-        return redirect('verify_otp')
+        messages.success(request, "Tài khoản đã được tạo thành công! Vui lòng đăng nhập.")
+        return redirect('signin')
 
     return render(request, "authentication/signup.html")
-
-def verify_otp(request):
-    if request.method == "POST":
-        entered_otp = request.POST.get('otp')
-        session_otp = request.session.get('otp')
-        user_data = request.session.get('temp_user')
-
-        if entered_otp == session_otp and user_data:
-            if User.objects.filter(username=user_data['username']).exists():
-                messages.error(request, "Username already exists.")
-                return redirect('signup')
-
-            user = User.objects.create_user(
-                username=user_data['username'],
-                email=user_data['email'],
-                password=user_data['pass1']
-            )
-            user.first_name = user_data['fname']
-            user.last_name = user_data['lname']
-            user.save()
-
-            is_teacher = user_data.get('is_teacher', False)
-            Account.objects.create(
-                username=user.username,
-                is_teacher=is_teacher,
-                email=user.email,
-                is_email_verified=True,
-                first_name=user.first_name,
-                last_name=user.last_name
-            )
-
-            request.session.pop('otp')
-            request.session.pop('temp_user')
-
-            messages.success(request, "Email verified successfully. Please sign in.")
-            return redirect('home')
-        else:
-            messages.error(request, "Invalid OTP.")
-            return redirect('verify_otp')
-
-    return render(request, "authentication/verify_otp.html")
 
 def signin(request):
     if request.user.is_authenticated:
@@ -109,36 +75,84 @@ def signin(request):
             return redirect('signin')
 
     if request.method == "POST":
-        username = request.POST.get('username')
-        password = request.POST.get('pass1')
-        remember_me = request.POST.get('remember_me')  
-        print("remember_me:", remember_me)  
+        # Kiểm tra nếu đang xác thực OTP
+        if 'verify_otp' in request.POST:
+            entered_otp = request.POST.get('otp')
+            session_otp = request.session.get('login_otp')
+            temp_login = request.session.get('temp_login')
 
-        user = authenticate(username=username, password=password)
-        if user is not None:
-            try:
+            if entered_otp == session_otp and temp_login:
+                user = User.objects.get(username=temp_login['username'])
                 account = Account.objects.get(username=user.username)
-                if not account.is_email_verified:
-                    messages.error(request, "Please verify your email before signing in.")
-                    return redirect('signin')
-            except Account.DoesNotExist:
-                messages.error(request, "Account data error. Please contact admin.")
-                return redirect('signin')
-
-            login(request, user)
-           
-            if remember_me == "on":
-                request.session.set_expiry(60 * 60 * 24 * 30)  
+                
+                login(request, user)
+                
+                # Xử lý remember me
+                if temp_login.get('remember_me'):
+                    request.session.set_expiry(60 * 60 * 24 * 30)  
+                else:
+                    request.session.set_expiry(0)
+                
+                # Xóa session tạm
+                request.session.pop('login_otp')
+                request.session.pop('temp_login')
+                
+                # Chuyển hướng theo vai trò
+                if account.is_teacher:
+                    return redirect('teacher_home')
+                else:
+                    return redirect('student_home')
             else:
-                request.session.set_expiry(0)  
-
-            if account.is_teacher:
-                return redirect('teacher_home')
-            else:
-                return redirect('student_home')
+                messages.error(request, "Mã OTP không đúng.")
+                return render(request, "authentication/signin_otp.html")
+        
+        # Đăng nhập bước 1: kiểm tra username/password
         else:
-            messages.error(request, "Invalid credentials.")
-            return redirect('signin')
+            username = request.POST.get('username')
+            password = request.POST.get('pass1')
+            remember_me = request.POST.get('remember_me')
+
+            user = authenticate(username=username, password=password)
+            if user is not None:
+                try:
+                    account = Account.objects.get(username=user.username)
+                except Account.DoesNotExist:
+                    messages.error(request, "Account data error. Please contact admin.")
+                    return redirect('signin')
+
+                # Kiểm tra nếu user đã bật 2FA
+                if account.two_factor_enabled:
+                    # Tạo OTP và gửi email
+                    otp = str(random.randint(100000, 999999))
+                    send_otp_to_email(user.email, otp)
+                    
+                    # Lưu thông tin tạm vào session
+                    request.session['login_otp'] = otp
+                    request.session['temp_login'] = {
+                        'username': username,
+                        'remember_me': remember_me == "on"
+                    }
+                    
+                    messages.success(request, f"Mã OTP đã được gửi đến email {user.email}")
+                    return render(request, "authentication/signin_otp.html")
+                else:
+                    # Đăng nhập trực tiếp nếu chưa bật 2FA
+                    login(request, user)
+                    
+                    # Xử lý remember me
+                    if remember_me == "on":
+                        request.session.set_expiry(60 * 60 * 24 * 30)  
+                    else:
+                        request.session.set_expiry(0)
+                    
+                    # Chuyển hướng theo vai trò
+                    if account.is_teacher:
+                        return redirect('teacher_home')
+                    else:
+                        return redirect('student_home')
+            else:
+                messages.error(request, "Tên đăng nhập hoặc mật khẩu không đúng.")
+                return redirect('signin')
 
     return render(request, "authentication/signin.html")
 

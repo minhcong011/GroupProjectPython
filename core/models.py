@@ -6,6 +6,7 @@ class Account(models.Model):
     is_teacher = models.BooleanField(default=False)
     email = models.EmailField(blank=True, null=True)
     is_email_verified = models.BooleanField(default=False)
+    two_factor_enabled = models.BooleanField(default=False)
     first_name = models.CharField(max_length=50)
     last_name = models.CharField(max_length=50)
     company = models.CharField(max_length=100, blank=True)
@@ -16,7 +17,16 @@ class Account(models.Model):
 
     def __str__(self):
         return self.username
-    
+
+# Thêm property để access Account từ User
+def get_account(user_instance):
+    try:
+        return Account.objects.get(username=user_instance.username)
+    except Account.DoesNotExist:
+        return None
+
+User.add_to_class('account', property(get_account))
+
 class Lecture(models.Model):
     title = models.CharField(max_length=255)
     description = models.TextField()

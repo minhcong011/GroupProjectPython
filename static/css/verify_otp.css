@@ -76,6 +76,64 @@ button:hover {
   transform: translateY(-2px) scale(1.03);
 }
 
+/* Messages */
+.alert {
+  margin: 10px 0;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.alert-success {
+  background: #e8f5e8;
+  color: #2e7d32;
+  border: 1px solid #66bb6a;
+}
+
+.alert-error {
+  background: #ffebee;
+  color: #c62828;
+  border: 1px solid #ef5350;
+}
+
+/* Links */
+.links {
+  margin-top: 15px;
+  text-align: center;
+}
+
+.links a {
+  color: #1976d2;
+  text-decoration: none;
+  font-size: 14px;
+  transition: color 0.2s;
+}
+
+.links a:hover {
+  color: #66a6ff;
+  text-decoration: underline;
+}
+
+/* Paragraph */
+p {
+  color: #555;
+  font-size: 14px;
+  line-height: 1.4;
+  margin: 15px 0;
+  text-align: center;
+}
+
+/* Footer */
+.footer {
+  position: fixed;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #888;
+  font-size: 12px;
+  text-align: center;
+}
+
 /* Responsive */
 @media (max-width: 480px) {
   .otp-container {

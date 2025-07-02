@@ -14,9 +14,6 @@ def khoa_hoc(request):
 def chatbot(request):
     return render(request, "student_page/Chat_bot.html")
 
-from django.shortcuts import render, redirect
-from django.utils import timezone
-
 def nop_bai(request):
     context = {}
     if request.method == "POST":
@@ -37,4 +34,5 @@ def nop_bai(request):
             context['message'] = "Đã nhận file. (Chưa xử lý lưu thực tế)"
     return render(request, "student_page/nop_bai.html", context)
 def cvsv_edit(request):
-    return render(request, "student_page/cvsv.html")
+    # Nếu sau này có phân quyền, kiểm tra user là sinh viên hay giáo viên ở đây
+    return render(request, "cv/cv_student.html")
