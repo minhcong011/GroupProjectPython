@@ -1,0 +1,17 @@
+{% extends 'teacher_page/gv_base.html' %}
+{% block title %}Thêm câu hỏi trắc nghiệm{% endblock %}
+{% block extra_css %}
+<link rel="stylesheet" href="/static/css/addQM.css">
+
+{% endblock %}
+{% block content %}
+<div class="form-container">
+    <h2>Thêm câu hỏi cho: {{ assignment.tieu_de }}</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" name="add_another" class="btn btn-info">Thêm câu hỏi khác</button>
+        <button type="submit" class="btn btn-success">Hoàn tất</button>
+    </form>
+</div>
+{% endblock %}

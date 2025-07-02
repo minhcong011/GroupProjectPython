@@ -1,0 +1,28 @@
+{% extends 'teacher_page/gv_base.html' %}
+{% block title %}Quản lý bài tập{% endblock %}
+{% block content %}
+<h2>Danh sách bài tập</h2>
+<a href="{% url 'create_assignment' %}" class="btn btn-primary">Tạo bài tập mới</a>
+<table>
+    <tr>
+        <th>Tiêu đề</th>
+        <th>Loại</th>
+        <th>Deadline</th>
+        <th>Ngày tạo</th>
+        <th>Xóa</th>
+    </tr>
+    {% for assignment in assignments %}
+    <tr>
+        <td>{{ assignment.tieu_de }}</td>
+        <td>{{ assignment.get_loai_baitap_display }}</td>
+        <td>{{ assignment.han_nop|date:'d/m/Y H:i' }}</td>
+        <td>{{ assignment.ngay_tao|date:'d/m/Y H:i' }}</td>
+        <td>
+            <a href="{% url 'delete_assignment' assignment.id %}" class="btn btn-danger" style="background:#c0392b;color:#fff;padding:4px 12px;border-radius:4px;font-size:14px;">Xóa</a>
+        </td>
+    </tr>
+    {% empty %}
+    <tr><td colspan="5">Chưa có bài tập nào.</td></tr>
+    {% endfor %}
+</table>
+{% endblock %}

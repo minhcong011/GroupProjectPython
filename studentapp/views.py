@@ -1,9 +1,10 @@
 from django.shortcuts import render, redirect
 from django.utils import timezone
+from teacherapp.models import BaiTap
 
 def assignment_list(request):
-    
-    return render(request, "student_page/assignment_list.html")
+    assignments = BaiTap.objects.all().order_by('-ngay_tao')
+    return render(request, "student_page/assignment_list.html", {"assignments": assignments})
 
 def ide_online(request):
     return render(request, "student_page/IDE_Onl.html")

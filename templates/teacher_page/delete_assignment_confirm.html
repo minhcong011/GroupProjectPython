@@ -1,0 +1,13 @@
+{% extends 'teacher_page/gv_base.html' %}
+{% block title %}Xác nhận xóa bài tập{% endblock %}
+{% block content %}
+<div style="max-width:500px;margin:40px auto;background:#fff;padding:32px 32px 24px 32px;border-radius:8px;box-shadow:0 2px 8px rgba(0,0,0,0.08);">
+  <h2 style="color:#c0392b;text-align:center;">Xóa bài tập</h2>
+  <p style="text-align:center;font-size:17px;">Bạn có chắc chắn muốn xóa bài tập <b>{{ assignment.tieu_de }}</b> không?</p>
+  <form method="post" style="text-align:center;margin-top:24px;">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger" style="background:#c0392b;color:#fff;padding:8px 22px;border:none;border-radius:4px;font-size:16px;">Xóa</button>
+    <a href="{% url 'assignment_list' %}" class="btn btn-secondary" style="margin-left:12px;padding:8px 22px;border-radius:4px;font-size:16px;background:#bdbdbd;color:#fff;text-decoration:none;">Hủy</a>
+  </form>
+</div>
+{% endblock %}
