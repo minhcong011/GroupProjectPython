@@ -1,0 +1,168 @@
+/* Edit Question Page Styles */
+
+.edit-question-container {
+    max-width: 700px;
+    margin: 30px auto;
+    background: #fff;
+    padding: 32px 40px;
+    border-radius: 8px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+}
+
+.edit-question-title {
+    color: #1976d2;
+    font-weight: 700;
+    margin-bottom: 24px;
+    font-size: 26px;
+    text-align: center;
+    border-bottom: 3px solid #e3f2fd;
+    padding-bottom: 12px;
+}
+
+.edit-question-form {
+    margin-top: 24px;
+}
+
+.edit-question-form p {
+    margin-bottom: 20px;
+}
+
+.edit-question-form label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #333;
+    font-size: 16px;
+}
+
+.edit-question-form input,
+.edit-question-form textarea,
+.edit-question-form select {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #e0e0e0;
+    border-radius: 6px;
+    font-size: 16px;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    box-sizing: border-box;
+}
+
+.edit-question-form input:focus,
+.edit-question-form textarea:focus,
+.edit-question-form select:focus {
+    outline: none;
+    border-color: #2196f3;
+    box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
+}
+
+.edit-question-form textarea {
+    min-height: 120px;
+    resize: vertical;
+}
+
+.form-actions {
+    text-align: center;
+    margin-top: 28px;
+    padding-top: 20px;
+    border-top: 1px solid #e0e0e0;
+}
+
+.save-question-btn {
+    background: linear-gradient(135deg, #4caf50, #45a049);
+    color: #fff;
+    padding: 14px 28px;
+    border: none;
+    border-radius: 6px;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-right: 12px;
+}
+
+.save-question-btn:hover {
+    background: linear-gradient(135deg, #45a049, #4caf50);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+}
+
+.save-question-btn:active {
+    transform: translateY(0);
+}
+
+.cancel-question-btn {
+    background: #757575;
+    color: #fff;
+    padding: 12px 24px;
+    text-decoration: none;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+}
+
+.cancel-question-btn:hover {
+    background: #616161;
+    color: #fff;
+    text-decoration: none;
+}
+
+/* Form validation feedback */
+.form-field-error {
+    border-color: #f44336 !important;
+    box-shadow: 0 0 0 3px rgba(244, 67, 54, 0.1) !important;
+}
+
+.error-message {
+    color: #f44336;
+    font-size: 14px;
+    margin-top: 4px;
+    font-weight: 500;
+}
+
+.help-text {
+    font-size: 14px;
+    color: #666;
+    margin-top: 4px;
+    font-style: italic;
+}
+
+/* Required field indicator */
+.form-field-required label::after {
+    content: '*';
+    color: #f44336;
+    margin-left: 4px;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .edit-question-container {
+        margin: 15px;
+        padding: 24px 20px;
+    }
+    
+    .edit-question-title {
+        font-size: 22px;
+    }
+    
+    .edit-question-form input,
+    .edit-question-form textarea,
+    .edit-question-form select {
+        padding: 10px 12px;
+        font-size: 14px;
+    }
+    
+    .save-question-btn {
+        padding: 12px 24px;
+        font-size: 16px;
+        margin-bottom: 12px;
+        margin-right: 0;
+    }
+    
+    .form-actions {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+}

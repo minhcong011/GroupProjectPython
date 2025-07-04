@@ -1,0 +1,144 @@
+{% extends 'student_page/student_base.html' %}
+{% load static %}
+
+{% block title %}Chat Bot AI{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/chat_bot.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="chatbot-container">
+    <div class="chatbot-header">
+        <h1 class="chatbot-title">Chat Bot AI</h1>
+        <div class="chatbot-subtitle">Trợ lý học tập thông minh cho Perl & Python</div>
+    </div>
+    
+    <div class="chat-messages" id="chatMessages">
+        <div class="welcome-message">
+            Xin chào! Tôi là trợ lý AI của bạn. Hãy hỏi tôi bất kỳ câu hỏi nào về Perl hoặc Python!
+        </div>
+        
+        <div class="quick-actions">
+            <button class="quick-action-btn" onclick="sendQuickMessage('Giải thích về vòng lặp for trong Python')">Vòng lặp Python</button>
+            <button class="quick-action-btn" onclick="sendQuickMessage('So sánh Perl và Python')">So sánh Perl vs Python</button>
+            <button class="quick-action-btn" onclick="sendQuickMessage('Cách xử lý file trong Python')">Xử lý file Python</button>
+        </div>
+    </div>
+    
+    <div class="typing-indicator" id="typingIndicator">
+        <div class="typing-dots">
+            <div class="typing-dot"></div>
+            <div class="typing-dot"></div>
+            <div class="typing-dot"></div>
+        </div>
+    </div>
+    
+    <div class="chat-input-container">
+        <form class="chat-input-form" id="chatForm">
+            <textarea 
+                class="chat-input" 
+                id="chatInput" 
+                placeholder="Nhập câu hỏi của bạn..." 
+                rows="1"
+                required
+            ></textarea>
+            <button type="submit" class="send-button"></button>
+        </form>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const chatForm = document.getElementById('chatForm');
+    const chatInput = document.getElementById('chatInput');
+    const chatMessages = document.getElementById('chatMessages');
+    const typingIndicator = document.getElementById('typingIndicator');
+    
+    // Auto resize textarea
+    chatInput.addEventListener('input', function() {
+        this.style.height = 'auto';
+        this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+    });
+    
+    // Handle form submission
+    chatForm.addEventListener('submit', function(e) {
+        e.preventDefault();
+        const message = chatInput.value.trim();
+        if (message) {
+            sendMessage(message);
+            chatInput.value = '';
+            chatInput.style.height = 'auto';
+        }
+    });
+    
+    // Handle Enter key (Shift+Enter for new line)
+    chatInput.addEventListener('keypress', function(e) {
+        if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            chatForm.dispatchEvent(new Event('submit'));
+        }
+    });
+});
+
+function sendMessage(message) {
+    const chatMessages = document.getElementById('chatMessages');
+    const typingIndicator = document.getElementById('typingIndicator');
+    
+    // Add user message
+    addMessage(message, 'user');
+    
+    // Show typing indicator
+    typingIndicator.style.display = 'block';
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+    
+    // Simulate API call (replace with actual API endpoint)
+    setTimeout(() => {
+        typingIndicator.style.display = 'none';
+        
+        // Mock response (replace with actual API response)
+        const responses = [
+            "Đây là một câu hỏi thú vị về lập trình! Tôi sẽ giải thích chi tiết...",
+            "Trong Python, bạn có thể làm điều này bằng cách sử dụng...",
+            "Perl và Python đều có những ưu điểm riêng. Hãy để tôi so sánh...",
+            "Tôi hiểu câu hỏi của bạn. Đây là cách tốt nhất để giải quyết..."
+        ];
+        
+        const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+        addMessage(randomResponse, 'bot');
+    }, 1500);
+}
+
+function addMessage(message, sender) {
+    const chatMessages = document.getElementById('chatMessages');
+    const messageDiv = document.createElement('div');
+    messageDiv.className = `message message-${sender}`;
+    
+    const now = new Date();
+    const timeString = now.toLocaleTimeString('vi-VN', { 
+        hour: '2-digit', 
+        minute: '2-digit' 
+    });
+    
+    messageDiv.innerHTML = `
+        <div>${message}</div>
+        <div class="message-time">${timeString}</div>
+    `;
+    
+    // Remove welcome message if it exists
+    const welcomeMessage = chatMessages.querySelector('.welcome-message');
+    if (welcomeMessage && sender === 'user') {
+        welcomeMessage.remove();
+        const quickActions = chatMessages.querySelector('.quick-actions');
+        if (quickActions) quickActions.remove();
+    }
+    
+    chatMessages.appendChild(messageDiv);
+    chatMessages.scrollTop = chatMessages.scrollHeight;
+}
+
+function sendQuickMessage(message) {
+    sendMessage(message);
+}
+</script>
+{% endblock %}

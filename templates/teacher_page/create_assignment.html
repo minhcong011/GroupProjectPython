@@ -1,10 +1,22 @@
 {% extends 'teacher_page/gv_base.html' %}
+{% load static %}
+
 {% block title %}Tạo bài tập{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/create_assignment.css' %}">
+{% endblock %}
+
 {% block content %}
-<h2>Tạo bài tập mới</h2>
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="btn btn-success">Tạo bài tập</button>
-</form>
+<div class="create-assignment-container">
+    <h2 class="create-assignment-title">Tạo bài tập mới</h2>
+    <form method="post" class="assignment-form">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <div class="form-actions">
+            <button type="submit" class="submit-btn">Tạo bài tập</button>
+            <a href="{% url 'assignment_list' %}" class="cancel-btn">Hủy</a>
+        </div>
+    </form>
+</div>
 {% endblock %}

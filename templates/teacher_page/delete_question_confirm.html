@@ -1,11 +1,31 @@
 {% extends 'teacher_page/gv_base.html' %}
+{% load static %}
+
 {% block title %}Xóa câu hỏi{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/delete_question_confirm.css' %}">
+{% endblock %}
+
 {% block content %}
-<h2>Bạn có chắc muốn xóa câu hỏi này?</h2>
-<p><strong>{{ question.noi_dung }}</strong></p>
-<form method="post">
-    {% csrf_token %}
-    <button type="submit" class="btn btn-danger">Xóa</button>
-    <a href="{% url 'edit_assignment' question.bai_tap.id %}" class="btn btn-secondary">Hủy</a>
-</form>
+<div class="delete-question-container">
+    <h2 class="delete-question-title">Bạn có chắc muốn xóa câu hỏi này?</h2>
+    
+    <div class="question-preview">
+        <div class="question-label">Nội dung câu hỏi:</div>
+        <div class="question-content">{{ question.noi_dung }}</div>
+    </div>
+    
+    <div class="warning-box">
+        Hành động này không thể hoàn tác.
+    </div>
+    
+    <form method="post" class="delete-question-form">
+        {% csrf_token %}
+        <div class="form-actions">
+            <button type="submit" class="confirm-delete-question-btn">Xóa</button>
+            <a href="{% url 'edit_assignment' question.bai_tap.id %}" class="cancel-delete-question-btn">Hủy</a>
+        </div>
+    </form>
+</div>
 {% endblock %}

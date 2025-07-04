@@ -1,11 +1,22 @@
 {% extends 'teacher_page/gv_base.html' %}
+{% load static %}
+
 {% block title %}Chỉnh sửa câu hỏi{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/edit_question.css' %}">
+{% endblock %}
+
 {% block content %}
-<h2>Chỉnh sửa câu hỏi</h2>
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="btn btn-success">Lưu thay đổi</button>
-    <a href="{% url 'edit_assignment' question.bai_tap.id %}" class="btn btn-secondary">Hủy</a>
-</form>
+<div class="edit-question-container">
+    <h2 class="edit-question-title">Chỉnh sửa câu hỏi</h2>
+    <form method="post" class="edit-question-form">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <div class="form-actions">
+            <button type="submit" class="save-question-btn">Lưu thay đổi</button>
+            <a href="{% url 'edit_assignment' question.bai_tap.id %}" class="cancel-question-btn">Hủy</a>
+        </div>
+    </form>
+</div>
 {% endblock %}

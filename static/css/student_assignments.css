@@ -1,19 +1,16 @@
-/* Student Assignment System - Master CSS File */
-/* This file can be used to import all assignment-related CSS files */
 
-/* Quiz Assignment Styles */
 @import url('quiz_assignment.css');
 
-/* Quiz Result Styles */
+
 @import url('quiz_result.css');
 
-/* Code Submission Result Styles */
+
 @import url('code_submission_result.css');
 
-/* Assignment Detail Styles */
+
 @import url('assignment_detail.css');
 
-/* IDE Online Extension Styles */
+
 @import url('ide_online_extension.css');
 
 /* Common Assignment Styles */

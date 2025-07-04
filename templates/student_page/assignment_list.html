@@ -3,6 +3,10 @@
 
 {% block title %}Danh sách bài tập{% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/student_assignment_list.css' %}">
+{% endblock %}
+
 {% block banner %}
 <div class="banner">
   <span>
@@ -16,34 +20,33 @@
 {% endblock %}
 
 {% block content %}
-<div style="max-width:900px;margin:30px auto;background:#fff;padding:24px 32px 18px 32px;box-shadow:0 2px 8px rgba(0,0,0,0.08);border-radius:12px;">
-  <h2 style="color:#2196f3;font-weight:700;margin-bottom:18px;">Danh sách bài tập</h2>
-  <table style="width:100%;border-collapse:collapse;font-size:16px;">
+<div class="assignment-container">
+  <h2 class="assignment-title">Danh sách bài tập</h2>
+  <table class="assignment-table">
     <thead>
-      <tr style="background:#90caf9;color:#222;">
-        <th style="padding:10px 8px;border:1px solid #e0e0e0;">Tên bài tập</th>
-        <th style="padding:10px 8px;border:1px solid #e0e0e0;">Loại</th>
-        <th style="padding:10px 8px;border:1px solid #e0e0e0;">Deadline</th>
-        <th style="padding:10px 8px;border:1px solid #e0e0e0;">Ngày tạo</th>
-        <th style="padding:10px 8px;border:1px solid #e0e0e0;">Hành động</th>
+      <tr>
+        <th>Tên bài tập</th>
+        <th>Loại</th>
+        <th>Deadline</th>
+        <th>Ngày tạo</th>
+        <th>Hành động</th>
       </tr>
     </thead>
     <tbody>
       {% for assignment in assignments %}
-      <tr style="background:{{ forloop.counter0|divisibleby:2|yesno:'#f5faff,#fff' }};">
-        <td style="padding:8px 8px;border:1px solid #e0e0e0;">{{ assignment.tieu_de }}</td>
-        <td style="padding:8px 8px;border:1px solid #e0e0e0;">{{ assignment.get_loai_baitap_display }}</td>
-        <td style="padding:8px 8px;border:1px solid #e0e0e0;">{{ assignment.han_nop|date:'d/m/Y H:i' }}</td>
-        <td style="padding:8px 8px;border:1px solid #e0e0e0;">{{ assignment.ngay_tao|date:'d/m/Y H:i' }}</td>
-        <td style="padding:8px 8px;border:1px solid #e0e0e0;">
-          <a href="{% url 'studentapp:assignment_detail' assignment.id %}" 
-             style="background:#4caf50;color:#fff;padding:4px 12px;text-decoration:none;border-radius:4px;font-size:14px;">
+      <tr>
+        <td>{{ assignment.tieu_de }}</td>
+        <td>{{ assignment.get_loai_baitap_display }}</td>
+        <td>{{ assignment.han_nop|date:'d/m/Y H:i' }}</td>
+        <td>{{ assignment.ngay_tao|date:'d/m/Y H:i' }}</td>
+        <td>
+          <a href="{% url 'studentapp:assignment_detail' assignment.id %}" class="do-assignment-btn">
             Làm bài
           </a>
         </td>
       </tr>
       {% empty %}
-      <tr><td colspan="5" style="text-align:center;padding:12px;">Chưa có bài tập nào.</td></tr>
+      <tr><td colspan="5" class="no-assignments">Chưa có bài tập nào.</td></tr>
       {% endfor %}
     </tbody>
   </table>

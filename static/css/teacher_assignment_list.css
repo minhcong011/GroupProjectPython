@@ -1,0 +1,192 @@
+/* Teacher Assignment List Page Styles */
+
+.teacher-assignment-container {
+    max-width: 1100px;
+    margin: 20px auto;
+    background: #fff;
+    padding: 24px 32px;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.teacher-assignment-title {
+    color: #1976d2;
+    font-weight: 700;
+    margin-bottom: 20px;
+    font-size: 26px;
+}
+
+.create-assignment-btn {
+    background: #2196f3;
+    color: #fff;
+    padding: 10px 20px;
+    text-decoration: none;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 500;
+    display: inline-block;
+    margin-bottom: 20px;
+    transition: background-color 0.2s ease;
+}
+
+.create-assignment-btn:hover {
+    background: #1976d2;
+    color: #fff;
+    text-decoration: none;
+}
+
+.teacher-assignment-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 16px;
+    margin-top: 16px;
+}
+
+.teacher-assignment-table th {
+    background: #f5f5f5;
+    color: #333;
+    padding: 12px 10px;
+    border: 1px solid #ddd;
+    font-weight: 600;
+    text-align: left;
+}
+
+.teacher-assignment-table td {
+    padding: 10px 10px;
+    border: 1px solid #ddd;
+    vertical-align: middle;
+}
+
+.teacher-assignment-table tbody tr:nth-child(even) {
+    background: #fafafa;
+}
+
+.teacher-assignment-table tbody tr:nth-child(odd) {
+    background: #fff;
+}
+
+.teacher-assignment-table tbody tr:hover {
+    background: #e8f4fd;
+    transition: background-color 0.2s ease;
+}
+
+.action-buttons {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.edit-btn, .delete-btn, .view-btn {
+    padding: 6px 12px;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 500;
+    display: inline-block;
+    transition: all 0.2s ease;
+    border: none;
+    cursor: pointer;
+}
+
+.edit-btn {
+    background: #ff9800;
+    color: #fff;
+}
+
+.edit-btn:hover {
+    background: #f57c00;
+    color: #fff;
+    text-decoration: none;
+}
+
+.delete-btn {
+    background: #f44336;
+    color: #fff;
+}
+
+.delete-btn:hover {
+    background: #d32f2f;
+    color: #fff;
+    text-decoration: none;
+}
+
+.view-btn {
+    background: #4caf50;
+    color: #fff;
+}
+
+.view-btn:hover {
+    background: #388e3c;
+    color: #fff;
+    text-decoration: none;
+}
+
+.assignment-type-badge {
+    padding: 4px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 500;
+    text-transform: uppercase;
+}
+
+.assignment-type-quiz {
+    background: #e3f2fd;
+    color: #1976d2;
+}
+
+.assignment-type-code {
+    background: #f3e5f5;
+    color: #7b1fa2;
+}
+
+.no-assignments-teacher {
+    text-align: center;
+    padding: 30px;
+    color: #666;
+    font-style: italic;
+    font-size: 18px;
+}
+
+/* Status indicators */
+.deadline-warning {
+    color: #ff5722;
+    font-weight: 500;
+}
+
+.deadline-normal {
+    color: #333;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .teacher-assignment-container {
+        margin: 10px;
+        padding: 16px 20px;
+    }
+    
+    .teacher-assignment-table {
+        font-size: 14px;
+    }
+    
+    .teacher-assignment-table th,
+    .teacher-assignment-table td {
+        padding: 8px 6px;
+    }
+    
+    .action-buttons {
+        flex-direction: column;
+        gap: 4px;
+    }
+    
+    .edit-btn, .delete-btn, .view-btn {
+        padding: 4px 8px;
+        font-size: 12px;
+    }
+}
+
+@media (max-width: 480px) {
+    .teacher-assignment-table th:nth-child(4),
+    .teacher-assignment-table td:nth-child(4) {
+        display: none;
+    }
+}

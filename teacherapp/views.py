@@ -194,5 +194,5 @@ def edit_course(request, course_id):
     return render(request, 'teacher_page/edit_course.html', {'form': form, 'course': course})
 
 def khoa_hoc(request):
-    courses = Course.objects.all().order_by('-id')  # mới nhất trước
+    courses = Course.objects.all().order_by('-id')
     return render(request, 'studentapp/khoa_hoc.html', {'courses': courses})

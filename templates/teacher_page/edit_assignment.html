@@ -1,34 +1,53 @@
 {% extends 'teacher_page/gv_base.html' %}
-{% block title %}Chỉnh sửa bài tập{% endblock %}
-{% block content %}
-<h2>Chỉnh sửa bài tập</h2>
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit" class="btn btn-success">Lưu thay đổi</button>
-    <a href="{% url 'assignment_list' %}" class="btn btn-secondary">Hủy</a>
-</form>
+{% load static %}
 
-<!-- Danh sách câu hỏi thuộc bài tập này -->
-<h3 style="margin-top:32px;">Câu hỏi trong bài tập</h3>
-<a href="{% url 'add_questions' assignment.id %}" class="btn btn-success" style="margin-bottom:12px;">+ Thêm câu hỏi</a>
-<table style="width:100%; margin-top: 12px;">
-    <tr>
-        <th>Nội dung</th>
-        <th>Đáp án đúng</th>
-        <th>Chức năng</th>
-    </tr>
-    {% for question in assignment.cau_hoi.all %}
-    <tr>
-        <td>{{ question.noi_dung }}</td>
-        <td>{{ question.dap_an_dung }}</td>
-        <td>
-            <a href="{% url 'edit_question' question.id %}" class="btn btn-warning btn-sm" style="font-size:13px;">Sửa</a>
-            <a href="{% url 'delete_question' question.id %}" class="btn btn-danger btn-sm" style="font-size:13px;">Xóa</a>
-        </td>
-    </tr>
-    {% empty %}
-    <tr><td colspan="3">Chưa có câu hỏi nào.</td></tr>
-    {% endfor %}
-</table>
+{% block title %}Chỉnh sửa bài tập{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/edit_assignment.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="edit-assignment-container">
+    <h2 class="edit-assignment-title">Chỉnh sửa bài tập</h2>
+    <form method="post" class="edit-assignment-form">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <div class="form-actions">
+            <button type="submit" class="save-btn">Lưu thay đổi</button>
+            <a href="{% url 'assignment_list' %}" class="cancel-btn">Hủy</a>
+        </div>
+    </form>
+
+    <!-- Danh sách câu hỏi thuộc bài tập này -->
+    <div class="questions-section">
+        <h3 class="questions-title">Câu hỏi trong bài tập</h3>
+        <a href="{% url 'add_questions' assignment.id %}" class="add-question-btn">+ Thêm câu hỏi</a>
+        <table class="questions-table">
+            <thead>
+                <tr>
+                    <th>Nội dung</th>
+                    <th>Đáp án đúng</th>
+                    <th>Chức năng</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for question in assignment.cau_hoi.all %}
+                <tr>
+                    <td class="question-content">{{ question.noi_dung }}</td>
+                    <td>{{ question.dap_an_dung }}</td>
+                    <td>
+                        <div class="question-actions">
+                            <a href="{% url 'edit_question' question.id %}" class="edit-question-btn">Sửa</a>
+                            <a href="{% url 'delete_question' question.id %}" class="delete-question-btn">Xóa</a>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr><td colspan="3" class="no-questions">Chưa có câu hỏi nào.</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
 {% endblock %}

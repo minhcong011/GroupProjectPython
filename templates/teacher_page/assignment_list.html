@@ -1,30 +1,51 @@
 {% extends 'teacher_page/gv_base.html' %}
-{% block title %}Quản lý bài tập{% endblock %}
-{% block content %}
-<h2>Danh sách bài tập</h2>
-<a href="{% url 'create_assignment' %}" class="btn btn-primary">Tạo bài tập mới</a>
+{% load static %}
 
-<table>
-    <tr>
-        <th>Tiêu đề</th>
-        <th>Loại</th>
-        <th>Deadline</th>
-        <th>Ngày tạo</th>
-        <th>Chức năng</th>
-    </tr>
-    {% for assignment in assignments %}
-    <tr>
-        <td>{{ assignment.tieu_de }}</td>
-        <td>{{ assignment.get_loai_baitap_display }}</td>
-        <td>{{ assignment.han_nop|date:'d/m/Y H:i' }}</td>
-        <td>{{ assignment.ngay_tao|date:'d/m/Y H:i' }}</td>
-        <td>
-            <a href="{% url 'edit_assignment' assignment.id %}" class="btn btn-warning" style="background:#fbbc05;color:#222;padding:4px 12px;border-radius:4px;font-size:14px;">Sửa</a>
-            <a href="{% url 'delete_assignment' assignment.id %}" class="btn btn-danger" style="background:#c0392b;color:#fff;padding:4px 12px;border-radius:4px;font-size:14px;">Xóa</a>
-        </td>
-    </tr>
-    {% empty %}
-    <tr><td colspan="5">Chưa có bài tập nào.</td></tr>
-    {% endfor %}
-</table>
+{% block title %}Quản lý bài tập{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/teacher_assignment_list.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="teacher-assignment-container">
+    <h2 class="teacher-assignment-title">Danh sách bài tập</h2>
+    <a href="{% url 'create_assignment' %}" class="create-assignment-btn">Tạo bài tập mới</a>
+
+    <table class="teacher-assignment-table">
+        <thead>
+            <tr>
+                <th>Tiêu đề</th>
+                <th>Loại</th>
+                <th>Deadline</th>
+                <th>Ngày tạo</th>
+                <th>Chức năng</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for assignment in assignments %}
+            <tr>
+                <td>{{ assignment.tieu_de }}</td>
+                <td>
+                    <span class="assignment-type-badge assignment-type-{{ assignment.loai_baitap }}">
+                        {{ assignment.get_loai_baitap_display }}
+                    </span>
+                </td>
+                <td class="{% if assignment.han_nop|date:'U' < now|date:'U' %}deadline-warning{% else %}deadline-normal{% endif %}">
+                    {{ assignment.han_nop|date:"d/m/Y H:i" }}
+                </td>
+                <td>{{ assignment.ngay_tao|date:"d/m/Y H:i" }}</td>
+                <td>
+                    <div class="action-buttons">
+                        <a href="{% url 'edit_assignment' assignment.id %}" class="edit-btn">Sửa</a>
+                        <a href="{% url 'delete_assignment' assignment.id %}" class="delete-btn">Xóa</a>
+                    </div>
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="5" class="no-assignments-teacher">Chưa có bài tập nào được tạo.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
 {% endblock %}
