@@ -11,7 +11,7 @@
   <!-- Header -->
   <div class="header">
     <div class="logo">
-      <img src="{% static 'image/PvsP.jpg' %}" alt="Perl/Python Logo">
+      <img src="{% static 'image/headerIcon.jpg' %}" alt="Perl/Python Logo">
       <span class="title">PERL & PYTHON</span>
     </div>
     <div class="nav">
@@ -54,19 +54,19 @@
           </div>
           
           <button onclick="runCode()" class="btn btn-run">
-            🚀 Chạy code
+             Chạy code
           </button>
           
           <button onclick="clearCode()" class="btn btn-clear">
-            🗑️ Xóa code
+             Xóa code
           </button>
           
           {% if assignment_mode %}
           <button onclick="submitAssignment()" class="btn btn-submit">
-            📤 Nộp bài
+             Nộp bài
           </button>
           <a href="{% url 'studentapp:assignment_list' %}" class="btn btn-back">
-            ↩️ Quay lại
+             Quay lại
           </a>
           {% endif %}
         </div>
@@ -83,6 +83,8 @@
                     placeholder="// Viết code của bạn tại đây...">{% if assignment_mode %}// Bài tập: {{ assignment.tieu_de }}
 // Mô tả: {{ assignment.mo_ta }}
 
+{% else %}
+# Viết code của bạn tai đây...
 {% endif %}</textarea>
         </div>
         
@@ -109,34 +111,85 @@
   {% endif %}
 
   <script>
+    // Hàm lấy CSRF token
+    function getCookie(name) {
+      let cookieValue = null;
+      if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+          const cookie = cookies[i].trim();
+          if (cookie.substring(0, name.length + 1) === (name + '=')) {
+            cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+            break;
+          }
+        }
+      }
+      return cookieValue;
+    }
+
     function runCode() {
       const code = document.getElementById('codeEditor').value;
       const language = document.getElementById('language').value;
       const output = document.getElementById('output');
       
-      // Simulation of code execution
-      output.textContent = `Đang chạy code ${language}...\n\n`;
+      // Hiển thị loading
+      output.innerHTML = '<div style="color: #f39c12;">🔄 Đang chạy code...</div>';
       
-      setTimeout(() => {
-        if (code.trim() === '') {
-          output.textContent = 'Lỗi: Không có code để chạy!';
-          return;
+      // Gửi AJAX request
+      fetch('{% url "studentapp:run_code" %}', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': getCookie('csrftoken')
+        },
+        body: JSON.stringify({
+          'code': code,
+          'language': language
+        })
+      })
+      .then(response => response.json())
+      .then(data => {
+        // Hiển thị kết quả
+        if (data.success) {
+          output.innerHTML = `<div style="color: #27ae60;"><strong>✅ Thực thi thành công (${data.language}):</strong></div><pre style="background: #f8f9fa; padding: 10px; border-radius: 5px; margin-top: 10px; white-space: pre-wrap;">${data.output}</pre>`;
+        } else {
+          output.innerHTML = `<div style="color: #e74c3c;"><strong>❌ Có lỗi xảy ra:</strong></div><pre style="background: #f8f9fa; padding: 10px; border-radius: 5px; margin-top: 10px; white-space: pre-wrap; color: #e74c3c;">${data.output}</pre>`;
         }
-        
-        // Simple simulation
-        output.textContent += `Code đã được thực thi thành công!\n`;
-        output.textContent += `Ngôn ngữ: ${language}\n`;
-        output.textContent += `Số dòng code: ${code.split('\n').length}\n\n`;
-        output.textContent += `[Đây là simulation - trong thực tế sẽ kết nối với compiler/interpreter thật]`;
-      }, 1000);
+      })
+      .catch(error => {
+        output.innerHTML = `<div style="color: #e74c3c;"><strong>❌ Lỗi kết nối:</strong></div><pre style="background: #f8f9fa; padding: 10px; border-radius: 5px; margin-top: 10px; white-space: pre-wrap; color: #e74c3c;">Không thể kết nối đến server: ${error.message}</pre>`;
+        console.error('Error:', error);
+      });
     }
     
     function clearCode() {
       if (confirm('Bạn có chắc muốn xóa toàn bộ code?')) {
-        document.getElementById('codeEditor').value = '{% if assignment_mode %}// Bài tập: {{ assignment.tieu_de }}\n// Mô tả: {{ assignment.mo_ta }}\n\n{% endif %}';
-        document.getElementById('output').textContent = 'Code đã được xóa.';
+        const defaultCode = '{% if assignment_mode %}// Bài tập: {{ assignment.tieu_de }}\n// Mô tả: {{ assignment.mo_ta }}\n\n{% else %}# Code mẫu Python\nprint("Hello, World!")\nprint("Chao mung den voi IDE Online!")\n\n# Thu viet code cua ban tai day...\n{% endif %}';
+        document.getElementById('codeEditor').value = defaultCode;
+        document.getElementById('output').innerHTML = '<div style="color: #95a5a6;">Code đã được xóa. Nhấn "Chạy code" để xem kết quả...</div>';
       }
     }
+
+    // Thêm shortcut Ctrl+Enter để chạy code
+    document.addEventListener('keydown', function(e) {
+      if (e.ctrlKey && e.key === 'Enter') {
+        e.preventDefault();
+        runCode();
+      }
+    });
+
+    // Tự động resize textarea
+    document.addEventListener('DOMContentLoaded', function() {
+      const textarea = document.getElementById('codeEditor');
+      textarea.addEventListener('input', function() {
+        this.style.height = 'auto';
+        this.style.height = this.scrollHeight + 'px';
+      });
+      
+      // Hiển thị hướng dẫn
+      const output = document.getElementById('output');
+      output.innerHTML = '<div style="color: #3498db;"><strong> Hướng dẫn sử dụng:</strong></div><div style="margin-top: 10px; color: #7f8c8d;">• Viết code trong khung bên trái<br>• Chọn ngôn ngữ (Python/Perl)<br>• Nhấn "Chạy code" hoặc Ctrl+Enter<br>• Xem kết quả ở khung này</div>';
+    });
     
     {% if assignment_mode %}
     function submitAssignment() {

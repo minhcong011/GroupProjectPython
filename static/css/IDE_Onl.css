@@ -191,6 +191,15 @@ body {
   background: #c82333;
 }
 
+.btn-test {
+  background: #17a2b8;
+  color: white;
+}
+
+.btn-test:hover {
+  background: #138496;
+}
+
 .btn-submit {
   background: #007bff;
   color: white;
@@ -274,6 +283,31 @@ body {
   overflow-y: auto;
   white-space: pre-wrap;
   word-wrap: break-word;
+  border: 1px solid #e0e0e0;
+  border-radius: 4px;
+}
+
+/* Output styling */
+.output-display pre {
+  margin: 0;
+  font-family: inherit;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}
+
+.output-display .success-output {
+  color: #27ae60;
+  font-weight: bold;
+}
+
+.output-display .error-output {
+  color: #e74c3c;
+  font-weight: bold;
+}
+
+.output-display .loading-output {
+  color: #f39c12;
+  font-weight: bold;
 }
 
 /* Responsive cho Mobile */

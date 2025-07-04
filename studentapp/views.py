@@ -3,6 +3,13 @@ from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from teacherapp.models import Course, BaiTap, CauHoi
+import subprocess
+import json
+import tempfile
+import os
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_http_methods
 
 def assignment_list(request):
     assignments = BaiTap.objects.all().order_by('-ngay_tao')
@@ -126,3 +133,165 @@ def submit_code_assignment(request, assignment_id):
         return render(request, "student_page/code_submission_result.html", context)
     
     return redirect('studentapp:assignment_detail', assignment_id=assignment_id)
+
+@csrf_exempt
+@require_http_methods(["POST"])
+def run_code(request):
+    """
+    Chạy code Python/Perl bằng subprocess
+    """
+    try:
+        data = json.loads(request.body)
+        code = data.get('code', '')
+        language = data.get('language', 'python')
+        
+        # Validate input
+        if not code.strip():
+            return JsonResponse({
+                'output': 'Lỗi: Không có code để chạy!',
+                'success': False
+            })
+        
+        # Giới hạn độ dài code để tránh spam
+        if len(code) > 10000:  # 10KB
+            return JsonResponse({
+                'output': 'Lỗi: Code quá dài (tối đa 10.000 ký tự)',
+                'success': False
+            })
+        
+        # Kiểm tra các lệnh nguy hiểm
+        dangerous_keywords = [
+            'import os', 'import sys', 'import subprocess', 'import shutil',
+            'open(', 'file(', 'exec(', 'eval(', '__import__',
+            'rm ', 'del ', 'format', 'remove'
+        ]
+        
+        code_lower = code.lower()
+        for keyword in dangerous_keywords:
+            if keyword in code_lower:
+                return JsonResponse({
+                    'output': f'Lỗi bảo mật: Không được sử dụng "{keyword}" trong code',
+                    'success': False
+                })
+        
+        # Tạo file tạm để lưu code
+        if language == 'python':
+            file_extension = '.py'
+            # Thêm encoding UTF-8 và xử lý output cho Python
+            code_with_encoding = f'''# -*- coding: utf-8 -*-
+import sys
+import io
+import os
+
+# Thiết lập encoding UTF-8 cho output
+if hasattr(sys.stdout, 'reconfigure'):
+    sys.stdout.reconfigure(encoding='utf-8')
+elif hasattr(sys.stdout, 'buffer'):
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8')
+
+# Thiết lập môi trường UTF-8
+os.environ['PYTHONIOENCODING'] = 'utf-8'
+
+# Code của người dùng
+{code}
+'''
+        elif language == 'perl':
+            file_extension = '.pl'
+            code_with_encoding = f'''use utf8;
+use open qw(:std :utf8);
+binmode(STDOUT, ":utf8");
+binmode(STDERR, ":utf8");
+
+# Code của người dùng
+{code}
+'''
+        else:
+            return JsonResponse({
+                'output': 'Lỗi: Ngôn ngữ không được hỗ trợ',
+                'success': False
+            })
+        
+        # Tạo file tạm thời
+        with tempfile.NamedTemporaryFile(mode='w', suffix=file_extension, delete=False, encoding='utf-8') as temp_file:
+            temp_file.write(code_with_encoding)
+            temp_file_path = temp_file.name
+        
+        try:
+            # Thiết lập môi trường UTF-8
+            env = os.environ.copy()
+            env['PYTHONIOENCODING'] = 'utf-8'
+            env['PYTHONUTF8'] = '1'
+            env['LC_ALL'] = 'C.UTF-8'
+            
+            # Chạy code với subprocess
+            if language == 'python':
+                # Chạy Python với encoding UTF-8
+                result = subprocess.run(
+                    ['python', '-X', 'utf8', temp_file_path],
+                    capture_output=True,
+                    text=True,
+                    timeout=5,
+                    cwd=tempfile.gettempdir(),
+                    encoding='utf-8',
+                    errors='replace',  # Thay thế ký tự lỗi thay vì crash
+                    env=env
+                )
+            else:
+                # Chạy Perl
+                result = subprocess.run(
+                    ['perl', temp_file_path],
+                    capture_output=True,
+                    text=True,
+                    timeout=5,
+                    cwd=tempfile.gettempdir(),
+                    encoding='utf-8',
+                    errors='replace',
+                    env=env
+                )
+            
+            # Lấy output
+            if result.returncode == 0:
+                output = result.stdout if result.stdout else "Code chạy thành công (không có output)"
+                # Giới hạn độ dài output
+                if len(output) > 5000:
+                    output = output[:5000] + "\n...(output bị cắt do quá dài)"
+                success = True
+            else:
+                error_output = result.stderr if result.stderr else "Lỗi không xác định"
+                if len(error_output) > 2000:
+                    error_output = error_output[:2000] + "\n...(lỗi bị cắt)"
+                output = f"Lỗi thực thi:\n{error_output}"
+                success = False
+                
+        except subprocess.TimeoutExpired:
+            output = "Lỗi: Code chạy quá lâu (timeout 5 giây)"
+            success = False
+        except FileNotFoundError:
+            output = f"Lỗi: Không tìm thấy {language} interpreter trên hệ thống"
+            success = False
+        except Exception as e:
+            output = f"Lỗi hệ thống: {str(e)}"
+            success = False
+        finally:
+            # Xóa file tạm
+            try:
+                os.unlink(temp_file_path)
+            except:
+                pass
+        
+        return JsonResponse({
+            'output': output,
+            'success': success,
+            'language': language
+        })
+        
+    except json.JSONDecodeError:
+        return JsonResponse({
+            'output': 'Lỗi: Dữ liệu JSON không hợp lệ',
+            'success': False
+        })
+    except Exception as e:
+        return JsonResponse({
+            'output': f'Lỗi server: {str(e)}',
+            'success': False
+        })
