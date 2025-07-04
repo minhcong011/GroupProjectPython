@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
 from django.utils import timezone
+from teacherapp.models import Course  # Thêm import model Course
 
 def assignment_list(request):
     
@@ -9,7 +10,8 @@ def ide_online(request):
     return render(request, "student_page/IDE_Onl.html")
 
 def khoa_hoc(request):
-    return render(request, "student_page/Khoa_hoc.html") 
+    courses = Course.objects.all()  # Lấy tất cả các khóa học do giáo viên tạo
+    return render(request, "student_page/Khoa_hoc.html", {"courses": courses}) 
 
 def chatbot(request):
     return render(request, "student_page/Chat_bot.html")

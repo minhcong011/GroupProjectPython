@@ -27,9 +27,11 @@ def lecture_list(request):
 from django.shortcuts import render, redirect
 from .models import Course
 from .forms import CourseForm
+from django.contrib.auth.decorators import login_required
 
+@login_required
 def course_management(request):
-    courses = Course.objects.all()
+    courses = Course.objects.filter(created_by=request.user)
     form = CourseForm()
     return render(request, 'teacher_page/course_management.html', {'courses': courses, 'form': form})
 
@@ -37,9 +39,12 @@ def create_course(request):
     if request.method == 'POST':
         form = CourseForm(request.POST)
         if form.is_valid():
-            form.save()
+            course = form.save(commit=False)
+            course.created_by = request.user  # Gán người tạo là user hiện tại
+            course.save()
             return redirect('course_management')
     return redirect('course_management')
+
 
 from django.shortcuts import redirect, get_object_or_404
 from .models import Course
@@ -53,20 +58,27 @@ def delete_course(request, course_id):
 
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Course
-from .forms import CourseForm
+from .forms import CourseEditForm  
 
 def edit_course(request, course_id):
     course = get_object_or_404(Course, id=course_id)
     
     if request.method == 'POST':
-        form = CourseForm(request.POST, instance=course)
+        form = CourseEditForm(request.POST, instance=course)  
         if form.is_valid():
-            form.save()
+            updated = form.save(commit=False)
+            updated.participants = course.participants  
+            updated.created_by = request.user   # ⚠️ sửa đúng biến tên
+            updated.save()
             print(">>> Đã lưu thành công")
-            return redirect('course_management')  # chắc chắn tên này có trong urls.py
+            return redirect('course_management')
         else:
             print(">>> Form không hợp lệ:", form.errors)
     else:
-        form = CourseForm(instance=course)
+        form = CourseEditForm(instance=course)
 
     return render(request, 'teacher_page/edit_course.html', {'form': form, 'course': course})
+
+def khoa_hoc(request):
+    courses = Course.objects.all().order_by('-id')  # mới nhất trước
+    return render(request, 'studentapp/khoa_hoc.html', {'courses': courses})
