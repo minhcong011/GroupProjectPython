@@ -1,0 +1,11 @@
+{% extends 'teacher_page/gv_base.html' %}
+{% block title %}Xóa câu hỏi{% endblock %}
+{% block content %}
+<h2>Bạn có chắc muốn xóa câu hỏi này?</h2>
+<p><strong>{{ question.noi_dung }}</strong></p>
+<form method="post">
+    {% csrf_token %}
+    <button type="submit" class="btn btn-danger">Xóa</button>
+    <a href="{% url 'edit_assignment' question.bai_tap.id %}" class="btn btn-secondary">Hủy</a>
+</form>
+{% endblock %}

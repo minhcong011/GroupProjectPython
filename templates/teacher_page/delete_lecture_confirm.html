@@ -1,0 +1,20 @@
+{% extends 'teacher_page/gv_base.html' %}
+{% load static %}
+
+{% block title %}Xóa Đề cương{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/delete_lecture_confirm.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="delete-lecture-confirm-container">
+    <h2>Bạn có chắc muốn xóa đề cương này?</h2>
+    <p><strong>{{ lecture.title }}</strong></p>
+    <form method="POST">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-danger">Xóa</button>
+        <a href="{% url 'lecture_detail' lecture.pk %}" class="btn btn-secondary">Hủy</a>
+    </form>
+</div>
+{% endblock %}

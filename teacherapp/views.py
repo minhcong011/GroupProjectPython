@@ -1,10 +1,39 @@
+# Sửa câu hỏi
 from django.contrib.auth.decorators import login_required
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from .forms import LectureForm, BaiTapForm, CauHoiForm
 from .models import BaiTap, CauHoi
 from django.http import HttpResponseForbidden
 from core.models import Lecture
+from .forms import CourseForm
 from django.contrib import messages
+from .models import Course
+
+@login_required
+def edit_question(request, question_id):
+    question = get_object_or_404(CauHoi, id=question_id, bai_tap__nguoi_tao=request.user)
+    if request.method == 'POST':
+        form = CauHoiForm(request.POST, instance=question)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Đã cập nhật câu hỏi thành công!')
+            return redirect('edit_assignment', assignment_id=question.bai_tap.id)
+    else:
+        form = CauHoiForm(instance=question)
+    return render(request, 'teacher_page/edit_question.html', {'form': form, 'question': question})
+
+# Xóa câu hỏi
+@login_required
+def delete_question(request, question_id):
+    question = get_object_or_404(CauHoi, id=question_id, bai_tap__nguoi_tao=request.user)
+    assignment_id = question.bai_tap.id
+    if request.method == 'POST':
+        question.delete()
+        messages.success(request, 'Đã xóa câu hỏi thành công!')
+        return redirect('edit_assignment', assignment_id=assignment_id)
+    return render(request, 'teacher_page/delete_question_confirm.html', {'question': question})
+
+
 
 @login_required
 def delete_assignment(request, assignment_id):
@@ -20,7 +49,9 @@ def delete_assignment(request, assignment_id):
 @login_required
 def assignment_list(request):
     assignments = BaiTap.objects.filter(nguoi_tao=request.user)
-    return render(request, 'teacher_page/assignment_list.html', {'assignments': assignments})
+    from core.models import Lecture
+    lectures = Lecture.objects.filter(created_by=request.user)
+    return render(request, 'teacher_page/assignment_list.html', {'assignments': assignments, 'lectures': lectures})
 
 
 @login_required
@@ -56,6 +87,21 @@ def add_questions(request, assignment_id):
     return render(request, 'teacher_page/add_questions.html', {'form': form, 'assignment': baitap})
 
 # Create your views here.
+
+# Sửa bài tập
+from django.shortcuts import get_object_or_404
+@login_required
+def edit_assignment(request, assignment_id):
+    assignment = get_object_or_404(BaiTap, id=assignment_id, nguoi_tao=request.user)
+    if request.method == 'POST':
+        form = BaiTapForm(request.POST, instance=assignment)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Đã cập nhật bài tập thành công!')
+            return redirect('assignment_list')
+    else:
+        form = BaiTapForm(instance=assignment)
+    return render(request, 'teacher_page/edit_assignment.html', {'form': form, 'assignment': assignment})
 @login_required
 def create_lecture(request):
     if request.method == 'POST':
@@ -71,15 +117,50 @@ def create_lecture(request):
         form = LectureForm()
     return render(request, 'teacher_page/create_lecture.html', {'form': form})
 
+
+# Xem chi tiết bài giảng (đề cương)
+@login_required
+def lecture_detail(request, pk):
+    lecture = get_object_or_404(Lecture, pk=pk, created_by=request.user)
+    return render(request, 'teacher_page/lecture_detail.html', {'lecture': lecture})
+
+# Chỉnh sửa bài giảng (đề cương)
+@login_required
+def edit_lecture(request, pk):
+    lecture = get_object_or_404(Lecture, pk=pk, created_by=request.user)
+    if request.method == 'POST':
+        form = LectureForm(request.POST, request.FILES, instance=lecture)
+        if form.is_valid():
+            form.save()
+            messages.success(request, 'Đã cập nhật đề cương thành công!')
+            return redirect('lecture_list')
+    else:
+        form = LectureForm(instance=lecture)
+    return render(request, 'teacher_page/edit_lecture.html', {'form': form, 'lecture': lecture})
+
+# Xóa bài giảng (đề cương)
+@login_required
+def delete_lecture(request, pk):
+    lecture = get_object_or_404(Lecture, pk=pk, created_by=request.user)
+    if request.method == 'POST':
+        lecture.delete()
+        messages.success(request, 'Đã xóa đề cương thành công!')
+        return redirect('lecture_list')
+    return render(request, 'teacher_page/delete_lecture_confirm.html', {'lecture': lecture})
+
 @login_required
 def lecture_list(request):
     lectures = Lecture.objects.filter(created_by=request.user)
     return render(request, 'teacher_page/lecture_list.html', {'lectures': lectures})
 
+<<<<<<< HEAD
 from django.shortcuts import render, redirect
 from .models import Course
 from .forms import CourseForm
 from django.contrib.auth.decorators import login_required
+=======
+
+>>>>>>> b32fbe8e912b1a08c995c0af1d123099f40171f7
 
 @login_required
 def course_management(request):
@@ -98,8 +179,11 @@ def create_course(request):
     return redirect('course_management')
 
 
+<<<<<<< HEAD
 from django.shortcuts import redirect, get_object_or_404
 from .models import Course
+=======
+>>>>>>> b32fbe8e912b1a08c995c0af1d123099f40171f7
 
 def delete_course(request, course_id):
     course = get_object_or_404(Course, id=course_id)
@@ -108,9 +192,12 @@ def delete_course(request, course_id):
         return redirect('course_management')
     return redirect('course_management')
 
+<<<<<<< HEAD
 from django.shortcuts import render, get_object_or_404, redirect
 from .models import Course
 from .forms import CourseEditForm  
+=======
+>>>>>>> b32fbe8e912b1a08c995c0af1d123099f40171f7
 
 def edit_course(request, course_id):
     course = get_object_or_404(Course, id=course_id)

@@ -14,7 +14,7 @@
     {% for lecture in lectures %}
         <div class="lecture-card">
             <div class="lecture-header">
-                <h3>{{ lecture.title }}</h3>
+                <h3><a href="{% url 'lecture_detail' lecture.pk %}" class="lecture-title-link">{{ lecture.title }}</a></h3>
                 <span class="subject">{{ lecture.subject }}</span>
             </div>
             <p class="description">{{ lecture.description }}</p>
@@ -29,12 +29,17 @@
                     <a href="{{ lecture.slide_file.url }}" class="btn-link" target="_blank">📊 Slides</a>
                 {% endif %}
             </div>
+            <div class="lecture-actions">
+                <a href="{% url 'lecture_detail' lecture.pk %}" class="btn btn-info">Xem</a>
+                <a href="{% url 'edit_lecture' lecture.pk %}" class="btn btn-warning">Sửa</a>
+                <a href="{% url 'delete_lecture' lecture.pk %}" class="btn btn-danger">Xóa</a>
+            </div>
         </div>
     {% empty %}
         <p class="no-lecture">Không có bài giảng nào.</p>
     {% endfor %}
 </div>
 
-<a href="{% url 'create_lecture' %}" class="btn-add">+ Thêm bài giảng mới</a>
+<a href="{% url 'create_lecture' %}" class="btn-add">+ Thêm đề cương mới</a>
 {% endblock %}
 
