@@ -1,13 +1,11 @@
 # Sửa câu hỏi
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
-from .forms import LectureForm, BaiTapForm, CauHoiForm
-from .models import BaiTap, CauHoi
+from .forms import LectureForm, BaiTapForm, CauHoiForm, CourseForm, CourseEditForm
+from .models import BaiTap, CauHoi, Course
 from django.http import HttpResponseForbidden
 from core.models import Lecture
-from .forms import CourseForm
 from django.contrib import messages
-from .models import Course
 
 @login_required
 def edit_question(request, question_id):
@@ -153,15 +151,6 @@ def lecture_list(request):
     lectures = Lecture.objects.filter(created_by=request.user)
     return render(request, 'teacher_page/lecture_list.html', {'lectures': lectures})
 
-<<<<<<< HEAD
-from django.shortcuts import render, redirect
-from .models import Course
-from .forms import CourseForm
-from django.contrib.auth.decorators import login_required
-=======
-
->>>>>>> b32fbe8e912b1a08c995c0af1d123099f40171f7
-
 @login_required
 def course_management(request):
     courses = Course.objects.filter(created_by=request.user)
@@ -178,26 +167,12 @@ def create_course(request):
             return redirect('course_management')
     return redirect('course_management')
 
-
-<<<<<<< HEAD
-from django.shortcuts import redirect, get_object_or_404
-from .models import Course
-=======
->>>>>>> b32fbe8e912b1a08c995c0af1d123099f40171f7
-
 def delete_course(request, course_id):
     course = get_object_or_404(Course, id=course_id)
     if request.method == "POST":
         course.delete()
         return redirect('course_management')
     return redirect('course_management')
-
-<<<<<<< HEAD
-from django.shortcuts import render, get_object_or_404, redirect
-from .models import Course
-from .forms import CourseEditForm  
-=======
->>>>>>> b32fbe8e912b1a08c995c0af1d123099f40171f7
 
 def edit_course(request, course_id):
     course = get_object_or_404(Course, id=course_id)
