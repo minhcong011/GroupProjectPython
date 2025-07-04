@@ -1,0 +1,92 @@
+{% extends 'student_page/student_base.html' %}
+{% load static %}
+
+{% block title %}Kết quả nộp bài{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/code_submission_result.css' %}">
+{% endblock %}
+
+{% block banner %}
+<div class="banner">
+  <span>
+    <b>Đã nộp bài: {{ assignment.tieu_de }}</b>
+    <span class="course-code">CS466</span>
+  </span>
+  <span class="right">
+    Thời gian nộp: {{ submission_time|date:"d/m/Y H:i" }}
+  </span>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="submission-container">
+  
+  <!-- Thông báo thành công -->
+  <div class="success-notification">
+    <div class="success-icon">✅</div>
+    <h2 class="success-title">Nộp bài thành công!</h2>
+    <p class="success-message">Bài tập code của bạn đã được ghi nhận</p>
+  </div>
+
+  <!-- Thông tin bài tập -->
+  <div class="assignment-info">
+    <h3 class="info-title">Thông tin bài tập</h3>
+    <div class="info-grid">
+      <div class="info-item">
+        <p><strong>Tên bài tập:</strong> {{ assignment.tieu_de }}</p>
+        <p><strong>Loại:</strong> {{ assignment.get_loai_baitap_display }}</p>
+      </div>
+      <div class="info-item">
+        <p><strong>Ngôn ngữ sử dụng:</strong> {{ language|capfirst }}</p>
+        <p><strong>Thời gian nộp:</strong> {{ submission_time|date:"d/m/Y H:i" }}</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Code đã nộp -->
+  <div class="code-section">
+    <h3 class="info-title">Code đã nộp</h3>
+    <div class="code-display">
+      <pre>{{ submitted_code }}</pre>
+    </div>
+  </div>
+
+  <!-- Thông tin thêm -->
+  <div class="notice-section">
+    <h4 class="notice-title">📝 Lưu ý:</h4>
+    <ul class="notice-list">
+      <li>Bài tập của bạn đã được lưu thành công</li>
+      <li>Giáo viên sẽ chấm và phản hồi trong thời gian sớm nhất</li>
+      <li>Bạn có thể xem kết quả chấm bài trong phần "Danh sách bài tập"</li>
+      <li>Nếu có thắc mắc, vui lòng liên hệ giáo viên</li>
+    </ul>
+  </div>
+
+  <!-- Thống kê -->
+  <div class="stats-grid">
+    <div class="stat-card characters">
+      <div class="stat-value characters">{{ submitted_code|length }}</div>
+      <div class="stat-label">Ký tự</div>
+    </div>
+    <div class="stat-card lines">
+      <div class="stat-value lines">{{ submitted_code|linebreaksbr|length }}</div>
+      <div class="stat-label">Dòng code</div>
+    </div>
+    <div class="stat-card language">
+      <div class="stat-value language">{{ language|capfirst }}</div>
+      <div class="stat-label">Ngôn ngữ</div>
+    </div>
+  </div>
+
+  <!-- Nút hành động -->
+  <div class="action-buttons">
+    <a href="{% url 'studentapp:assignment_list' %}" class="btn-primary">
+      📋 Quay lại danh sách bài tập
+    </a>
+    <a href="{% url 'studentapp:ide_online' %}" class="btn-success">
+      💻 IDE Online
+    </a>
+  </div>
+</div>
+{% endblock %}

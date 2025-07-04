@@ -1,0 +1,87 @@
+{% extends 'student_page/student_base.html' %}
+{% load static %}
+
+{% block title %}{{ assignment.tieu_de }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/quiz_assignment.css' %}">
+{% endblock %}
+
+{% block banner %}
+<div class="banner">
+  <span>
+    <b>Bài tập trắc nghiệm: {{ assignment.tieu_de }}</b>
+    <span class="course-code">CS466</span>
+  </span>
+  <span class="right">
+    Hạn nộp: {{ assignment.han_nop|date:"d/m/Y H:i" }}
+  </span>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="quiz-container">
+  <h2 class="quiz-title">{{ assignment.tieu_de }}</h2>
+  
+  <div class="quiz-info">
+    <p><strong>Mô tả:</strong> {{ assignment.mo_ta }}</p>
+    <p><strong>Loại bài tập:</strong> {{ assignment.get_loai_baitap_display }}</p>
+    <p><strong>Số câu hỏi:</strong> {{ questions.count }}</p>
+    <p><strong>Hạn nộp:</strong> {{ assignment.han_nop|date:"d/m/Y H:i" }}</p>
+  </div>
+
+  <form method="POST" action="{% url 'studentapp:submit_quiz' assignment.id %}">
+    {% csrf_token %}
+    
+    {% for question in questions %}
+    <div class="question-container">
+      <h4 class="question-title">Câu {{ forloop.counter }}: {{ question.noi_dung }}</h4>
+      
+      <div class="question-options">
+        {% if question.lua_chon_a %}
+        <label class="option-label">
+          <input type="radio" name="question_{{ question.id }}" value="A" class="option-input">
+          A) {{ question.lua_chon_a }}
+        </label>
+        {% endif %}
+        
+        {% if question.lua_chon_b %}
+        <label class="option-label">
+          <input type="radio" name="question_{{ question.id }}" value="B" class="option-input">
+          B) {{ question.lua_chon_b }}
+        </label>
+        {% endif %}
+        
+        {% if question.lua_chon_c %}
+        <label class="option-label">
+          <input type="radio" name="question_{{ question.id }}" value="C" class="option-input">
+          C) {{ question.lua_chon_c }}
+        </label>
+        {% endif %}
+        
+        {% if question.lua_chon_d %}
+        <label class="option-label">
+          <input type="radio" name="question_{{ question.id }}" value="D" class="option-input">
+          D) {{ question.lua_chon_d }}
+        </label>
+        {% endif %}
+      </div>
+    </div>
+    {% empty %}
+    <p class="no-questions">Bài tập này chưa có câu hỏi nào.</p>
+    {% endfor %}
+    
+    {% if questions %}
+    <div class="submit-section">
+      <button type="submit" class="submit-btn"
+              onclick="return confirm('Bạn có chắc muốn nộp bài? Sau khi nộp sẽ không thể chỉnh sửa.')">
+        Nộp bài
+      </button>
+      <a href="{% url 'studentapp:assignment_list' %}" class="back-btn">
+        Quay lại
+      </a>
+    </div>
+    {% endif %}
+  </form>
+</div>
+{% endblock %}

@@ -1,0 +1,100 @@
+{% extends 'student_page/student_base.html' %}
+{% load static %}
+
+{% block title %}Kết quả bài tập{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/quiz_result.css' %}">
+{% endblock %}
+
+{% block banner %}
+<div class="banner">
+  <span>
+    <b>Kết quả: {{ assignment.tieu_de }}</b>
+    <span class="course-code">CS466</span>
+  </span>
+  <span class="right">
+    Điểm: {{ score }}/{{ total_questions }} ({{ percentage|floatformat:1 }}%)
+  </span>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="result-container">
+  
+  <!-- Kết quả tổng quan -->
+  <div class="result-summary {% if percentage >= 70 %}excellent{% elif percentage >= 50 %}good{% else %}poor{% endif %}">
+    <h2 class="result-title {% if percentage >= 70 %}excellent{% elif percentage >= 50 %}good{% else %}poor{% endif %}">
+      Kết quả bài làm
+    </h2>
+    <div class="result-score {% if percentage >= 70 %}excellent{% elif percentage >= 50 %}good{% else %}poor{% endif %}">
+      {{ score }}/{{ total_questions }} câu đúng ({{ percentage|floatformat:1 }}%)
+    </div>
+    <p class="result-message">
+      {% if percentage >= 70 %}
+        🎉 Chúc mừng! Bạn đã làm bài rất tốt!
+      {% elif percentage >= 50 %}
+        👍 Kết quả khá tốt, hãy cố gắng hơn lần sau!
+      {% else %}
+        💪 Hãy ôn tập thêm và cố gắng hơn nhé!
+      {% endif %}
+    </p>
+  </div>
+
+  <!-- Chi tiết từng câu hỏi -->
+  <h3 class="details-title">Chi tiết kết quả:</h3>
+  
+  {% for result in results %}
+  <div class="question-result {% if result.is_correct %}correct{% else %}incorrect{% endif %}">
+    <div class="question-header">
+      <span class="question-number {% if result.is_correct %}correct{% else %}incorrect{% endif %}">
+        Câu {{ forloop.counter }}
+      </span>
+      <span class="question-status {% if result.is_correct %}correct{% else %}incorrect{% endif %}">
+        {% if result.is_correct %}✓ Đúng{% else %}✗ Sai{% endif %}
+      </span>
+    </div>
+    
+    <p class="question-text">{{ result.question.noi_dung }}</p>
+    
+    <div class="answer-section">
+      <p>
+        <strong>Bạn chọn:</strong> 
+        <span class="user-answer {% if result.is_correct %}correct{% else %}incorrect{% endif %}">
+          {% if result.user_answer %}
+            {{ result.user_answer }}) 
+            {% if result.user_answer == 'A' %}{{ result.question.lua_chon_a }}
+            {% elif result.user_answer == 'B' %}{{ result.question.lua_chon_b }}
+            {% elif result.user_answer == 'C' %}{{ result.question.lua_chon_c }}
+            {% elif result.user_answer == 'D' %}{{ result.question.lua_chon_d }}
+            {% endif %}
+          {% else %}
+            Không chọn đáp án
+          {% endif %}
+        </span>
+      </p>
+      
+      {% if not result.is_correct %}
+      <p>
+        <strong>Đáp án đúng:</strong> 
+        <span class="correct-answer">
+          {{ result.correct_answer }}) 
+          {% if result.correct_answer == 'A' %}{{ result.question.lua_chon_a }}
+          {% elif result.correct_answer == 'B' %}{{ result.question.lua_chon_b }}
+          {% elif result.correct_answer == 'C' %}{{ result.question.lua_chon_c }}
+          {% elif result.correct_answer == 'D' %}{{ result.question.lua_chon_d }}
+          {% endif %}
+        </span>
+      </p>
+      {% endif %}
+    </div>
+  </div>
+  {% endfor %}
+
+  <div class="result-actions">
+    <a href="{% url 'studentapp:assignment_list' %}" class="back-to-list">
+      Quay lại danh sách bài tập
+    </a>
+  </div>
+</div>
+{% endblock %}

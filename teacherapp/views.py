@@ -162,7 +162,7 @@ def create_course(request):
         form = CourseForm(request.POST)
         if form.is_valid():
             course = form.save(commit=False)
-            course.created_by = request.user  # Gán người tạo là user hiện tại
+            course.created_by = request.user  
             course.save()
             return redirect('course_management')
     return redirect('course_management')
@@ -182,7 +182,7 @@ def edit_course(request, course_id):
         if form.is_valid():
             updated = form.save(commit=False)
             updated.participants = course.participants  
-            updated.created_by = request.user   # ⚠️ sửa đúng biến tên
+            updated.created_by = request.user
             updated.save()
             print(">>> Đã lưu thành công")
             return redirect('course_management')

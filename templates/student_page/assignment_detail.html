@@ -1,0 +1,108 @@
+{% extends 'student_page/student_base.html' %}
+{% load static %}
+
+{% block title %}{{ assignment.tieu_de }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/assignment_detail.css' %}">
+{% endblock %}
+
+{% block banner %}
+<div class="banner">
+  <span>
+    <b>Chi tiết bài tập: {{ assignment.tieu_de }}</b>
+    <span class="course-code">CS466</span>
+  </span>
+  <span class="right">
+    Hạn nộp: {{ assignment.han_nop|date:"d/m/Y H:i" }}
+  </span>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="detail-container">
+  
+  <h2 class="detail-title">{{ assignment.tieu_de }}</h2>
+  
+  <!-- Thông tin bài tập -->
+  <div class="assignment-info">
+    <div class="info-grid">
+      <div class="info-item">
+        <p><strong>Loại bài tập:</strong> 
+          <span class="assignment-type {% if assignment.loai_baitap == 'code' %}code{% else %}quiz{% endif %}">
+            {{ assignment.get_loai_baitap_display }}
+          </span>
+        </p>
+        <p><strong>Người tạo:</strong> {{ assignment.nguoi_tao.get_full_name|default:assignment.nguoi_tao.username }}</p>
+      </div>
+      <div class="info-item">
+        <p><strong>Ngày tạo:</strong> {{ assignment.ngay_tao|date:"d/m/Y H:i" }}</p>
+        <p><strong>Hạn nộp:</strong> 
+          <span class="deadline {% now 'Y-m-d H:i' > assignment.han_nop|date:'Y-m-d H:i' %}expired{% else %}active{% endifnow %}">
+            {{ assignment.han_nop|date:"d/m/Y H:i" }}
+          </span>
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mô tả bài tập -->
+  <div class="description-section">
+    <h3 class="description-title">📋 Mô tả bài tập</h3>
+    <div class="description-content">
+      {{ assignment.mo_ta|linebreaks }}
+    </div>
+  </div>
+
+  <!-- Nút hành động -->
+  <div class="action-section">
+    {% if assignment.loai_baitap == 'code' %}
+      <a href="{% url 'studentapp:assignment_detail' assignment.id %}" class="btn-code">
+        💻 Bắt đầu viết code
+      </a>
+    {% elif assignment.loai_baitap == 'quiz' %}
+      <a href="{% url 'studentapp:assignment_detail' assignment.id %}" class="btn-quiz">
+        📝 Làm bài trắc nghiệm
+      </a>
+    {% endif %}
+    
+    <a href="{% url 'studentapp:assignment_list' %}" class="btn-back">
+      ↩️ Quay lại danh sách
+    </a>
+  </div>
+
+  <!-- Thời gian còn lại -->
+  <div class="countdown-section">
+    <div class="countdown-text">
+      ⏰ <strong>Thời gian còn lại:</strong> 
+      <span id="countdown" class="countdown-timer"></span>
+    </div>
+  </div>
+</div>
+
+<script>
+// Countdown timer
+function updateCountdown() {
+  const deadline = new Date("{{ assignment.han_nop|date:'Y-m-d H:i' }}").getTime();
+  const now = new Date().getTime();
+  const timeLeft = deadline - now;
+  
+  if (timeLeft > 0) {
+    const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+    const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+    const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+    
+    document.getElementById("countdown").innerHTML = 
+      `${days} ngày ${hours} giờ ${minutes} phút ${seconds} giây`;
+  } else {
+    document.getElementById("countdown").innerHTML = "Đã hết hạn";
+    document.getElementById("countdown").classList.add("countdown-expired");
+  }
+}
+
+// Update countdown every second
+setInterval(updateCountdown, 1000);
+updateCountdown(); // Initial call
+</script>
+{% endblock %}

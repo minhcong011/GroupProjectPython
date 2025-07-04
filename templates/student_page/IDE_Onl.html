@@ -6,6 +6,7 @@
   <meta charset="UTF-8">
   <title>IDE Online</title>
   <link rel="stylesheet" href="{% static 'css/IDE_Onl.css' %}">
+  <link rel="stylesheet" href="{% static 'css/ide_online_extension.css' %}">
 </head>
 <body>
   <!-- Header -->
@@ -26,18 +27,132 @@
   <!-- Banner -->
   <div class="banner">
     <span>
-      <b>Hệ thống học tập môn PERL & PYTHON</b>
+      <b>{% if assignment_mode %}Bài tập: {{ assignment.tieu_de }}{% else %}IDE Online - Hệ thống học tập môn PERL & PYTHON{% endif %}</b>
       <span class="course-code">CS466</span>
     </span>
     <span class="right">
-      {{ now|date:"l, d/m/Y" }}
+      {% if assignment_mode %}Hạn nộp: {{ assignment.han_nop|date:"d/m/Y H:i" }}{% else %}{{ now|date:"l, d/m/Y" }}{% endif %}
     </span>
   </div>
   <!-- Main Content -->
   <div class="assignment-list-container">
-    <h2>IDE Online</h2>
-    <p>Chức năng IDE Online sẽ được phát triển tại đây.</p>
-    <!-- Bạn có thể thêm giao diện code editor, nút chạy code, ... -->
+    {% if assignment_mode %}
+    <!-- Chế độ làm bài tập -->
+    <div class="assignment-header">
+      <h2 class="assignment-header-title">{{ assignment.tieu_de }}</h2>
+      <div class="assignment-meta">
+        <p><strong>Mô tả:</strong> {{ assignment.mo_ta }}</p>
+        <p><strong>Loại:</strong> {{ assignment.get_loai_baitap_display }}</p>
+        <p><strong>Hạn nộp:</strong> {{ assignment.han_nop|date:"d/m/Y H:i" }}</p>
+      </div>
+    </div>
+    {% endif %}
+    
+    <div class="ide-container">
+      <h3 class="ide-title">{% if assignment_mode %}Viết code cho bài tập{% else %}IDE Online{% endif %}</h3>
+      
+      <!-- Language selector -->
+      <div class="language-selector">
+        <label for="language">Ngôn ngữ:</label>
+        <select id="language">
+          <option value="python">Python</option>
+          <option value="perl">Perl</option>
+        </select>
+      </div>
+      
+      <!-- Code editor -->
+      <textarea id="codeEditor" class="code-editor"
+                placeholder="// Viết code của bạn tại đây...">{% if assignment_mode %}// Bài tập: {{ assignment.tieu_de }}
+// Mô tả: {{ assignment.mo_ta }}
+
+{% endif %}</textarea>
+      
+      <!-- Action buttons -->
+      <div class="action-buttons">
+        <button onclick="runCode()" class="btn btn-run">
+          🚀 Chạy code
+        </button>
+        
+        {% if assignment_mode %}
+        <button onclick="submitAssignment()" class="btn btn-submit">
+          📤 Nộp bài
+        </button>
+        <a href="{% url 'studentapp:assignment_list' %}" class="btn btn-back">
+          ↩️ Quay lại
+        </a>
+        {% endif %}
+        
+        <button onclick="clearCode()" class="btn btn-clear">
+          🗑️ Xóa code
+        </button>
+      </div>
+      
+      <!-- Output area -->
+      <div class="output-section">
+        <h4 class="output-title">Kết quả:</h4>
+        <div id="output" class="output-display">
+          Nhấn "Chạy code" để xem kết quả...
+        </div>
+      </div>
+    </div>
   </div>
+
+  {% if assignment_mode %}
+  <!-- Form ẩn để nộp bài -->
+  <form id="submitForm" method="POST" action="{% url 'studentapp:submit_code' assignment.id %}" style="display:none;">
+    {% csrf_token %}
+    <input type="hidden" name="code" id="hiddenCode">
+    <input type="hidden" name="language" id="hiddenLanguage">
+  </form>
+  {% endif %}
+
+  <script>
+    function runCode() {
+      const code = document.getElementById('codeEditor').value;
+      const language = document.getElementById('language').value;
+      const output = document.getElementById('output');
+      
+      // Simulation of code execution
+      output.textContent = `Đang chạy code ${language}...\n\n`;
+      
+      setTimeout(() => {
+        if (code.trim() === '') {
+          output.textContent = 'Lỗi: Không có code để chạy!';
+          return;
+        }
+        
+        // Simple simulation
+        output.textContent += `Code đã được thực thi thành công!\n`;
+        output.textContent += `Ngôn ngữ: ${language}\n`;
+        output.textContent += `Số dòng code: ${code.split('\n').length}\n\n`;
+        output.textContent += `[Đây là simulation - trong thực tế sẽ kết nối với compiler/interpreter thật]`;
+      }, 1000);
+    }
+    
+    function clearCode() {
+      if (confirm('Bạn có chắc muốn xóa toàn bộ code?')) {
+        document.getElementById('codeEditor').value = '{% if assignment_mode %}// Bài tập: {{ assignment.tieu_de }}\n// Mô tả: {{ assignment.mo_ta }}\n\n{% endif %}';
+        document.getElementById('output').textContent = 'Code đã được xóa.';
+      }
+    }
+    
+    {% if assignment_mode %}
+    function submitAssignment() {
+      const code = document.getElementById('codeEditor').value;
+      const language = document.getElementById('language').value;
+      
+      if (code.trim() === '') {
+        alert('Vui lòng viết code trước khi nộp bài!');
+        return;
+      }
+      
+      if (confirm('Bạn có chắc muốn nộp bài? Sau khi nộp sẽ không thể chỉnh sửa.')) {
+        document.getElementById('hiddenCode').value = code;
+        document.getElementById('hiddenLanguage').value = language;
+        document.getElementById('submitForm').submit();
+      }
+    }
+    {% endif %}
+  </script>
 </body>
 </html>

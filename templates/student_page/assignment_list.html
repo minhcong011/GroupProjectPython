@@ -25,6 +25,7 @@
         <th style="padding:10px 8px;border:1px solid #e0e0e0;">Loại</th>
         <th style="padding:10px 8px;border:1px solid #e0e0e0;">Deadline</th>
         <th style="padding:10px 8px;border:1px solid #e0e0e0;">Ngày tạo</th>
+        <th style="padding:10px 8px;border:1px solid #e0e0e0;">Hành động</th>
       </tr>
     </thead>
     <tbody>
@@ -34,9 +35,15 @@
         <td style="padding:8px 8px;border:1px solid #e0e0e0;">{{ assignment.get_loai_baitap_display }}</td>
         <td style="padding:8px 8px;border:1px solid #e0e0e0;">{{ assignment.han_nop|date:'d/m/Y H:i' }}</td>
         <td style="padding:8px 8px;border:1px solid #e0e0e0;">{{ assignment.ngay_tao|date:'d/m/Y H:i' }}</td>
+        <td style="padding:8px 8px;border:1px solid #e0e0e0;">
+          <a href="{% url 'studentapp:assignment_detail' assignment.id %}" 
+             style="background:#4caf50;color:#fff;padding:4px 12px;text-decoration:none;border-radius:4px;font-size:14px;">
+            Làm bài
+          </a>
+        </td>
       </tr>
       {% empty %}
-      <tr><td colspan="4" style="text-align:center;padding:12px;">Chưa có bài tập nào.</td></tr>
+      <tr><td colspan="5" style="text-align:center;padding:12px;">Chưa có bài tập nào.</td></tr>
       {% endfor %}
     </tbody>
   </table>
