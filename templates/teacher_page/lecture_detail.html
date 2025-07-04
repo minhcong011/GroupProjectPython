@@ -1,0 +1,32 @@
+{% extends 'teacher_page/gv_base.html' %}
+{% load static %}
+
+{% block title %}Chi tiết Đề cương{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/lecture_detail.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="lecture-detail-container">
+    <h2>{{ lecture.title }}</h2>
+    <p><strong>Môn học:</strong> {{ lecture.subject }}</p>
+    <p><strong>Mô tả:</strong> {{ lecture.description }}</p>
+    <div class="lecture-files">
+        {% if lecture.video_url %}
+            <a href="{{ lecture.video_url }}" class="btn-link" target="_blank">🎥 Video</a>
+        {% endif %}
+        {% if lecture.pdf_file %}
+            <a href="{{ lecture.pdf_file.url }}" class="btn-link" target="_blank">📄 PDF</a>
+        {% endif %}
+        {% if lecture.slide_file %}
+            <a href="{{ lecture.slide_file.url }}" class="btn-link" target="_blank">📊 Slides</a>
+        {% endif %}
+    </div>
+    <div class="lecture-actions">
+        <a href="{% url 'edit_lecture' lecture.pk %}" class="btn btn-warning">Chỉnh sửa</a>
+        <a href="{% url 'delete_lecture' lecture.pk %}" class="btn btn-danger">Xóa</a>
+        <a href="{% url 'lecture_list' %}" class="btn btn-secondary">Quay lại danh sách</a>
+    </div>
+</div>
+{% endblock %}

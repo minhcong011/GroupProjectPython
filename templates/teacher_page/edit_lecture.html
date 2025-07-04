@@ -1,0 +1,20 @@
+{% extends 'teacher_page/gv_base.html' %}
+{% load static %}
+
+{% block title %}Chỉnh sửa Đề cương{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/edit_lecture.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="edit-lecture-container">
+    <h2>Chỉnh sửa Đề cương</h2>
+    <form method="POST" enctype="multipart/form-data">
+        {% csrf_token %}
+        {{ form.as_p }}
+        <button type="submit" class="btn btn-success">Lưu thay đổi</button>
+        <a href="{% url 'lecture_detail' lecture.pk %}" class="btn btn-secondary">Hủy</a>
+    </form>
+</div>
+{% endblock %}

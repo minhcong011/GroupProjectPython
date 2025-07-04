@@ -6,6 +6,9 @@ from cv import views as cv_views
 urlpatterns = [
     path('lectures/create/', views.create_lecture, name='create_lecture'),
     path('lectures/', views.lecture_list, name='lecture_list'),
+    path('lectures/<int:pk>/', views.lecture_detail, name='lecture_detail'),
+    path('lectures/<int:pk>/edit/', views.edit_lecture, name='edit_lecture'),
+    path('lectures/<int:pk>/delete/', views.delete_lecture, name='delete_lecture'),
 
     path('course_management/', views.course_management, name='course_management'),
 
@@ -13,6 +16,9 @@ urlpatterns = [
     path('assignments/', views.assignment_list, name='assignment_list'),
     path('assignments/create/', views.create_assignment, name='create_assignment'),
     path('assignments/<int:assignment_id>/add_questions/', views.add_questions, name='add_questions'),
+    path('questions/<int:question_id>/edit/', views.edit_question, name='edit_question'),
+    path('questions/<int:question_id>/delete/', views.delete_question, name='delete_question'),
+    path('assignments/<int:assignment_id>/edit/', views.edit_assignment, name='edit_assignment'),
     path('assignments/<int:assignment_id>/delete/', views.delete_assignment, name='delete_assignment'),
 
 
