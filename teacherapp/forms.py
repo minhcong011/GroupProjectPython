@@ -54,8 +54,6 @@ class CourseForm(forms.ModelForm):
                 'rows': 4,'style': 'resize: vertical;'}),
             'participants': forms.NumberInput(attrs={'class': 'input'}),
         }
-from django import forms
-from .models import Course
 
 class CourseEditForm(forms.ModelForm):
     class Meta:

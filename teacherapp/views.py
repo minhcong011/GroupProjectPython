@@ -181,7 +181,6 @@ def edit_course(request, course_id):
         form = CourseEditForm(request.POST, instance=course)  
         if form.is_valid():
             updated = form.save(commit=False)
-            updated.participants = course.participants  
             updated.created_by = request.user
             updated.save()
             print(">>> Đã lưu thành công")
@@ -193,6 +192,5 @@ def edit_course(request, course_id):
 
     return render(request, 'teacher_page/edit_course.html', {'form': form, 'course': course})
 
-def khoa_hoc(request):
-    courses = Course.objects.all().order_by('-id')
-    return render(request, 'studentapp/khoa_hoc.html', {'courses': courses})
+
+

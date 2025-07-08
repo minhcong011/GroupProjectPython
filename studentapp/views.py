@@ -3,6 +3,9 @@ from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from teacherapp.models import Course, BaiTap, CauHoi
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.views.decorators.http import require_POST
 
 def assignment_list(request):
     assignments = BaiTap.objects.all().order_by('-ngay_tao')
@@ -126,3 +129,23 @@ def submit_code_assignment(request, assignment_id):
         return render(request, "student_page/code_submission_result.html", context)
     
     return redirect('studentapp:assignment_detail', assignment_id=assignment_id)
+
+
+def course(request):
+    courses = Course.objects.all().order_by('-id')
+    return render(request, "student_page/course.html", {"courses": courses})
+
+
+@csrf_exempt
+@require_POST
+def increment_participants(request):
+    course_id = request.GET.get('id')
+    if not course_id:
+        return JsonResponse({'success': False, 'error': 'Missing course id'})
+    try:
+        course = Course.objects.get(id=course_id)
+        course.participants += 1
+        course.save()
+        return JsonResponse({'success': True, 'participants': course.participants})
+    except Course.DoesNotExist:
+        return JsonResponse({'success': False, 'error': 'Course not found'})

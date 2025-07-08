@@ -1,0 +1,217 @@
+{% extends 'student_page/student_base.html' %}
+{% load static %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/course_management.css' %}">
+{% endblock %}
+
+{% block content %}
+
+<div class="main-content">
+    <div class="page-header">
+        <h2>Danh sách các khóa học</h2>
+        <div class="header-actions">
+            <input type="text" placeholder="Nhập từ khoá tìm kiếm">
+        </div>
+    </div>
+    <table class="class-table">
+        <thead>
+            <tr>
+                <th>Tên khóa học</th>
+                <th>Trạng thái</th>
+                <th>Giáo viên</th>
+                <th>Học phí</th>
+                <th>Ngày bắt đầu</th>
+                <th>Ngày kết thúc</th>
+                <th>Lịch học</th>
+                <th>Số buổi</th>
+                <th>Giáo trình</th>
+                <th>Ghi chú</th>
+                <th>Số người tham gia</th>
+                <th>Tính năng</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for course in courses %}
+            <tr>
+                <td>{{ course.name }}</td>
+                <td>{{ course.status }}</td>
+                <td>{{ course.teacher }}</td>
+                <td>{{ course.fee }}</td>
+                <td>{{ course.start_date|date:"d-m-Y" }}</td>
+                <td>{{ course.end_date|date:"d-m-Y" }}</td>
+                <td>{{ course.schedule }}</td>
+                <td>{{ course.sessions }}</td>
+                <td>{{ course.curriculum }}</td>
+                <td>{{ course.note }}</td>
+                <td>{{ course.participants }}</td>
+                <td>
+                    <button class="enter-course-btn custom-btn" onclick="checkCheckbox(this, {{ course.id }})">Vào khóa học</button>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+
+
+<script>
+
+// Sử dụng localStorage để lưu trạng thái đã vào khóa học cho từng khóa học
+function checkCheckbox(btn, courseId) {
+    // Lấy tên hoặc id khóa học từ dòng hiện tại
+    const row = btn.closest('tr');
+    const courseName = row.querySelector('td').innerText.trim();
+    const storageKey = 'entered_course_' + courseName;
+    let entered = localStorage.getItem(storageKey);
+
+    // Lấy ô số người tham gia (ô thứ 11 trong bảng, index 10)
+    const participantsCell = row.querySelectorAll('td')[10];
+    let currentParticipants = parseInt(participantsCell.innerText) || 0;
+
+    if (!entered) {
+        btn.innerText = "Vào lại";
+        btn.classList.add("btn-reenter");
+        localStorage.setItem(storageKey, 'true');
+        // Gửi request lên server để tăng số người tham gia bằng id
+       fetch(`/student/api/courses/increment_participants/?id=${courseId}`, {
+    method: 'POST',
+    headers: {
+        'X-CSRFToken': getCookie('csrftoken'),
+    },
+})
+
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                participantsCell.innerText = data.participants;
+            } else {
+                participantsCell.innerText = currentParticipants + 1; // fallback
+            }
+        })
+        .catch(() => {
+            participantsCell.innerText = currentParticipants + 1;
+        });
+    } else {
+        btn.innerText = "Vào lại";
+        btn.classList.add("btn-reenter");
+    }
+}
+
+// Hàm lấy CSRF token cho fetch
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+// Khi load trang, cập nhật trạng thái nút dựa trên localStorage
+window.addEventListener('DOMContentLoaded', function() {
+    document.querySelectorAll('.enter-course-btn').forEach(function(btn) {
+        const row = btn.closest('tr');
+        const courseName = row.querySelector('td').innerText.trim();
+        const storageKey = 'entered_course_' + courseName;
+        if (localStorage.getItem(storageKey)) {
+            btn.innerText = "Vào lại";
+            btn.classList.add("btn-reenter");
+        } else {
+            btn.innerText = "Vào khóa học";
+            btn.classList.remove("btn-reenter");
+        }
+    });
+});
+</script>
+
+<style>
+.modal {
+    position: fixed; z-index: 999; left: 0; top: 0; width: 100vw; height: 100vh;
+    background: rgba(0,0,0,0.3); display: flex; align-items: center; justify-content: center;
+}
+.modal-content {
+    background: #fff; padding: 24px 32px; border-radius: 8px; min-width: 300px; max-height: 80vh; overflow-y: auto; position: relative;
+}
+.scrollable {
+    max-height: 80vh;
+    overflow-y: auto;
+}
+.close-modal {
+    position: absolute; right: 12px; top: 8px; font-size: 1.5em; cursor: pointer; color: #888;
+}
+#classForm input, #classForm textarea, #classForm select,
+#editForm input, #editForm textarea, #editForm select {
+    width: 90%; margin: 8px 0; padding: 8px; border: 1px solid #ccc; border-radius: 4px;
+}
+#saveBtn {
+    background: #6ec1e4; color: #fff; border: none; border-radius: 4px;
+    padding: 8px 18px; font-size: 1em; cursor: pointer; margin-top: 8px;
+}
+#saveBtn:hover {
+    background: #4fa3c7;
+}
+.form-group {
+    display: flex;
+    align-items: center;
+    margin-bottom: 12px;
+}
+.form-group label {
+    width: 130px;
+    font-weight: 500;
+    font-size: 1em;
+    margin-right: 10px;
+}
+.form-group input,
+.form-group textarea,
+.form-group select {
+    flex: 1;
+    padding: 8px 10px;
+    font-size: 1em;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-family: 'Segoe UI', Arial, sans-serif;
+}
+.form-group textarea {
+    height: 35px;
+    resize: none;
+}
+.custom-btn {
+    background: linear-gradient(90deg, #4fa3c7 0%, #6ec1e4 100%);
+    color: #fff;
+    border: none;
+    border-radius: 6px;
+    padding: 10px 22px;
+    font-size: 1em;
+    font-weight: 600;
+    box-shadow: 0 2px 8px rgba(110,193,228,0.15);
+    transition: background 0.3s, transform 0.2s;
+    cursor: pointer;
+    margin: 0 auto;
+    display: block;
+}
+.custom-btn:hover {
+    background: linear-gradient(90deg, #357ca5 0%, #4fa3c7 100%);
+    transform: translateY(-2px) scale(1.04);
+}
+.custom-btn.btn-disabled {
+    background: #bdbdbd;
+    color: #fff;
+    cursor: not-allowed;
+    box-shadow: none;
+    transform: none;
+}
+.custom-btn.btn-reenter {
+    background: linear-gradient(90deg, #ffb347 0%, #ffcc80 100%);
+    color: #333;
+}
+</style>
+{% endblock %}
+
