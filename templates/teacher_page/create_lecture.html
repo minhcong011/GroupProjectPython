@@ -4,17 +4,28 @@
 {% block title %}Tạo bài giảng{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="/static/css/create_lecture.css">
+<link rel="stylesheet" href="{% static 'css/create_lecture.css' %}">
 {% endblock %}
 
 {% block content %}
-<div class="container">
-    <h2>Tạo bài giảng</h2>
-    <form method="POST" enctype="multipart/form-data">
-        {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Lưu bài giảng</button>
-    </form>
-    <a href="{% url 'lecture_list' %}">Trở lại Menu bài giảng</a>
-</div>
+<h2 class="page-title">+ Thêm đề cương mới</h2>
+
+<form method="post" enctype="multipart/form-data">
+    {% csrf_token %}
+    <!-- Combobox chọn khóa học -->
+    <div class="form-group">
+        <label for="id_course">Khóa học:</label>
+        <select name="course" id="id_course" required>
+            <option value="">-- Chọn khóa học --</option>
+            {% for course in courses %}
+                <option value="{{ course.id }}" {% if form.course.value == course.id|stringformat:"s" %}selected{% endif %}>
+                    {{ course.name }}
+                </option>
+            {% endfor %}
+        </select>
+    </div>
+    <!-- ...existing form fields... -->
+    {{ form.as_p }}
+    <button type="submit" class="btn btn-primary">Tạo bài giảng</button>
+</form>
 {% endblock %}
