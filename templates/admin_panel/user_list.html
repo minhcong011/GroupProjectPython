@@ -1,0 +1,217 @@
+{% extends 'admin_panel/dashboard.html' %}
+
+{% block title %}Quản lý Người dùng{% endblock %}
+
+{% block content %}
+<div class="content-wrapper">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4>Quản lý Người dùng</h4>
+        <a href="{% url 'admin_panel:user_add' %}" class="btn btn-primary">
+            <i class="fas fa-plus me-2"></i>Thêm người dùng
+        </a>
+    </div>
+
+    <!-- Filter Section -->
+    <div class="stats-card mb-4">
+        <div class="row">
+            <div class="col-md-4">
+                <div class="input-group">
+                    <span class="input-group-text"><i class="fas fa-search"></i></span>
+                    <input type="text" class="form-control" placeholder="Tìm kiếm người dùng..." id="searchInput">
+                </div>
+            </div>
+            <div class="col-md-3">
+                <select class="form-select" id="roleFilter">
+                    <option value="">Tất cả vai trò</option>
+                    <option value="staff">Quản trị viên</option>
+                    <option value="teacher">Giảng viên</option>
+                    <option value="student">Học viên</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <select class="form-select" id="statusFilter">
+                    <option value="">Tất cả trạng thái</option>
+                    <option value="active">Hoạt động</option>
+                    <option value="inactive">Không hoạt động</option>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <div class="stats-card">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th>Thông tin người dùng</th>
+                        <th>Email</th>
+                        <th>Vai trò</th>
+                        <th>Trạng thái</th>
+                        <th>Ngày tham gia</th>
+                        <th>Hoạt động cuối</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for user in users %}
+                    <tr>
+                        <td>
+                            <div class="d-flex align-items-center">
+                                <div class="user-avatar me-3">
+                                    {% if user.account and user.account.avatar %}
+                                        <img src="{{ user.account.avatar.url }}" alt="{{ user.username }}" class="rounded-circle" width="40" height="40">
+                                    {% else %}
+                                        <div class="bg-primary rounded-circle d-flex align-items-center justify-content-center text-white" style="width: 40px; height: 40px;">
+                                            {{ user.first_name|first|default:user.username|first|upper }}
+                                        </div>
+                                    {% endif %}
+                                </div>
+                                <div>
+                                    <strong>{{ user.get_full_name|default:user.username }}</strong>
+                                    <br><small class="text-muted">@{{ user.username }}</small>
+                                </div>
+                            </div>
+                        </td>
+                        <td>
+                            {% if user.email %}
+                                {{ user.email }}
+                                {% if user.account and user.account.is_email_verified %}
+                                    <i class="fas fa-check-circle text-success ms-1" title="Email đã xác thực"></i>
+                                {% endif %}
+                            {% else %}
+                                <span class="text-muted">Chưa có email</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if user.is_superuser %}
+                                <span class="badge bg-danger">Super Admin</span>
+                            {% elif user.is_staff %}
+                                <span class="badge bg-warning">Quản trị viên</span>
+                            {% elif user.account and user.account.is_teacher %}
+                                <span class="badge bg-info">Giảng viên</span>
+                            {% else %}
+                                <span class="badge bg-primary">Học viên</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if user.is_active %}
+                                <span class="badge bg-success">Hoạt động</span>
+                            {% else %}
+                                <span class="badge bg-secondary">Không hoạt động</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ user.date_joined|date:"d/m/Y" }}</td>
+                        <td>
+                            {% if user.last_login %}
+                                {{ user.last_login|timesince }} trước
+                            {% else %}
+                                <span class="text-muted">Chưa đăng nhập</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <a href="{% url 'admin_panel:user_edit' user.pk %}" class="btn btn-outline-primary" title="Chỉnh sửa">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <button class="btn btn-outline-info" title="Xem chi tiết">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                {% if not user.is_superuser %}
+                                <button class="btn btn-outline-secondary" title="Reset mật khẩu">
+                                    <i class="fas fa-key"></i>
+                                </button>
+                                {% endif %}
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" class="text-center text-muted py-4">
+                            <i class="fas fa-users fa-2x mb-2"></i>
+                            <br>Không tìm thấy người dùng nào
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        {% if is_paginated %}
+        <nav aria-label="Phân trang người dùng">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1">&laquo; Đầu</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Trước</a>
+                    </li>
+                {% endif %}
+
+                <li class="page-item active">
+                    <span class="page-link">
+                        Trang {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}
+                    </span>
+                </li>
+
+                {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}">Sau</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Cuối &raquo;</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+.content-wrapper {
+    padding: 0 2rem 2rem;
+    margin-left: 280px;
+}
+
+.user-avatar img {
+    object-fit: cover;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Simple search functionality
+    const searchInput = document.getElementById('searchInput');
+    const roleFilter = document.getElementById('roleFilter');
+    const statusFilter = document.getElementById('statusFilter');
+    
+    function filterTable() {
+        const searchTerm = searchInput.value.toLowerCase();
+        const roleValue = roleFilter.value;
+        const statusValue = statusFilter.value;
+        const rows = document.querySelectorAll('tbody tr');
+        
+        rows.forEach(row => {
+            const text = row.textContent.toLowerCase();
+            const badges = row.querySelectorAll('.badge');
+            
+            let showRow = text.includes(searchTerm);
+            
+            if (roleValue && showRow) {
+                showRow = Array.from(badges).some(badge => 
+                    badge.textContent.toLowerCase().includes(roleValue.toLowerCase())
+                );
+            }
+            
+            row.style.display = showRow ? '' : 'none';
+        });
+    }
+    
+    searchInput.addEventListener('input', filterTable);
+    roleFilter.addEventListener('change', filterTable);
+    statusFilter.addEventListener('change', filterTable);
+});
+</script>
+{% endblock %}

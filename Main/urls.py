@@ -21,6 +21,7 @@ from django.conf import settings
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path('admin-dashboard/', include('admin_panel.urls')),
     path('', include('authentication.urls')),
     path('', include('cv.urls')), 
     path('', include('teacherapp.urls')),

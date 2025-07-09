@@ -1,0 +1,295 @@
+{% extends 'admin_panel/dashboard.html' %}
+
+{% block title %}Thống kê và Báo cáo{% endblock %}
+
+{% block content %}
+<div class="content-wrapper">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4>Thống kê và Báo cáo</h4>
+        <div class="btn-group">
+            <button class="btn btn-outline-primary" type="button" data-bs-toggle="dropdown">
+                <i class="fas fa-download me-2"></i>Xuất báo cáo
+            </button>
+            <ul class="dropdown-menu">
+                <li><a class="dropdown-item" href="#"><i class="fas fa-file-pdf me-2"></i>Xuất PDF</a></li>
+                <li><a class="dropdown-item" href="#"><i class="fas fa-file-excel me-2"></i>Xuất Excel</a></li>
+                <li><a class="dropdown-item" href="#"><i class="fas fa-file-csv me-2"></i>Xuất CSV</a></li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- Summary Stats -->
+    <div class="row g-4 mb-4">
+        <div class="col-lg-3 col-md-6">
+            <div class="stats-card text-center">
+                <div class="stats-icon icon-blue mx-auto mb-3">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <h3 class="text-primary">{{ courses_this_month }}</h3>
+                <p class="mb-0">Khóa học tháng này</p>
+                <small class="text-muted">
+                    {% if courses_last_month > 0 %}
+                        {% widthratio courses_this_month courses_last_month 100 %}% so với tháng trước
+                    {% else %}
+                        Tháng đầu tiên
+                    {% endif %}
+                </small>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="stats-card text-center">
+                <div class="stats-icon icon-green mx-auto mb-3">
+                    <i class="fas fa-users"></i>
+                </div>
+                <h3 class="text-success">{{ users_this_month }}</h3>
+                <p class="mb-0">Người dùng mới</p>
+                <small class="text-muted">Tháng {{ "now"|date:"m/Y" }}</small>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="stats-card text-center">
+                <div class="stats-icon icon-orange mx-auto mb-3">
+                    <i class="fas fa-tasks"></i>
+                </div>
+                <h3 class="text-warning">{{ assignments_this_month }}</h3>
+                <p class="mb-0">Bài tập mới</p>
+                <small class="text-muted">Tháng {{ "now"|date:"m/Y" }}</small>
+            </div>
+        </div>
+        <div class="col-lg-3 col-md-6">
+            <div class="stats-card text-center">
+                <div class="stats-icon icon-purple mx-auto mb-3">
+                    <i class="fas fa-percentage"></i>
+                </div>
+                <h3 class="text-info">85%</h3>
+                <p class="mb-0">Tỷ lệ hoàn thành</p>
+                <small class="text-muted">Trung bình</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Charts Section -->
+    <div class="row">
+        <div class="col-lg-8">
+            <div class="chart-container">
+                <h5 class="mb-3">Biểu đồ hoạt động theo thời gian</h5>
+                <div class="mb-3">
+                    <div class="btn-group btn-group-sm" role="group">
+                        <input type="radio" class="btn-check" name="chartPeriod" id="week" checked>
+                        <label class="btn btn-outline-primary" for="week">7 ngày</label>
+                        
+                        <input type="radio" class="btn-check" name="chartPeriod" id="month">
+                        <label class="btn btn-outline-primary" for="month">30 ngày</label>
+                        
+                        <input type="radio" class="btn-check" name="chartPeriod" id="year">
+                        <label class="btn btn-outline-primary" for="year">12 tháng</label>
+                    </div>
+                </div>
+                <canvas id="timelineChart" height="100"></canvas>
+            </div>
+        </div>
+        
+        <div class="col-lg-4">
+            <div class="chart-container">
+                <h5 class="mb-3">Phân bố người dùng</h5>
+                <canvas id="userDistributionChart"></canvas>
+                <div class="mt-3">
+                    <div class="d-flex justify-content-between mb-2">
+                        <span><i class="fas fa-circle text-primary"></i> Học viên</span>
+                        <strong>75%</strong>
+                    </div>
+                    <div class="d-flex justify-content-between mb-2">
+                        <span><i class="fas fa-circle text-success"></i> Giảng viên</span>
+                        <strong>20%</strong>
+                    </div>
+                    <div class="d-flex justify-content-between">
+                        <span><i class="fas fa-circle text-warning"></i> Quản trị</span>
+                        <strong>5%</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Performance Metrics -->
+    <div class="row mt-4">
+        <div class="col-lg-6">
+            <div class="chart-container">
+                <h5 class="mb-3">Top khóa học phổ biến</h5>
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Khóa học</th>
+                                <th>Học viên</th>
+                                <th>Tỷ lệ hoàn thành</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Python Cơ bản</td>
+                                <td>124</td>
+                                <td>
+                                    <div class="progress" style="height: 6px;">
+                                        <div class="progress-bar bg-success" style="width: 85%"></div>
+                                    </div>
+                                    <small>85%</small>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Perl Advanced</td>
+                                <td>78</td>
+                                <td>
+                                    <div class="progress" style="height: 6px;">
+                                        <div class="progress-bar bg-info" style="width: 72%"></div>
+                                    </div>
+                                    <small>72%</small>
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>Web Development</td>
+                                <td>156</td>
+                                <td>
+                                    <div class="progress" style="height: 6px;">
+                                        <div class="progress-bar bg-warning" style="width: 91%"></div>
+                                    </div>
+                                    <small>91%</small>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-6">
+            <div class="chart-container">
+                <h5 class="mb-3">Hoạt động hệ thống</h5>
+                <div class="activity-metrics">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <h6 class="mb-1">Bài nộp hôm nay</h6>
+                            <small class="text-muted">Số lượng bài tập được nộp</small>
+                        </div>
+                        <div class="text-end">
+                            <h4 class="text-primary mb-0">42</h4>
+                            <small class="text-success">+12% ↗</small>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <h6 class="mb-1">Đăng nhập active</h6>
+                            <small class="text-muted">Người dùng online trong 24h</small>
+                        </div>
+                        <div class="text-end">
+                            <h4 class="text-success mb-0">128</h4>
+                            <small class="text-success">+8% ↗</small>
+                        </div>
+                    </div>
+                    
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <div>
+                            <h6 class="mb-1">Tỷ lệ hoàn thành</h6>
+                            <small class="text-muted">Bài tập đã hoàn thành</small>
+                        </div>
+                        <div class="text-end">
+                            <h4 class="text-warning mb-0">87%</h4>
+                            <small class="text-danger">-3% ↘</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.content-wrapper {
+    padding: 0 2rem 2rem;
+    margin-left: 280px;
+}
+
+.activity-metrics {
+    padding: 1rem 0;
+}
+
+.activity-metrics > div {
+    padding: 1rem;
+    border-radius: 8px;
+    background: #f8fafc;
+    transition: all 0.3s ease;
+}
+
+.activity-metrics > div:hover {
+    background: #e2e8f0;
+}
+</style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // Timeline Chart
+    const timelineCtx = document.getElementById('timelineChart').getContext('2d');
+    const timelineChart = new Chart(timelineCtx, {
+        type: 'line',
+        data: {
+            labels: ['T2', 'T3', 'T4', 'T5', 'T6', 'T7', 'CN'],
+            datasets: [{
+                label: 'Bài nộp',
+                data: [12, 19, 3, 5, 2, 3, 7],
+                borderColor: '#667eea',
+                backgroundColor: 'rgba(102, 126, 234, 0.1)',
+                tension: 0.4,
+                fill: true
+            }, {
+                label: 'Đăng ký mới',
+                data: [2, 3, 20, 5, 1, 4, 2],
+                borderColor: '#38ef7d',
+                backgroundColor: 'rgba(56, 239, 125, 0.1)',
+                tension: 0.4,
+                fill: true
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    position: 'top',
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true
+                }
+            }
+        }
+    });
+
+    // User Distribution Chart
+    const distributionCtx = document.getElementById('userDistributionChart').getContext('2d');
+    const distributionChart = new Chart(distributionCtx, {
+        type: 'doughnut',
+        data: {
+            labels: ['Học viên', 'Giảng viên', 'Quản trị'],
+            datasets: [{
+                data: [75, 20, 5],
+                backgroundColor: [
+                    '#667eea',
+                    '#38ef7d',
+                    '#ffd93d'
+                ],
+                borderWidth: 0
+            }]
+        },
+        options: {
+            responsive: true,
+            plugins: {
+                legend: {
+                    display: false
+                }
+            }
+        }
+    });
+});
+</script>
+{% endblock %}

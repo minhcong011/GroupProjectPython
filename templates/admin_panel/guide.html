@@ -1,0 +1,233 @@
+{% extends 'admin_panel/dashboard.html' %}
+
+{% block title %}Hướng dẫn sử dụng Admin Dashboard{% endblock %}
+
+{% block content %}
+<div class="content-wrapper">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4>Hướng dẫn sử dụng Admin Dashboard</h4>
+        <a href="{% url 'admin_panel:dashboard' %}" class="btn btn-secondary">
+            <i class="fas fa-arrow-left me-2"></i>Quay lại Dashboard
+        </a>
+    </div>
+
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Quick Start Guide -->
+            <div class="stats-card">
+                <h5 class="mb-3"><i class="fas fa-rocket me-2"></i>Bắt đầu nhanh</h5>
+                
+                <div class="alert alert-info">
+                    <h6><i class="fas fa-info-circle me-2"></i>Chưa có tài khoản?</h6>
+                    <p class="mb-2">Bạn cần tạo tài khoản để truy cập đầy đủ tính năng:</p>
+                    <div class="d-flex gap-2">
+                        <a href="{% url 'signup' %}" class="btn btn-primary btn-sm">
+                            <i class="fas fa-user-plus me-1"></i>Đăng ký ngay
+                        </a>
+                        <a href="{% url 'signin' %}" class="btn btn-outline-primary btn-sm">
+                            <i class="fas fa-sign-in-alt me-1"></i>Đã có tài khoản? Đăng nhập
+                        </a>
+                    </div>
+                </div>
+
+                <h6>1. Truy cập hệ thống</h6>
+                <ul class="mb-3">
+                    <li><strong>Trang chủ:</strong> <code>http://localhost:8888/</code></li>
+                    <li><strong>Đăng ký:</strong> <code>http://localhost:8888/signup/</code></li>
+                    <li><strong>Đăng nhập:</strong> <code>http://localhost:8888/signin/</code></li>
+                    <li><strong>Admin Dashboard:</strong> <code>http://localhost:8888/admin-dashboard/</code></li>
+                    <li><strong>Django Admin:</strong> <code>http://localhost:8888/admin/</code></li>
+                </ul>
+
+                <h6>2. Các loại tài khoản</h6>
+                <div class="table-responsive">
+                    <table class="table table-sm">
+                        <thead>
+                            <tr>
+                                <th>Loại tài khoản</th>
+                                <th>Quyền truy cập</th>
+                                <th>Chức năng</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="badge bg-danger">Superuser</span></td>
+                                <td>Toàn quyền</td>
+                                <td>Quản lý tất cả, Django Admin, Admin Dashboard</td>
+                            </tr>
+                            <tr>
+                                <td><span class="badge bg-warning">Staff/Admin</span></td>
+                                <td>Quản trị viên</td>
+                                <td>Admin Dashboard, quản lý người dùng, khóa học</td>
+                            </tr>
+                            <tr>
+                                <td><span class="badge bg-info">Teacher</span></td>
+                                <td>Giảng viên</td>
+                                <td>Tạo bài tập, bài giảng, xem báo cáo</td>
+                            </tr>
+                            <tr>
+                                <td><span class="badge bg-primary">Student</span></td>
+                                <td>Học viên</td>
+                                <td>Làm bài tập, xem bài giảng, nộp bài</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+
+                <h6>3. Chức năng chính</h6>
+                <div class="row">
+                    <div class="col-md-6">
+                        <ul>
+                            <li><strong>Dashboard:</strong> Thống kê tổng quan</li>
+                            <li><strong>Khóa học:</strong> Quản lý khóa học PERL/Python</li>
+                            <li><strong>Bài tập:</strong> Tạo và quản lý bài tập</li>
+                            <li><strong>Bài giảng:</strong> Upload video, PDF, slide</li>
+                        </ul>
+                    </div>
+                    <div class="col-md-6">
+                        <ul>
+                            <li><strong>Người dùng:</strong> Quản lý tài khoản</li>
+                            <li><strong>Thống kê:</strong> Báo cáo và biểu đồ</li>
+                            <li><strong>Thông báo:</strong> Gửi thông báo hệ thống</li>
+                            <li><strong>Chatbot:</strong> Cấu hình AI trợ giảng</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Features Detail -->
+            <div class="stats-card mt-4">
+                <h5 class="mb-3"><i class="fas fa-cogs me-2"></i>Chi tiết tính năng</h5>
+                
+                <div class="accordion" id="featuresAccordion">
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button" type="button" data-bs-toggle="collapse" data-bs-target="#dashboard">
+                                <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                            </button>
+                        </h2>
+                        <div id="dashboard" class="accordion-collapse collapse show">
+                            <div class="accordion-body">
+                                <ul>
+                                    <li>Thống kê tổng số: học viên, khóa học, bài tập, bài giảng</li>
+                                    <li>Biểu đồ hoạt động theo thời gian</li>
+                                    <li>Danh sách hoạt động gần đây</li>
+                                    <li>Lịch sự kiện và deadline</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#courses">
+                                <i class="fas fa-book me-2"></i>Quản lý Khóa học
+                            </button>
+                        </h2>
+                        <div id="courses" class="accordion-collapse collapse">
+                            <div class="accordion-body">
+                                <ul>
+                                    <li>Tạo khóa học PERL và Python</li>
+                                    <li>Gán giảng viên cho khóa học</li>
+                                    <li>Quản lý lịch học và học phí</li>
+                                    <li>Theo dõi số lượng học viên</li>
+                                    <li>Tìm kiếm và lọc khóa học</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="accordion-item">
+                        <h2 class="accordion-header">
+                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#assignments">
+                                <i class="fas fa-tasks me-2"></i>Quản lý Bài tập
+                            </button>
+                        </h2>
+                        <div id="assignments" class="accordion-collapse collapse">
+                            <div class="accordion-body">
+                                <ul>
+                                    <li>Tạo bài tập lập trình (Python/Perl)</li>
+                                    <li>Tạo bài tập trắc nghiệm</li>
+                                    <li>Đặt deadline và mô tả chi tiết</li>
+                                    <li>Xem thống kê bài nộp</li>
+                                    <li>Chấm điểm và nhận xét</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-lg-4">
+            <!-- Quick Actions -->
+            <div class="stats-card">
+                <h5 class="mb-3"><i class="fas fa-bolt me-2"></i>Thao tác nhanh</h5>
+                
+                <div class="d-grid gap-2">
+                    <a href="{% url 'signup' %}" class="btn btn-custom">
+                        <i class="fas fa-user-plus me-2"></i>Đăng ký tài khoản mới
+                    </a>
+                    <a href="{% url 'signin' %}" class="btn btn-outline-primary">
+                        <i class="fas fa-sign-in-alt me-2"></i>Đăng nhập hệ thống
+                    </a>
+                    <a href="{% url 'admin_panel:course_add' %}" class="btn btn-outline-success">
+                        <i class="fas fa-plus me-2"></i>Tạo khóa học mới
+                    </a>
+                    <a href="{% url 'admin_panel:assignment_add' %}" class="btn btn-outline-info">
+                        <i class="fas fa-tasks me-2"></i>Tạo bài tập mới
+                    </a>
+                </div>
+            </div>
+
+            <!-- Contact Support -->
+            <div class="stats-card mt-4">
+                <h5 class="mb-3"><i class="fas fa-question-circle me-2"></i>Cần hỗ trợ?</h5>
+                <p class="text-muted">Nếu bạn gặp vấn đề gì, hãy liên hệ với chúng tôi:</p>
+                <ul class="list-unstyled">
+                    <li><i class="fas fa-envelope me-2"></i>Email: admin@perlpython.edu</li>
+                    <li><i class="fas fa-phone me-2"></i>Hotline: 1900-xxxx</li>
+                    <li><i class="fas fa-chat me-2"></i>Live Chat: Sử dụng Chatbot AI</li>
+                </ul>
+            </div>
+
+            <!-- System Status -->
+            <div class="stats-card mt-4">
+                <h5 class="mb-3"><i class="fas fa-server me-2"></i>Trạng thái hệ thống</h5>
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Database</span>
+                    <span class="badge bg-success">Online</span>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Server</span>
+                    <span class="badge bg-success">Running</span>
+                </div>
+                <div class="d-flex justify-content-between mb-2">
+                    <span>Chatbot AI</span>
+                    <span class="badge bg-warning">Maintenance</span>
+                </div>
+                <div class="d-flex justify-content-between">
+                    <span>IDE Online</span>
+                    <span class="badge bg-success">Available</span>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+.content-wrapper {
+    padding: 0 2rem 2rem;
+    margin-left: 280px;
+}
+
+.accordion-button {
+    background-color: #f8f9fa;
+}
+
+.accordion-button:not(.collapsed) {
+    background-color: var(--primary-color);
+    color: white;
+}
+</style>
+{% endblock %}

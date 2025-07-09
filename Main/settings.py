@@ -22,7 +22,9 @@ INSTALLED_APPS = [
     'authentication',  # <-- Thêm app của bạn vào đây
     'cv', # Thêm app cv
     'core',
-    'teacherapp'
+    'teacherapp',
+    'studentapp',
+    'admin_panel',  # App admin dashboard mới
 ]
 
 # ==================== MIDDLEWARE ====================
@@ -93,5 +95,12 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'phuockhoamai@gmail.com'        # <-- Thay bằng Gmail của bạn
 EMAIL_HOST_PASSWORD = 'ajxzihidyzkcfrsa'         # <-- App Password của bạn
+
+# ==================== CẤU HÌNH ĐĂNG NHẬP ====================
+LOGIN_URL = '/signin/'
+LOGIN_REDIRECT_URL = '/admin-dashboard/'
+LOGOUT_REDIRECT_URL = '/signin/'
+
+# ==================== MEDIA FILES ====================
 MEDIA_URL = '/uploads/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'uploads')

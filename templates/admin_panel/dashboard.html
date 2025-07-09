@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - EduSync</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2563EB;
+            --secondary-color: #F8FAFC;
+            --sidebar-width: 280px;
+            --accent-blue: #3B82F6;
+            --dark-blue: #1E40AF;
+            --light-blue: #60A5FA;
+        }
+        
+        body {
+            background-color: var(--secondary-color);
+            font-family: 'Inter', sans-serif;
+        }
+        
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            height: 100vh;
+            width: var(--sidebar-width);
+            background: linear-gradient(135deg, #1E3A8A 0%, #2563EB 100%);
+            z-index: 1000;
+            padding: 0;
+            overflow-y: auto;
+        }
+        
+        .sidebar-header {
+            padding: 1.5rem;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .sidebar-header h3 {
+            color: white;
+            margin: 0;
+            font-weight: 600;
+        }
+        
+        .nav-link {
+            color: rgba(255,255,255,0.8) !important;
+            padding: 12px 1.5rem;
+            margin: 4px 12px;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+        
+        .nav-link:hover, .nav-link.active {
+            background: rgba(255,255,255,0.1);
+            color: white !important;
+            transform: translateX(4px);
+        }
+        
+        .main-content {
+            margin-left: var(--sidebar-width);
+            min-height: 100vh;
+        }
+        
+        .top-navbar {
+            background: white;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 1rem 2rem;
+            margin-bottom: 2rem;
+        }
+        
+        .content-wrapper {
+            padding: 0 2rem 2rem;
+        }
+        
+        .stats-card {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            transition: transform 0.3s ease;
+        }
+        
+        .stats-card:hover {
+            transform: translateY(-4px);
+        }
+
+        a .stats-card {
+            cursor: pointer;
+        }
+
+        a .stats-card:hover {
+            box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+        }
+
+        a:hover .stats-card h5,
+        a:hover .stats-card p {
+            color: inherit !important;
+        }
+        
+        .stats-icon {
+            width: 60px;
+            height: 60px;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            color: white;
+        }
+        
+        .icon-blue { background: linear-gradient(135deg, #2563EB 0%, #3B82F6 100%); }
+        .icon-green { background: linear-gradient(135deg, #1E40AF 0%, #2563EB 100%); }
+        .icon-orange { background: linear-gradient(135deg, #60A5FA 0%, #93C5FD 100%); }
+        .icon-purple { background: linear-gradient(135deg, #1E3A8A 0%, #2563EB 100%); }
+        
+        .chart-container {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+            margin-top: 1.5rem;
+        }
+        
+        .recent-activity {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+        
+        .activity-item {
+            padding: 12px 0;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+        
+        .calendar-widget {
+            background: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.08);
+        }
+
+        .welcome-card {
+            background: linear-gradient(135deg, #1E3A8A 0%, #2563EB 100%);
+            color: white;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .btn-custom {
+            background: linear-gradient(135deg, #2563EB 0%, #3B82F6 100%);
+            border: none;
+            color: white;
+            border-radius: 8px;
+            padding: 0.75rem 1.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-custom:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(37, 99, 235, 0.3);
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <nav class="sidebar">
+        <div class="sidebar-header">
+            <h3><i class="fas fa-graduation-cap me-2"></i>PERL & PYTHON Admin</h3>
+        </div>
+        <ul class="nav flex-column">
+            <li class="nav-item">
+                <a class="nav-link active" href="{% url 'admin_panel:dashboard' %}">
+                    <i class="fas fa-tachometer-alt me-2"></i>Dashboard
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'admin_panel:user_list' %}">
+                    <i class="fas fa-users me-2"></i>Quản lý người dùng
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'admin_panel:course_list' %}">
+                    <i class="fas fa-book me-2"></i>Quản lý khóa học
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'admin_panel:assignment_list' %}">
+                    <i class="fas fa-tasks me-2"></i>Quản lý bài tập
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'admin_panel:lecture_list' %}">
+                    <i class="fas fa-video me-2"></i>Quản lý bài giảng
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'admin_panel:statistics' %}">
+                    <i class="fas fa-chart-bar me-2"></i>Thống kê
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'admin_panel:guide' %}">
+                    <i class="fas fa-question-circle me-2"></i>Hướng dẫn
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="/admin/">
+                    <i class="fas fa-cog me-2"></i>Django Admin
+                </a>
+            </li>
+            <li class="nav-item mt-3">
+                <a class="nav-link" href="{% url 'home' %}">
+                    <i class="fas fa-home me-2"></i>Về trang chủ
+                </a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="{% url 'signout' %}">
+                    <i class="fas fa-sign-out-alt me-2"></i>Đăng xuất
+                </a>
+            </li>
+        </ul>
+    </nav>
+
+    <!-- Main Content -->
+    <main class="main-content">
+        <!-- Top Navigation -->
+        <div class="top-navbar d-flex justify-content-between align-items-center">
+            <h4 class="mb-0">Dashboard Quản trị PERL & PYTHON</h4>
+            <div class="d-flex align-items-center gap-3">
+                {% if not user.is_authenticated %}
+                <!-- Quick Links cho user chưa đăng nhập -->
+                <a href="{% url 'signup' %}" class="btn btn-custom btn-sm">
+                    <i class="fas fa-user-plus me-1"></i>Đăng ký mới
+                </a>
+                <a href="{% url 'signin' %}" class="btn btn-outline-primary btn-sm">
+                    <i class="fas fa-sign-in-alt me-1"></i>Đăng nhập
+                </a>
+                {% else %}
+                <!-- Dropdown cho user đã đăng nhập -->
+                <span class="text-muted me-3">
+                    <i class="fas fa-user-circle me-1"></i>Chào {{ user.get_full_name|default:user.username }}
+                </span>
+                {% endif %}
+                
+                <div class="dropdown">
+                    <button class="btn btn-outline-primary dropdown-toggle" type="button" data-bs-toggle="dropdown">
+                        <i class="fas fa-user-circle me-2"></i>{{ user.get_full_name|default:user.username|default:"Menu" }}
+                    </button>
+                    <ul class="dropdown-menu">
+                        {% if user.is_authenticated %}
+                        <li><a class="dropdown-item" href="/admin/"><i class="fas fa-cog me-2"></i>Django Admin</a></li>
+                        <li><a class="dropdown-item" href="{% url 'admin_panel:guide' %}"><i class="fas fa-question-circle me-2"></i>Hướng dẫn</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="{% url 'home' %}"><i class="fas fa-home me-2"></i>Về trang chủ</a></li>
+                        <li><a class="dropdown-item" href="{% url 'signout' %}"><i class="fas fa-sign-out-alt me-2"></i>Đăng xuất</a></li>
+                        {% else %}
+                        <li><a class="dropdown-item" href="{% url 'signin' %}"><i class="fas fa-sign-in-alt me-2"></i>Đăng nhập</a></li>
+                        <li><a class="dropdown-item" href="{% url 'signup' %}"><i class="fas fa-user-plus me-2"></i>Đăng ký</a></li>
+                        <li><hr class="dropdown-divider"></li>
+                        <li><a class="dropdown-item" href="{% url 'home' %}"><i class="fas fa-home me-2"></i>Về trang chủ</a></li>
+                        {% endif %}
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- Content -->
+        <div class="content-wrapper">
+            <!-- Welcome Card -->
+            {% if not user.is_authenticated %}
+            <div class="welcome-card">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h2><i class="fas fa-rocket me-2"></i>Chào mừng đến với Hệ thống PERL & PYTHON!</h2>
+                        <p class="mb-3">Bạn cần đăng nhập để truy cập đầy đủ các tính năng của admin dashboard.</p>
+                        <div class="d-flex gap-2">
+                            <a href="{% url 'signin' %}" class="btn btn-light">
+                                <i class="fas fa-sign-in-alt me-2"></i>Đăng nhập ngay
+                            </a>
+                            <a href="{% url 'signup' %}" class="btn btn-outline-light">
+                                <i class="fas fa-user-plus me-2"></i>Đăng ký tài khoản mới
+                            </a>
+                        </div>
+                    </div>
+                    <div class="col-md-4 text-center">
+                        <i class="fas fa-users fa-5x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="welcome-card">
+                <div class="row align-items-center">
+                    <div class="col-md-8">
+                        <h2><i class="fas fa-chart-line me-2"></i>Xin chào, {{ user.get_full_name|default:user.username }}!</h2>
+                        <p class="mb-0">Chào mừng bạn quay trở lại dashboard quản trị. Hôm nay có {{ new_users_this_week }} người dùng mới đăng ký.</p>
+                    </div>
+                    <div class="col-md-4 text-center">
+                        <i class="fas fa-tachometer-alt fa-5x opacity-50"></i>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+
+            <!-- Stats Cards -->
+            <div class="row g-4 mb-4">
+                <div class="col-lg-3 col-md-6">
+                    <a href="{% url 'admin_panel:user_list' %}" class="text-decoration-none">
+                        <div class="stats-card">
+                            <div class="d-flex align-items-center">
+                                <div class="stats-icon icon-blue">
+                                    <i class="fas fa-users"></i>
+                                </div>
+                                <div class="ms-3">
+                                    <h5 class="mb-0">{{ total_students }}</h5>
+                                    <p class="text-muted mb-0">Người dùng</p>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <a href="{% url 'admin_panel:course_list' %}" class="text-decoration-none">
+                        <div class="stats-card">
+                            <div class="d-flex align-items-center">
+                                <div class="stats-icon icon-green">
+                                    <i class="fas fa-book"></i>
+                                </div>
+                                <div class="ms-3">
+                                    <h5 class="mb-0">{{ total_courses }}</h5>
+                                    <p class="text-muted mb-0">Khóa học</p>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <a href="{% url 'admin_panel:assignment_list' %}" class="text-decoration-none">
+                        <div class="stats-card">
+                            <div class="d-flex align-items-center">
+                                <div class="stats-icon icon-orange">
+                                    <i class="fas fa-tasks"></i>
+                                </div>
+                                <div class="ms-3">
+                                    <h5 class="mb-0">{{ total_assignments }}</h5>
+                                    <p class="text-muted mb-0">Bài tập</p>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+                <div class="col-lg-3 col-md-6">
+                    <a href="{% url 'admin_panel:lecture_list' %}" class="text-decoration-none">
+                        <div class="stats-card">
+                            <div class="d-flex align-items-center">
+                                <div class="stats-icon icon-purple">
+                                    <i class="fas fa-video"></i>
+                                </div>
+                                <div class="ms-3">
+                                    <h5 class="mb-0">{{ total_lectures }}</h5>
+                                    <p class="text-muted mb-0">Bài giảng</p>
+                                </div>
+                            </div>
+                        </div>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Charts and Activity -->
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="chart-container">
+                        <h5 class="mb-3">Thống kê hoạt động</h5>
+                        <canvas id="activityChart" height="100"></canvas>
+                    </div>
+                </div>
+                <div class="col-lg-4">
+                    <div class="recent-activity">
+                        <h5 class="mb-3">Hoạt động gần đây</h5>
+                        {% for assignment in recent_assignments %}
+                        <div class="activity-item">
+                            <div class="d-flex justify-content-between">
+                                <div>
+                                    <h6 class="mb-1">{{ assignment.tieu_de }}</h6>
+                                    <small class="text-muted">Bài tập {{ assignment.get_loai_baitap_display|lower }}</small>
+                                </div>
+                                <small class="text-muted">{{ assignment.ngay_tao|timesince }} trước</small>
+                            </div>
+                        </div>
+                        {% empty %}
+                        <p class="text-muted">Chưa có hoạt động nào</p>
+                        {% endfor %}
+                    </div>
+
+                    <div class="calendar-widget mt-4">
+                        <h5 class="mb-3">Lịch sự kiện</h5>
+                        <div class="text-center">
+                            <h3 class="text-primary">{{ "now"|date:"d" }}</h3>
+                            <p class="mb-0">{{ "now"|date:"F Y" }}</p>
+                        </div>
+                        <hr>
+                        <div class="upcoming-events">
+                            {% for course in active_courses %}
+                            <div class="d-flex justify-content-between mb-2">
+                                <small>{{ course.name|truncatechars:20 }}</small>
+                                <small class="text-muted">{{ course.end_date }}</small>
+                            </div>
+                            {% endfor %}
+                        </div>
+                    </div>
+
+                    <!-- Quick Actions -->
+                    <div class="stats-card mt-4">
+                        <h5 class="mb-3"><i class="fas fa-bolt me-2"></i>Thao tác nhanh</h5>
+                        <div class="d-grid gap-2">
+                            <a href="{% url 'admin_panel:user_list' %}" class="btn btn-custom btn-sm">
+                                <i class="fas fa-users me-2"></i>Quản lý người dùng
+                            </a>
+                            <a href="{% url 'admin_panel:course_list' %}" class="btn btn-outline-primary btn-sm">
+                                <i class="fas fa-book me-2"></i>Quản lý khóa học
+                            </a>
+                            <a href="{% url 'admin_panel:assignment_list' %}" class="btn btn-outline-success btn-sm">
+                                <i class="fas fa-tasks me-2"></i>Quản lý bài tập
+                            </a>
+                            <a href="{% url 'admin_panel:lecture_list' %}" class="btn btn-outline-info btn-sm">
+                                <i class="fas fa-video me-2"></i>Quản lý bài giảng
+                            </a>
+                            <a href="/admin/" class="btn btn-outline-warning btn-sm">
+                                <i class="fas fa-cog me-2"></i>Django Admin
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script>
+        // Activity Chart
+        const ctx = document.getElementById('activityChart').getContext('2d');
+        const activityChart = new Chart(ctx, {
+            type: 'line',
+            data: {
+                labels: ['Thứ 2', 'Thứ 3', 'Thứ 4', 'Thứ 5', 'Thứ 6', 'Thứ 7', 'CN'],
+                datasets: [{
+                    label: 'Bài nộp',
+                    data: [12, 19, 3, 5, 2, 3, 7],
+                    borderColor: '#2563EB',
+                    backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                    tension: 0.4
+                }, {
+                    label: 'Đăng ký mới',
+                    data: [2, 5, 1, 3, 1, 2, 1],
+                    borderColor: '#3B82F6',
+                    backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                    tension: 0.4
+                }]
+            },
+            options: {
+                responsive: true,
+                plugins: {
+                    legend: {
+                        position: 'top',
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    </script>
+</body>
+</html>

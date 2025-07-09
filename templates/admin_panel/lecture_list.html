@@ -1,0 +1,121 @@
+{% extends 'admin_panel/dashboard.html' %}
+
+{% block title %}Quản lý Bài giảng{% endblock %}
+
+{% block content %}
+<div class="content-wrapper">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h4>Quản lý Bài giảng</h4>
+        <a href="{% url 'admin_panel:lecture_add' %}" class="btn btn-primary">
+            <i class="fas fa-plus me-2"></i>Thêm bài giảng mới
+        </a>
+    </div>
+
+    <div class="stats-card">
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th>Tiêu đề</th>
+                        <th>Môn học</th>
+                        <th>Người tạo</th>
+                        <th>Ngày tạo</th>
+                        <th>Tài liệu</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for lecture in lectures %}
+                    <tr>
+                        <td>
+                            <strong>{{ lecture.title }}</strong>
+                            <br><small class="text-muted">{{ lecture.description|truncatechars:50 }}</small>
+                        </td>
+                        <td>
+                            {% if lecture.subject == 'Python' %}
+                                <span class="badge bg-primary">Python</span>
+                            {% else %}
+                                <span class="badge bg-info">Perl</span>
+                            {% endif %}
+                        </td>
+                        <td>{{ lecture.created_by.get_full_name|default:lecture.created_by.username }}</td>
+                        <td>{{ lecture.created_at|date:"d/m/Y H:i" }}</td>
+                        <td>
+                            <div class="d-flex gap-1">
+                                {% if lecture.video_url %}
+                                    <span class="badge bg-danger" title="Video"><i class="fas fa-video"></i></span>
+                                {% endif %}
+                                {% if lecture.pdf_file %}
+                                    <span class="badge bg-success" title="PDF"><i class="fas fa-file-pdf"></i></span>
+                                {% endif %}
+                                {% if lecture.slide_file %}
+                                    <span class="badge bg-warning" title="Slide"><i class="fas fa-presentation"></i></span>
+                                {% endif %}
+                            </div>
+                        </td>
+                        <td>
+                            <div class="btn-group btn-group-sm">
+                                <a href="{% url 'admin_panel:lecture_edit' lecture.pk %}" class="btn btn-outline-primary" title="Chỉnh sửa">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <button class="btn btn-outline-info" title="Xem chi tiết">
+                                    <i class="fas fa-eye"></i>
+                                </button>
+                                <button class="btn btn-outline-danger" title="Xóa">
+                                    <i class="fas fa-trash"></i>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" class="text-center text-muted py-4">
+                            <i class="fas fa-video fa-2x mb-2"></i>
+                            <br>Chưa có bài giảng nào
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        {% if is_paginated %}
+        <nav aria-label="Phân trang bài giảng">
+            <ul class="pagination justify-content-center">
+                {% if page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page=1">&laquo; Đầu</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.previous_page_number }}">Trước</a>
+                    </li>
+                {% endif %}
+
+                <li class="page-item active">
+                    <span class="page-link">
+                        Trang {{ page_obj.number }} / {{ page_obj.paginator.num_pages }}
+                    </span>
+                </li>
+
+                {% if page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.next_page_number }}">Sau</a>
+                    </li>
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}">Cuối &raquo;</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+        {% endif %}
+    </div>
+</div>
+
+<style>
+.content-wrapper {
+    padding: 0 2rem 2rem;
+    margin-left: 280px;
+}
+</style>
+{% endblock %}
