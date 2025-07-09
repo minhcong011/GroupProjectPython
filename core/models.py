@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from teacherapp.models import Course
 
 class Account(models.Model):
     username = models.CharField(max_length=150, unique=True)
@@ -36,6 +37,7 @@ class Lecture(models.Model):
     subject = models.CharField(max_length=100, choices=[("Perl", "Perl"), ("Python", "Python")])
     created_by = models.ForeignKey(User, on_delete=models.CASCADE)
     created_at = models.DateTimeField(auto_now_add=True)
+    course = models.ForeignKey(Course, on_delete=models.CASCADE, default=1)
 
     def __str__(self):
         return self.title

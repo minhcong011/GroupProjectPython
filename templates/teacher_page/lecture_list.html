@@ -10,12 +10,28 @@
 {% block content %}
 <h2 class="page-title">📚 Bài giảng của bạn</h2>
 
+<!-- Combobox lọc bài giảng theo khóa học -->
+<form method="get" class="course-combobox-form" style="margin-bottom: 20px;">
+    <label for="course"><strong>Lọc theo khóa học:</strong></label>
+    <select name="course" id="course" onchange="this.form.submit()">
+        <option value="" {% if not selected_course %}selected{% endif %}>Tất cả</option>
+        {% for course in courses %}
+            <option value="{{ course.id }}" {% if selected_course and course.id == selected_course.id %}selected{% endif %}>
+                {{ course.name }}
+            </option>
+        {% endfor %}
+    </select>
+</form>
+
 <div class="lecture-list">
     {% for lecture in lectures %}
         <div class="lecture-card">
             <div class="lecture-header">
                 <h3><a href="{% url 'lecture_detail' lecture.pk %}" class="lecture-title-link">{{ lecture.title }}</a></h3>
                 <span class="subject">{{ lecture.subject }}</span>
+                {% if lecture.course %}
+                    <span class="course-label">({{ lecture.course.name }})</span>
+                {% endif %}
             </div>
             <p class="description">{{ lecture.description }}</p>
             <div class="resources">
@@ -42,4 +58,3 @@
 
 <a href="{% url 'create_lecture' %}" class="btn-add">+ Thêm đề cương mới</a>
 {% endblock %}
-
