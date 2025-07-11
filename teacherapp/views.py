@@ -102,18 +102,22 @@ def edit_assignment(request, assignment_id):
     return render(request, 'teacher_page/edit_assignment.html', {'form': form, 'assignment': assignment})
 @login_required
 def create_lecture(request):
+    from core.models import Lecture
+    courses = Course.objects.filter(created_by=request.user)
     if request.method == 'POST':
         form = LectureForm(request.POST, request.FILES)
-        if form.is_valid():
-            print('faskdjfhs')
+        course_id = request.POST.get('course')
+        selected_course = courses.filter(id=course_id).first() if course_id else None
+        if form.is_valid() and selected_course:
             lecture = form.save(commit=False)
             lecture.created_by = request.user
+            lecture.course = selected_course
             lecture.save()
             messages.success(request, 'Bài giảng đã được tạo thành công!')
             return redirect('lecture_list')
     else:
         form = LectureForm()
-    return render(request, 'teacher_page/create_lecture.html', {'form': form})
+    return render(request, 'teacher_page/create_lecture.html', {'form': form, 'courses': courses})
 
 
 # Xem chi tiết bài giảng (đề cương)
@@ -145,11 +149,25 @@ def delete_lecture(request, pk):
         messages.success(request, 'Đã xóa đề cương thành công!')
         return redirect('lecture_list')
     return render(request, 'teacher_page/delete_lecture_confirm.html', {'lecture': lecture})
-
 @login_required
 def lecture_list(request):
-    lectures = Lecture.objects.filter(created_by=request.user)
-    return render(request, 'teacher_page/lecture_list.html', {'lectures': lectures})
+    courses = Course.objects.filter(created_by=request.user)
+    course_id = request.GET.get('course')
+    selected_course = None
+    from core.models import Lecture
+    if course_id:
+        selected_course = courses.filter(id=course_id).first()
+        if selected_course:
+            lectures = Lecture.objects.filter(course=selected_course)
+        else:
+            lectures = Lecture.objects.none()
+    else:
+        lectures = Lecture.objects.filter(course__in=courses)
+    return render(request, 'teacher_page/lecture_list.html', {
+        'lectures': lectures,
+        'courses': courses,
+        'selected_course': selected_course,
+    })
 
 @login_required
 def course_management(request):
