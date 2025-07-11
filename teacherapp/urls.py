@@ -29,7 +29,7 @@ urlpatterns = [
     path('create_course/', views.create_course, name='create_course'),
     path('courses/edit/<int:course_id>/', views.edit_course, name='edit_course'),
     path('courses/delete/<int:course_id>/', views.delete_course, name='delete_course'),
-     
+    path('random_question_ai/', views.random_question_ai_view, name='random_question_ai'),
 
 
 ]

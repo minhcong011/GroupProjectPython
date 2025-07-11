@@ -11,8 +11,16 @@
     <div class="page-header">
         <h2>Danh sách các khóa học</h2>
         <div class="header-actions">
-            <input type="text" placeholder="Nhập từ khoá tìm kiếm">
-            <button class="add-class-btn" title="Nhấn để thêm mới lớp học">Tạo mới</button>
+            <form method="get" style="display: flex; gap: 8px;">
+                <input type="text" name="q" placeholder="Nhập từ khoá tìm kiếm" value="{{ query|default:'' }}">
+                <select name="lang">
+                    <option value="">Tất cả</option>
+                    <option value="Python" {% if filter_lang == "Python" %}selected{% endif %}>Python</option>
+                    <option value="Perl" {% if filter_lang == "Perl" %}selected{% endif %}>Perl</option>
+                </select>
+                <button type="submit">Tìm kiếm</button>
+                <button class="add-class-btn" type="button" title="Nhấn để thêm mới lớp học">Tạo mới</button>
+            </form>
         </div>
     </div>
     <table class="class-table">

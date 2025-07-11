@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <title>Chat với AI</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='random_question_ai.css') }}">
+</head>
+<body>
+    <div class="chat-container">
+        <div id="chat-box"></div>
+        <input type="text" id="user-input" placeholder="Nhập tin nhắn...">
+        <button onclick="sendMessage()">Gửi</button>
+    </div>
+
+    <script>
+        async function sendMessage() {
+            const input = document.getElementById('user-input');
+            const chatBox = document.getElementById('chat-box');
+            const userText = input.value;
+
+            chatBox.innerHTML += `<div><strong>Bạn:</strong> ${userText}</div>`;
+            input.value = '';
+
+            const response = await fetch('/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: userText })
+            });
+
+            const data = await response.json();
+            chatBox.innerHTML += `<div><strong>AI:</strong> ${data.reply}</div>`;
+            chatBox.scrollTop = chatBox.scrollHeight;
+        }
+    </script>
+</body>
+</html>

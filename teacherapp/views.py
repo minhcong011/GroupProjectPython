@@ -192,5 +192,7 @@ def edit_course(request, course_id):
 
     return render(request, 'teacher_page/edit_course.html', {'form': form, 'course': course})
 
-
+def random_question_ai_view(request):
+    # 
+    return render(request, 'random_question_ai.html')  # sửa theo thực tế
 
