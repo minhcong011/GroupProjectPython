@@ -1,17 +1,157 @@
 {% extends 'teacher_page/gv_base.html' %}
-{% block title %}Thêm câu hỏi trắc nghiệm{% endblock %}
-{% block extra_css %}
-<link rel="stylesheet" href="/static/css/addQM.css">
+{% load static %}
 
+{% block title %}Thêm câu hỏi trắc nghiệm{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/addQM.css' %}">
 {% endblock %}
+
 {% block content %}
 <div class="form-container">
     <h2>Thêm câu hỏi cho: {{ assignment.tieu_de }}</h2>
+    
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+    
     <form method="post">
         {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit" name="add_another" class="btn btn-info">Thêm câu hỏi khác</button>
-        <button type="submit" class="btn btn-success">Hoàn tất</button>
+        
+        <div class="form-group">
+            <label for="id_noi_dung">Nội dung câu hỏi:</label>
+            {{ form.noi_dung }}
+            {% if form.noi_dung.errors %}
+                <div class="error">{{ form.noi_dung.errors }}</div>
+            {% endif %}
+        </div>
+        
+        <div class="form-group">
+            <label for="id_lua_chon_a">Lựa chọn A:</label>
+            {{ form.lua_chon_a }}
+            {% if form.lua_chon_a.errors %}
+                <div class="error">{{ form.lua_chon_a.errors }}</div>
+            {% endif %}
+        </div>
+        
+        <div class="form-group">
+            <label for="id_lua_chon_b">Lựa chọn B:</label>
+            {{ form.lua_chon_b }}
+            {% if form.lua_chon_b.errors %}
+                <div class="error">{{ form.lua_chon_b.errors }}</div>
+            {% endif %}
+        </div>
+        
+        <div class="form-group">
+            <label for="id_lua_chon_c">Lựa chọn C:</label>
+            {{ form.lua_chon_c }}
+            {% if form.lua_chon_c.errors %}
+                <div class="error">{{ form.lua_chon_c.errors }}</div>
+            {% endif %}
+        </div>
+        
+        <div class="form-group">
+            <label for="id_lua_chon_d">Lựa chọn D:</label>
+            {{ form.lua_chon_d }}
+            {% if form.lua_chon_d.errors %}
+                <div class="error">{{ form.lua_chon_d.errors }}</div>
+            {% endif %}
+        </div>
+        
+        <div class="form-group">
+            <label for="id_dap_an_dung">Đáp án đúng:</label>
+            {{ form.dap_an_dung }}
+            {% if form.dap_an_dung.errors %}
+                <div class="error">{{ form.dap_an_dung.errors }}</div>
+            {% endif %}
+        </div>
+        
+        <div class="form-actions">
+            <button type="submit" name="add_another" class="btn btn-info">Thêm câu hỏi khác</button>
+            <button type="submit" class="btn btn-success">Hoàn tất</button>
+            <a href="{% url 'assignment_list' %}" class="btn btn-secondary">Hủy</a>
+        </div>
     </form>
 </div>
+
+<style>
+.alert {
+    padding: 10px;
+    margin-bottom: 15px;
+    border: 1px solid transparent;
+    border-radius: 4px;
+}
+
+.alert-success {
+    color: #3c763d;
+    background-color: #dff0d8;
+    border-color: #d6e9c6;
+}
+
+.alert-error {
+    color: #a94442;
+    background-color: #f2dede;
+    border-color: #ebccd1;
+}
+
+.form-group {
+    margin-bottom: 1rem;
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-weight: bold;
+}
+
+.form-group input,
+.form-group textarea,
+.form-group select {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+}
+
+.error {
+    color: #a94442;
+    font-size: 0.9rem;
+    margin-top: 0.25rem;
+}
+
+.form-actions {
+    margin-top: 1.5rem;
+    display: flex;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.btn {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    text-decoration: none;
+    display: inline-block;
+}
+
+.btn-info {
+    background: #17a2b8;
+    color: white;
+}
+
+.btn-success {
+    background: #28a745;
+    color: white;
+}
+
+.btn-secondary {
+    background: #6c757d;
+    color: white;
+}
+</style>
 {% endblock %}

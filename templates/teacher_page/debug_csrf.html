@@ -1,0 +1,27 @@
+{% extends 'teacher_page/gv_base.html' %}
+{% load static %}
+
+{% block title %}Debug CSRF{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Debug CSRF Token</h1>
+    
+    <p><strong>User:</strong> {{ user.username }}</p>
+    <p><strong>Is authenticated:</strong> {{ user.is_authenticated }}</p>
+    <p><strong>Session key:</strong> {{ request.session.session_key }}</p>
+    
+    <form method="post" action="">
+        {% csrf_token %}
+        <input type="hidden" name="test" value="csrf_test">
+        <button type="submit">Test CSRF</button>
+    </form>
+    
+    {% if request.method == 'POST' %}
+        <div style="background: #d4edda; padding: 1rem; margin-top: 1rem; border-radius: 4px;">
+            <p><strong>POST request received successfully!</strong></p>
+            <p>CSRF protection is working.</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

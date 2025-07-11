@@ -28,6 +28,44 @@ class CauHoi(models.Model):
     def __str__(self):
         return self.noi_dung
 
+class BaiLam(models.Model):
+    """Bài làm của sinh viên"""
+    sinh_vien = models.ForeignKey(User, on_delete=models.CASCADE, related_name='bai_lam')
+    bai_tap = models.ForeignKey(BaiTap, on_delete=models.CASCADE, related_name='bai_lam')
+    thoi_gian_nop = models.DateTimeField(auto_now_add=True)
+    diem_so = models.FloatField(null=True, blank=True)
+    da_cham = models.BooleanField(default=False)
+    
+    # Cho bài trắc nghiệm
+    dap_an_json = models.JSONField(null=True, blank=True)  # Lưu đáp án sinh viên chọn
+    so_cau_dung = models.IntegerField(null=True, blank=True)  # Số câu trả lời đúng
+    tong_so_cau = models.IntegerField(null=True, blank=True)  # Tổng số câu hỏi
+    
+    # Cho bài lập trình
+    code_nop = models.TextField(null=True, blank=True)  # Code sinh viên nộp
+    ket_qua_test = models.JSONField(null=True, blank=True)  # Kết quả chạy test
+    so_test_pass = models.IntegerField(null=True, blank=True)  # Số test case pass
+    tong_so_test = models.IntegerField(null=True, blank=True)  # Tổng số test case
+    
+    class Meta:
+        unique_together = ['sinh_vien', 'bai_tap']
+        verbose_name = 'Bài Làm'
+        verbose_name_plural = 'Bài Làm'
+    
+    def __str__(self):
+        return f"{self.sinh_vien.username} - {self.bai_tap.tieu_de}"
+
+class TestCase(models.Model):
+    """Test case cho bài lập trình"""
+    bai_tap = models.ForeignKey(BaiTap, on_delete=models.CASCADE, related_name='test_cases')
+    ten_test = models.CharField(max_length=100)
+    input_data = models.TextField()  # Input cho test case
+    expected_output = models.TextField()  # Output mong đợi
+    diem_so = models.FloatField(default=1.0)  # Điểm cho test case này
+    
+    def __str__(self):
+        return f"{self.bai_tap.tieu_de} - {self.ten_test}"
+
 class Course(models.Model):
     name = models.CharField(max_length=200)
     status = models.CharField(max_length=50)

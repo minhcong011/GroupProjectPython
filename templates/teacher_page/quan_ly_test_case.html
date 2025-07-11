@@ -1,0 +1,192 @@
+{% extends 'teacher_page/gv_base.html' %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/teacher/test_case.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>{{ title }}</h1>
+    
+    <div class="assignment-info">
+        <h2>{{ bai_tap.tieu_de }}</h2>
+        <p><strong>Mô tả:</strong> {{ bai_tap.mo_ta }}</p>
+        <p><strong>Loại:</strong> {{ bai_tap.get_loai_baitap_display }}</p>
+    </div>
+    
+    <div class="test-case-form">
+        <h3>Thêm Test Case Mới</h3>
+        
+        <div class="quick-actions" style="margin-bottom: 1rem;">
+            <a href="{% url 'tao_test_case_tu_dong' bai_tap.id %}" class="btn btn-success">
+                 Tạo Test Cases Tự Động
+            </a>
+            <small style="display: block; margin-top: 0.5rem; color: #666;">
+                Tự động tạo test cases phù hợp dựa trên tên bài tập
+            </small>
+        </div>
+        
+        <form method="POST">
+            {% csrf_token %}
+            <div class="form-group">
+                <label for="ten_test">Tên test case:</label>
+                <input type="text" id="ten_test" name="ten_test" required placeholder="VD: Test 1, Test cơ bản...">
+            </div>
+            
+            <div class="form-group">
+                <label for="input_data">Input data:</label>
+                <textarea id="input_data" name="input_data" rows="4" placeholder="Dữ liệu đầu vào cho test case..."></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="expected_output">Expected output:</label>
+                <textarea id="expected_output" name="expected_output" rows="4" required placeholder="Kết quả mong muốn..."></textarea>
+            </div>
+            
+            <div class="form-group">
+                <label for="diem_so">Điểm số:</label>
+                <input type="number" id="diem_so" name="diem_so" step="0.1" min="0" max="10" value="1.0" required>
+            </div>
+            
+            <button type="submit" class="btn btn-primary">Thêm Test Case</button>
+        </form>
+    </div>
+    
+    <div class="test-case-list">
+        <h3>Danh sách Test Cases</h3>
+        
+        {% if test_cases %}
+        <div class="table-responsive">
+            <table class="test-case-table">
+                <thead>
+                    <tr>
+                        <th>Tên</th>
+                        <th>Input</th>
+                        <th>Expected Output</th>
+                        <th>Điểm</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for test_case in test_cases %}
+                    <tr>
+                        <td><strong>{{ test_case.ten_test }}</strong></td>
+                        <td>
+                            <div class="code-preview">
+                                <pre>{{ test_case.input_data|truncatechars:100 }}</pre>
+                            </div>
+                        </td>
+                        <td>
+                            <div class="code-preview">
+                                <pre>{{ test_case.expected_output|truncatechars:100 }}</pre>
+                            </div>
+                        </td>
+                        <td><span class="score">{{ test_case.diem_so }}</span></td>
+                        <td>
+                            <div class="action-buttons">
+                                <button class="btn btn-sm btn-info" onclick="xemChiTiet({{ test_case.id }})">Xem</button>
+                                <button class="btn btn-sm btn-warning" onclick="suaTestCase({{ test_case.id }})">Sửa</button>
+                                <a href="{% url 'xoa_test_case' test_case.id %}" class="btn btn-sm btn-danger" onclick="return confirm('Bạn có chắc muốn xóa test case này?')">Xóa</a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="test-summary">
+            <p><strong>Tổng điểm tối đa:</strong> 
+                {% with total_score=0 %}
+                    {% for tc in test_cases %}
+                        {% with total_score=total_score|add:tc.diem_so %}{% endwith %}
+                    {% endfor %}
+                    {{ total_score }}
+                {% endwith %}
+            </p>
+            <p><strong>Số test cases:</strong> {{ test_cases|length }}</p>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <p>Chưa có test case nào được tạo.</p>
+            <p>Hãy thêm ít nhất một test case để có thể chấm bài tự động.</p>
+        </div>
+        {% endif %}
+    </div>
+    
+    <div class="back-actions">
+        <a href="{% url 'chi_tiet_bai_tap' bai_tap.id %}" class="btn btn-back">← Quay lại</a>
+    </div>
+</div>
+
+<!-- Modal xem chi tiết test case -->
+<div id="testCaseModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Chi tiết Test Case</h3>
+            <span class="close" onclick="closeTestCaseModal()">&times;</span>
+        </div>
+        <div class="modal-body" id="testCaseModalBody">
+            <!-- Nội dung sẽ được load bằng JavaScript -->
+        </div>
+    </div>
+</div>
+
+<script>
+    function xemChiTiet(testCaseId) {
+        // Tìm test case trong table và hiển thị chi tiết
+        const row = document.querySelector(`tr:has(button[onclick="xemChiTiet(${testCaseId})"])`);
+        if (row) {
+            const cells = row.querySelectorAll('td');
+            const name = cells[0].textContent.trim();
+            const input = cells[1].querySelector('pre').textContent;
+            const output = cells[2].querySelector('pre').textContent;
+            const score = cells[3].textContent.trim();
+            
+            document.getElementById('testCaseModalBody').innerHTML = `
+                <div class="test-case-detail">
+                    <h4>${name}</h4>
+                    <div class="detail-section">
+                        <h5>Input:</h5>
+                        <pre class="code-block">${input}</pre>
+                    </div>
+                    <div class="detail-section">
+                        <h5>Expected Output:</h5>
+                        <pre class="code-block">${output}</pre>
+                    </div>
+                    <div class="detail-section">
+                        <h5>Điểm số:</h5>
+                        <span class="score-display">${score}</span>
+                    </div>
+                </div>
+            `;
+            document.getElementById('testCaseModal').style.display = 'block';
+        }
+    }
+    
+    function suaTestCase(testCaseId) {
+        alert('Chức năng sửa test case đang được phát triển');
+    }
+    
+    function xoaTestCase(testCaseId) {
+        if (confirm('Bạn có chắc muốn xóa test case này?')) {
+            alert('Chức năng xóa test case đang được phát triển');
+        }
+    }
+    
+    function closeTestCaseModal() {
+        document.getElementById('testCaseModal').style.display = 'none';
+    }
+    
+    // Đóng modal khi click bên ngoài
+    window.onclick = function(event) {
+        const modal = document.getElementById('testCaseModal');
+        if (event.target == modal) {
+            modal.style.display = 'none';
+        }
+    }
+</script>
+{% endblock %}

@@ -1,0 +1,212 @@
+{% extends 'teacher_page/gv_base.html' %}
+{% load static %}
+
+{% block title %}Kết quả chấm điểm{% endblock %}
+
+{% block extra_css %}
+<meta charset="UTF-8">
+<link rel="stylesheet" href="{% static 'css/teacher/test_case.css' %}">
+<style>
+body, html {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    -webkit-font-feature-settings: "liga", "kern";
+    font-feature-settings: "liga", "kern";
+}
+
+.code-block {
+    font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
+    white-space: pre-wrap;
+    word-break: break-word;
+    unicode-bidi: embed;
+    direction: ltr;
+}
+
+.test-result {
+    margin-bottom: 1rem;
+    padding: 1rem;
+    border-radius: 8px;
+    border-left: 4px solid;
+}
+
+.test-result.pass {
+    border-left-color: #28a745;
+    background: #d4edda;
+}
+
+.test-result.fail {
+    border-left-color: #dc3545;
+    background: #f8d7da;
+}
+
+.test-result.error {
+    border-left-color: #ffc107;
+    background: #fff3cd;
+}
+
+.code-comparison {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+    margin-top: 0.5rem;
+}
+
+.code-block {
+    background: #f8f9fa;
+    padding: 0.5rem;
+    border-radius: 4px;
+    font-family: monospace;
+    white-space: pre-wrap;
+    border: 1px solid #dee2e6;
+}
+
+.expected {
+    border-left: 3px solid #28a745;
+}
+
+.actual {
+    border-left: 3px solid #dc3545;
+}
+
+.score-info {
+    background: #e9ecef;
+    padding: 0.5rem;
+    border-radius: 4px;
+    margin-top: 0.5rem;
+}
+</style>
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Kết quả chấm điểm: {{ bai_lam.bai_tap.tieu_de }}</h1>
+    
+    <div class="info-card">
+        <h3>Thông tin sinh viên</h3>
+        <p><strong>Sinh viên:</strong> {{ bai_lam.sinh_vien.get_full_name|default:bai_lam.sinh_vien.username }}</p>
+        <p><strong>Thời gian nộp:</strong> {{ bai_lam.thoi_gian_nop }}</p>
+        <p><strong>Điểm số:</strong> <span class="score">{{ bai_lam.diem_so }}/10</span></p>
+        <p><strong>Trạng thái:</strong> 
+            <span class="badge {% if bai_lam.da_cham %}badge-success{% else %}badge-warning{% endif %}">
+                {% if bai_lam.da_cham %}Đã chấm{% else %}Chưa chấm{% endif %}
+            </span>
+        </p>
+    </div>
+
+    {% if bai_lam.code_nop %}
+    <div class="info-card">
+        <h3>Code đã nộp</h3>
+        <pre class="code-block">{{ bai_lam.code_nop }}</pre>
+    </div>
+    {% endif %}
+
+    {% if bai_lam.ket_qua_test %}
+    <div class="info-card">
+        <h3>Kết quả Test Cases</h3>
+        
+        {% for test in bai_lam.ket_qua_test %}
+        <div class="test-result {% if test.ket_qua == 'PASS' %}pass{% elif test.ket_qua == 'FAIL' %}fail{% else %}error{% endif %}">
+            <h4>{{ test.ten_test }}</h4>
+            
+            {% if test.input %}
+            <p><strong>Input:</strong> <code>{{ test.input }}</code></p>
+            {% endif %}
+            
+            <div class="code-comparison">
+                <div>
+                    <strong>Expected Output:</strong>
+                    <div class="code-block expected">{{ test.expected|safe }}</div>
+                </div>
+                <div>
+                    <strong>Actual Output:</strong>
+                    <div class="code-block actual">{{ test.actual|safe }}</div>
+                </div>
+            </div>
+            
+            {% if test.original_output and test.original_output != test.actual %}
+            <div style="margin-top: 0.5rem;">
+                <strong>Original Output (Raw):</strong>
+                <div class="code-block">{{ test.original_output|safe }}</div>
+            </div>
+            {% endif %}
+            
+            <div class="score-info">
+                <strong>Kết quả:</strong> 
+                <span class="badge {% if test.ket_qua == 'PASS' %}badge-success{% elif test.ket_qua == 'FAIL' %}badge-danger{% else %}badge-warning{% endif %}">
+                    {{ test.ket_qua }}
+                </span>
+                | <strong>Điểm:</strong> {{ test.diem_dat }}/{{ test.diem_toi_da }}
+                
+                {% if test.error %}
+                <br><strong>Lỗi:</strong> <span class="text-danger">{{ test.error }}</span>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+    </div>
+    {% endif %}
+
+    <div class="action-buttons">
+        <a href="{% url 'chi_tiet_bai_tap' bai_lam.bai_tap.id %}" class="btn btn-secondary">← Quay lại</a>
+        
+        {% if bai_lam.bai_tap.loai_baitap == 'code' %}
+        <button onclick="chamLaiTestCase({{ bai_lam.id }})" class="btn btn-primary">🔄 Chấm lại</button>
+        {% endif %}
+        
+        <button onclick="suaDiem({{ bai_lam.id }})" class="btn btn-warning">✏️ Sửa điểm</button>
+    </div>
+</div>
+
+<script>
+function chamLaiTestCase(baiLamId) {
+    if (confirm('Bạn có muốn chấm lại bài này không?')) {
+        fetch(`/teacher/cham-bai-lap-trinh/${baiLamId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Chấm lại thành công! Điểm mới: ' + data.diem_so);
+                location.reload();
+            } else {
+                alert('Lỗi: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Có lỗi xảy ra khi chấm lại');
+        });
+    }
+}
+
+function suaDiem(baiLamId) {
+    const newScore = prompt('Nhập điểm mới (0-10):');
+    if (newScore !== null && !isNaN(newScore) && newScore >= 0 && newScore <= 10) {
+        fetch(`/teacher/sua-diem/${baiLamId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': '{{ csrf_token }}',
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ diem_so: parseFloat(newScore) })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert('Sửa điểm thành công!');
+                location.reload();
+            } else {
+                alert('Lỗi: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Có lỗi xảy ra khi sửa điểm');
+        });
+    }
+}
+</script>
+{% endblock %}

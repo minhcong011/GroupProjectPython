@@ -87,8 +87,12 @@ def submit_quiz(request, assignment_id):
         total_questions = questions.count()
         results = []
         
+        # Lưu đáp án sinh viên
+        dap_an_sinh_vien = {}
+        
         for question in questions:
             user_answer = request.POST.get(f'question_{question.id}')
+            dap_an_sinh_vien[str(question.id)] = user_answer
             is_correct = user_answer == question.dap_an_dung
             if is_correct:
                 score += 1
@@ -102,6 +106,25 @@ def submit_quiz(request, assignment_id):
         
         # Tính phần trăm điểm
         percentage = (score / total_questions * 100) if total_questions > 0 else 0
+        
+        # Lưu bài làm vào database
+        from teacherapp.models import BaiLam
+        bai_lam, created = BaiLam.objects.get_or_create(
+            sinh_vien=request.user,
+            bai_tap=assignment,
+            defaults={
+                'dap_an_json': dap_an_sinh_vien,
+                'diem_so': round((score / total_questions) * 10, 2) if total_questions > 0 else 0,
+                'da_cham': True  # Tự động chấm bài trắc nghiệm
+            }
+        )
+        
+        if not created:
+            # Cập nhật bài làm nếu đã tồn tại
+            bai_lam.dap_an_json = dap_an_sinh_vien
+            bai_lam.diem_so = round((score / total_questions) * 10, 2) if total_questions > 0 else 0
+            bai_lam.da_cham = True
+            bai_lam.save()
         
         context = {
             'assignment': assignment,
@@ -125,8 +148,22 @@ def submit_code_assignment(request, assignment_id):
         code = request.POST.get('code', '')
         language = request.POST.get('language', 'python')
         
-        # Ở đây bạn có thể lưu code vào database hoặc xử lý thêm
-        # Tạm thời chỉ hiển thị thông báo thành công
+        # Lưu bài làm vào database
+        from teacherapp.models import BaiLam
+        bai_lam, created = BaiLam.objects.get_or_create(
+            sinh_vien=request.user,
+            bai_tap=assignment,
+            defaults={
+                'code_nop': code,
+                'da_cham': False  # Cần giáo viên chấm thủ công
+            }
+        )
+        
+        if not created:
+            # Cập nhật bài làm nếu đã tồn tại
+            bai_lam.code_nop = code
+            bai_lam.da_cham = False
+            bai_lam.save()
         
         context = {
             'assignment': assignment,

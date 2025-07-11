@@ -73,11 +73,29 @@ AUTH_PASSWORD_VALIDATORS = [
     {'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator'},
 ]
 
-# ==================== QUỐC TẾ HÓA ====================
-LANGUAGE_CODE = 'en-us'
-TIME_ZONE = 'Asia/Ho_Chi_Minh'  # Hoặc giữ nguyên UTC
+# ==================== QUỐC TẾ HÓA & ENCODING ====================
+LANGUAGE_CODE = 'vi-vn'  # Chuyển sang tiếng Việt
+TIME_ZONE = 'Asia/Ho_Chi_Minh'
 USE_I18N = True
 USE_TZ = True
+
+# Cấu hình encoding cho tiếng Việt
+DEFAULT_CHARSET = 'utf-8'
+FILE_CHARSET = 'utf-8'
+
+# Cấu hình locale cho tiếng Việt
+import locale
+import os
+os.environ.setdefault('LANG', 'vi_VN.UTF-8')
+os.environ.setdefault('LC_ALL', 'vi_VN.UTF-8')
+
+try:
+    locale.setlocale(locale.LC_ALL, 'vi_VN.UTF-8')
+except:
+    try:
+        locale.setlocale(locale.LC_ALL, 'Vietnamese_Vietnam.1258')
+    except:
+        pass
 
 # ==================== STATIC FILES ====================
 STATIC_URL = 'static/'

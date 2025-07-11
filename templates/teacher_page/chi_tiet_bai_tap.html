@@ -1,0 +1,252 @@
+{% extends 'teacher_page/gv_base.html' %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/teacher/cham_diem.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>{{ title }}</h1>
+    
+    <div class="assignment-info">
+        <h2>{{ bai_tap.tieu_de }}</h2>
+        <div class="info-grid">
+            <div class="info-item">
+                <label>Loại bài tập:</label>
+                <span class="assignment-type {% if bai_tap.loai_baitap == 'code' %}code{% else %}quiz{% endif %}">
+                    {% if bai_tap.loai_baitap == 'code' %}Lập trình{% else %}Trắc nghiệm{% endif %}
+                </span>
+            </div>
+            <div class="info-item">
+                <label>Hạn nộp:</label>
+                <span>{{ bai_tap.han_nop|date:"d/m/Y H:i" }}</span>
+            </div>
+            <div class="info-item">
+                <label>Tổng số bài nộp:</label>
+                <span>{{ bai_lam_list|length }}</span>
+            </div>
+        </div>
+    </div>
+    
+    <div class="submissions-list">
+        <h3>Danh sách bài làm</h3>
+        
+        {% if bai_lam_list %}
+        <div class="table-responsive">
+            <table class="submissions-table">
+                <thead>
+                    <tr>
+                        <th>Sinh viên</th>
+                        <th>Thời gian nộp</th>
+                        <th>Trạng thái</th>
+                        <th>Điểm số</th>
+                        <th>Thao tác</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for bai_lam in bai_lam_list %}
+                    <tr>
+                        <td>
+                            <div class="student-info">
+                                <strong>{{ bai_lam.sinh_vien.get_full_name|default:bai_lam.sinh_vien.username }}</strong>
+                                <small>{{ bai_lam.sinh_vien.email }}</small>
+                            </div>
+                        </td>
+                        <td>{{ bai_lam.thoi_gian_nop|date:"d/m/Y H:i" }}</td>
+                        <td>
+                            <span class="status {% if bai_lam.da_cham %}graded{% else %}pending{% endif %}">
+                                {% if bai_lam.da_cham %}Đã chấm{% else %}Chưa chấm{% endif %}
+                            </span>
+                        </td>
+                        <td>
+                            <span class="score">
+                                {% if bai_lam.da_cham %}
+                                    <strong>{{ bai_lam.diem_so|floatformat:1 }}/10</strong>
+                                    {% if bai_tap.loai_baitap == 'code' and bai_lam.so_test_pass is not None %}
+                                        <br><small class="test-stats">
+                                            <span class="test-summary">
+                                                <span class="pass-count">{{ bai_lam.so_test_pass }}</span>/<span class="total-count">{{ bai_lam.tong_so_test }}</span> test cases
+                                            </span>
+                                            {% if bai_lam.ket_qua_test %}
+                                                <br>
+                                                {% for test in bai_lam.ket_qua_test %}
+                                                    {% if test.ket_qua == 'PASS' %}
+                                                        <span class="test-pass" title="{{ test.ten_test }}">✓</span>
+                                                    {% elif test.ket_qua == 'FAIL' %}
+                                                        <span class="test-fail" title="{{ test.ten_test }}">✗</span>
+                                                    {% else %}
+                                                        <span class="test-error" title="{{ test.ten_test }}">⚠</span>
+                                                    {% endif %}
+                                                {% endfor %}
+                                            {% endif %}
+                                        </small>
+                                    {% elif bai_tap.loai_baitap == 'quiz' and bai_lam.so_cau_dung is not None %}
+                                        <br><small class="quiz-stats">
+                                            <span class="quiz-summary">
+                                                <span class="correct-count">{{ bai_lam.so_cau_dung }}</span>/<span class="total-questions">{{ bai_lam.tong_so_cau }}</span> câu đúng
+                                            </span>
+                                        </small>
+                                    {% endif %}
+                                {% else %}
+                                    <span class="no-score">--</span>
+                                {% endif %}
+                            </span>
+                        </td>
+                        <td>
+                            <div class="action-buttons">
+                                {% if bai_tap.loai_baitap == 'quiz' %}
+                                    <button class="btn btn-sm btn-primary" onclick="chamBaiTracNghiem({{ bai_lam.id }})">
+                                        {% if bai_lam.da_cham %}Chấm lại{% else %}Chấm điểm{% endif %}
+                                    </button>
+                                {% else %}
+                                    <button class="btn btn-sm btn-primary" onclick="chamBaiLapTrinh({{ bai_lam.id }})">
+                                        {% if bai_lam.da_cham %}Chấm lại{% else %}Chấm điểm{% endif %}
+                                    </button>
+                                {% endif %}
+                                <button class="btn btn-sm btn-secondary" onclick="xemChiTiet({{ bai_lam.id }})">
+                                    Chi tiết
+                                </button>
+                                <a href="{% url 'ket_qua_cham_diem' bai_lam.id %}" class="btn btn-sm btn-info">
+                                    Kết quả
+                                </a>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <p>Chưa có sinh viên nào nộp bài.</p>
+        </div>
+        {% endif %}
+    </div>
+    
+    <div class="back-actions">
+        <a href="{% url 'cham_diem' %}" class="btn btn-back">← Quay lại</a>
+    </div>
+</div>
+
+<!-- Modal xem chi tiết -->
+<div id="detailModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Chi tiết bài làm</h3>
+            <span class="close" onclick="closeModal()">&times;</span>
+        </div>
+        <div class="modal-body" id="modalBody">
+            <!-- Nội dung sẽ được load bằng JavaScript -->
+        </div>
+    </div>
+</div>
+
+<script>
+    function chamBaiTracNghiem(baiLamId) {
+        if (confirm('Bạn có chắc muốn chấm bài này?')) {
+            fetch(`/cham-bai-trac-nghiem/${baiLamId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken'),
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert(`Chấm điểm thành công!\nĐiểm: ${data.diem_so}/10\nSố câu đúng: ${data.so_cau_dung}/${data.tong_so_cau}`);
+                    location.reload();
+                } else {
+                    alert('Lỗi: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Có lỗi xảy ra khi chấm bài!');
+            });
+        }
+    }
+    
+    function chamBaiLapTrinh(baiLamId) {
+        if (confirm('Bạn có chắc muốn chấm bài này?')) {
+            const loading = document.createElement('div');
+            loading.innerHTML = 'Đang chấm bài...';
+            loading.className = 'loading';
+            document.body.appendChild(loading);
+            
+            fetch(`/cham-bai-lap-trinh/${baiLamId}/`, {
+                method: 'POST',
+                headers: {
+                    'X-CSRFToken': getCookie('csrftoken'),
+                    'Content-Type': 'application/json'
+                }
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.body.removeChild(loading);
+                if (data.success) {
+                    showTestResults(data);
+                    location.reload();
+                } else {
+                    alert('Lỗi: ' + data.message);
+                }
+            })
+            .catch(error => {
+                document.body.removeChild(loading);
+                console.error('Error:', error);
+                alert('Có lỗi xảy ra khi chấm bài!');
+            });
+        }
+    }
+    
+    function showTestResults(data) {
+        let resultHtml = `
+            <h4>Kết quả chấm bài</h4>
+            <p><strong>Điểm số:</strong> ${data.diem_so}/10</p>
+            <p><strong>Điểm test:</strong> ${data.tong_diem}/${data.diem_toi_da}</p>
+            <div class="test-results">
+        `;
+        
+        data.ket_qua_test.forEach(test => {
+            resultHtml += `
+                <div class="test-case ${test.ket_qua.toLowerCase()}">
+                    <h5>${test.ten_test} - ${test.ket_qua}</h5>
+                    <p><strong>Điểm:</strong> ${test.diem_dat}/${test.diem_toi_da}</p>
+                    ${test.error ? `<p class="error">Lỗi: ${test.error}</p>` : ''}
+                </div>
+            `;
+        });
+        
+        resultHtml += '</div>';
+        
+        document.getElementById('modalBody').innerHTML = resultHtml;
+        document.getElementById('detailModal').style.display = 'block';
+    }
+    
+    function xemChiTiet(baiLamId) {
+        alert('Chức năng xem chi tiết đang được phát triển');
+    }
+    
+    function closeModal() {
+        document.getElementById('detailModal').style.display = 'none';
+    }
+    
+    function getCookie(name) {
+        let cookieValue = null;
+        if (document.cookie && document.cookie !== '') {
+            const cookies = document.cookie.split(';');
+            for (let i = 0; i < cookies.length; i++) {
+                const cookie = cookies[i].trim();
+                if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                    break;
+                }
+            }
+        }
+        return cookieValue;
+    }
+</script>
+{% endblock %}

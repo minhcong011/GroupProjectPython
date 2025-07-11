@@ -13,11 +13,55 @@ class BaiTapForm(forms.ModelForm):
     class Meta:
         model = BaiTap
         fields = ['tieu_de', 'mo_ta', 'loai_baitap', 'han_nop']
+        widgets = {
+            'tieu_de': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Nhập tiêu đề bài tập...'
+            }),
+            'mo_ta': forms.Textarea(attrs={
+                'class': 'form-control',
+                'rows': 4,
+                'placeholder': 'Mô tả chi tiết về bài tập...'
+            }),
+            'loai_baitap': forms.Select(attrs={
+                'class': 'form-control'
+            }),
+            'han_nop': forms.DateTimeInput(attrs={
+                'class': 'form-control',
+                'type': 'datetime-local'
+            })
+        }
 
 class CauHoiForm(forms.ModelForm):
     class Meta:
         model = CauHoi
         fields = ['noi_dung', 'lua_chon_a', 'lua_chon_b', 'lua_chon_c', 'lua_chon_d', 'dap_an_dung']
+        widgets = {
+            'noi_dung': forms.Textarea(attrs={
+                'class': 'form-control',
+                'rows': 3,
+                'placeholder': 'Nhập nội dung câu hỏi...'
+            }),
+            'lua_chon_a': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Lựa chọn A...'
+            }),
+            'lua_chon_b': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Lựa chọn B...'
+            }),
+            'lua_chon_c': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Lựa chọn C...'
+            }),
+            'lua_chon_d': forms.TextInput(attrs={
+                'class': 'form-control',
+                'placeholder': 'Lựa chọn D...'
+            }),
+            'dap_an_dung': forms.Select(attrs={
+                'class': 'form-control'
+            })
+        }
 
         
 from django import forms

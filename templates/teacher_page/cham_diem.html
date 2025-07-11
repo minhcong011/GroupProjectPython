@@ -1,0 +1,80 @@
+{% extends 'teacher_page/gv_base.html' %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/teacher/cham_diem.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>{{ title }}</h1>
+    
+    <div class="stats-summary">
+        <div class="stat-card">
+            <h3>Tổng số bài tập</h3>
+            <span class="stat-number">{{ thong_ke|length }}</span>
+        </div>
+        <div class="stat-card">
+            <h3>Bài cần chấm</h3>
+            <span class="stat-number warning">
+                {% with total_chua_cham=0 %}
+                    {% for item in thong_ke %}
+                        {% with total_chua_cham=total_chua_cham|add:item.chua_cham %}{% endwith %}
+                    {% endfor %}
+                    {{ total_chua_cham }}
+                {% endwith %}
+            </span>
+        </div>
+    </div>
+    
+    <div class="assignment-list">
+        {% for item in thong_ke %}
+        <div class="assignment-card">
+            <div class="assignment-header">
+                <h3>{{ item.bai_tap.tieu_de }}</h3>
+                <span class="assignment-type {% if item.bai_tap.loai_baitap == 'code' %}code{% else %}quiz{% endif %}">
+                    {% if item.bai_tap.loai_baitap == 'code' %}Lập trình{% else %}Trắc nghiệm{% endif %}
+                </span>
+            </div>
+            
+            <div class="assignment-stats">
+                <div class="stat-item">
+                    <span class="label">Đã nộp:</span>
+                    <span class="value">{{ item.so_luong_nop }}</span>
+                </div>
+                <div class="stat-item">
+                    <span class="label">Đã chấm:</span>
+                    <span class="value success">{{ item.so_luong_cham }}</span>
+                </div>
+                <div class="stat-item">
+                    <span class="label">Chưa chấm:</span>
+                    <span class="value warning">{{ item.chua_cham }}</span>
+                </div>
+            </div>
+            
+            <div class="assignment-actions">
+                <a href="{% url 'chi_tiet_bai_tap' item.bai_tap.id %}" class="btn btn-primary">
+                    Xem chi tiết
+                </a>
+                {% if item.bai_tap.loai_baitap == 'code' %}
+                    <a href="{% url 'quan_ly_test_case' item.bai_tap.id %}" class="btn btn-secondary">
+                        Quản lý Test Case
+                    </a>
+                {% endif %}
+            </div>
+        </div>
+        {% empty %}
+        <div class="empty-state">
+            <p>Chưa có bài tập nào được tạo.</p>
+            <a href="{% url 'create_assignment' %}" class="btn btn-primary">Tạo bài tập mới</a>
+        </div>
+        {% endfor %}
+    </div>
+    
+    <div class="back-actions">
+        <a href="{% url 'teacher_home' %}" class="btn btn-back">← Quay lại</a>
+    </div>
+</div>
+{% endblock %}

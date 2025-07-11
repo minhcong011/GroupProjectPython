@@ -2,10 +2,15 @@
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from .forms import LectureForm, BaiTapForm, CauHoiForm, CourseForm, CourseEditForm
-from .models import BaiTap, CauHoi, Course
-from django.http import HttpResponseForbidden
-from core.models import Lecture
+from .models import BaiTap, CauHoi, Course, BaiLam, TestCase
+from django.http import HttpResponseForbidden, JsonResponse
+from core.models import Lecture, Account
 from django.contrib import messages
+from django.utils import timezone
+import json
+import subprocess
+import tempfile
+import os
 
 @login_required
 def edit_question(request, question_id):
@@ -54,6 +59,13 @@ def assignment_list(request):
 
 @login_required
 def create_assignment(request):
+    try:
+        account = Account.objects.get(username=request.user.username)
+        if not account.is_teacher:
+            return redirect('student_home')
+    except Account.DoesNotExist:
+        return redirect('signin')
+        
     if request.method == 'POST':
         form = BaiTapForm(request.POST)
         if form.is_valid():
@@ -63,6 +75,8 @@ def create_assignment(request):
             if baitap.loai_baitap == 'quiz':
                 return redirect('add_questions', assignment_id=baitap.id)
             return redirect('assignment_list')
+        else:
+            messages.error(request, 'Có lỗi trong form. Vui lòng kiểm tra lại.')
     else:
         form = BaiTapForm()
     return render(request, 'teacher_page/create_assignment.html', {'form': form})
@@ -70,16 +84,27 @@ def create_assignment(request):
 
 @login_required
 def add_questions(request, assignment_id):
-    baitap = BaiTap.objects.get(id=assignment_id, nguoi_tao=request.user)
+    try:
+        account = Account.objects.get(username=request.user.username)
+        if not account.is_teacher:
+            return redirect('student_home')
+    except Account.DoesNotExist:
+        return redirect('signin')
+        
+    baitap = get_object_or_404(BaiTap, id=assignment_id, nguoi_tao=request.user)
+    
     if request.method == 'POST':
         form = CauHoiForm(request.POST)
         if form.is_valid():
             cauhoi = form.save(commit=False)
             cauhoi.bai_tap = baitap
             cauhoi.save()
+            messages.success(request, 'Thêm câu hỏi thành công!')
             if 'add_another' in request.POST:
                 return redirect('add_questions', assignment_id=baitap.id)
             return redirect('assignment_list')
+        else:
+            messages.error(request, 'Có lỗi trong form câu hỏi. Vui lòng kiểm tra lại.')
     else:
         form = CauHoiForm()
     return render(request, 'teacher_page/add_questions.html', {'form': form, 'assignment': baitap})
@@ -213,4 +238,594 @@ def edit_course(request, course_id):
 def random_question_ai_view(request):
     # 
     return render(request, 'random_question_ai.html')  # sửa theo thực tế
+
+@login_required
+def cham_diem(request):
+    """Trang chấm điểm"""
+    try:
+        account = Account.objects.get(username=request.user.username)
+        if not account.is_teacher:
+            return redirect('student_home')
+    except Account.DoesNotExist:
+        return redirect('signin')
+    
+    # Lấy danh sách bài tập
+    bai_tap_list = BaiTap.objects.filter(nguoi_tao=request.user).order_by('-ngay_tao')
+    
+    # Lấy thống kê
+    thong_ke = []
+    for bai_tap in bai_tap_list:
+        so_luong_nop = BaiLam.objects.filter(bai_tap=bai_tap).count()
+        so_luong_cham = BaiLam.objects.filter(bai_tap=bai_tap, da_cham=True).count()
+        
+        thong_ke.append({
+            'bai_tap': bai_tap,
+            'so_luong_nop': so_luong_nop,
+            'so_luong_cham': so_luong_cham,
+            'chua_cham': so_luong_nop - so_luong_cham
+        })
+    
+    context = {
+        'thong_ke': thong_ke,
+        'title': 'Chấm điểm bài tập'
+    }
+    return render(request, 'teacher_page/cham_diem.html', context)
+
+@login_required
+def chi_tiet_bai_tap(request, bai_tap_id):
+    """Xem chi tiết bài làm của sinh viên"""
+    try:
+        account = Account.objects.get(username=request.user.username)
+        if not account.is_teacher:
+            return redirect('student_home')
+    except Account.DoesNotExist:
+        return redirect('signin')
+    
+    bai_tap = get_object_or_404(BaiTap, id=bai_tap_id, nguoi_tao=request.user)
+    bai_lam_list = BaiLam.objects.filter(bai_tap=bai_tap).select_related('sinh_vien').order_by('-thoi_gian_nop')
+    
+    context = {
+        'bai_tap': bai_tap,
+        'bai_lam_list': bai_lam_list,
+        'title': f'Chấm điểm: {bai_tap.tieu_de}'
+    }
+    return render(request, 'teacher_page/chi_tiet_bai_tap.html', context)
+
+@login_required
+def cham_bai_trac_nghiem(request, bai_lam_id):
+    """Chấm bài trắc nghiệm tự động"""
+    try:
+        account = Account.objects.get(username=request.user.username)
+        if not account.is_teacher:
+            return JsonResponse({'success': False, 'message': 'Không có quyền truy cập'})
+    except Account.DoesNotExist:
+        return JsonResponse({'success': False, 'message': 'Không có quyền truy cập'})
+    
+    bai_lam = get_object_or_404(BaiLam, id=bai_lam_id)
+    
+    # Kiểm tra quyền
+    if bai_lam.bai_tap.nguoi_tao != request.user:
+        return JsonResponse({'success': False, 'message': 'Không có quyền chấm bài này'})
+    
+    # Chỉ chấm bài trắc nghiệm
+    if bai_lam.bai_tap.loai_baitap != 'quiz':
+        return JsonResponse({'success': False, 'message': 'Chỉ chấm được bài trắc nghiệm'})
+    
+    # Lấy đáp án đúng
+    cau_hoi_list = CauHoi.objects.filter(bai_tap=bai_lam.bai_tap)
+    dap_an_dung = {str(ch.id): ch.dap_an_dung for ch in cau_hoi_list}
+    
+    # Lấy đáp án sinh viên
+    dap_an_sinh_vien = bai_lam.dap_an_json or {}
+    
+    # Tính điểm
+    so_cau_dung = 0
+    tong_so_cau = len(dap_an_dung)
+    
+    for cau_id, dap_an_dung_val in dap_an_dung.items():
+        if dap_an_sinh_vien.get(cau_id) == dap_an_dung_val:
+            so_cau_dung += 1
+    
+    diem_so = (so_cau_dung / tong_so_cau) * 10 if tong_so_cau > 0 else 0
+    
+    # Lưu điểm
+    bai_lam.diem_so = round(diem_so, 2)
+    bai_lam.da_cham = True
+    bai_lam.so_cau_dung = so_cau_dung
+    bai_lam.tong_so_cau = tong_so_cau
+    bai_lam.save()
+    
+    return JsonResponse({
+        'success': True,
+        'diem_so': bai_lam.diem_so,
+        'so_cau_dung': so_cau_dung,
+        'tong_so_cau': tong_so_cau
+    })
+
+@login_required
+def cham_bai_lap_trinh(request, bai_lam_id):
+    """Chấm bài lập trình bằng test case"""
+    try:
+        account = Account.objects.get(username=request.user.username)
+        if not account.is_teacher:
+            return JsonResponse({'success': False, 'message': 'Không có quyền truy cập'})
+    except Account.DoesNotExist:
+        return JsonResponse({'success': False, 'message': 'Không có quyền truy cập'})
+    
+    bai_lam = get_object_or_404(BaiLam, id=bai_lam_id)
+    
+    # Kiểm tra quyền
+    if bai_lam.bai_tap.nguoi_tao != request.user:
+        return JsonResponse({'success': False, 'message': 'Không có quyền chấm bài này'})
+    
+    # Chỉ chấm bài lập trình
+    if bai_lam.bai_tap.loai_baitap != 'code':
+        return JsonResponse({'success': False, 'message': 'Chỉ chấm được bài lập trình'})
+    
+    # Lấy test cases
+    test_cases = TestCase.objects.filter(bai_tap=bai_lam.bai_tap)
+    
+    if not test_cases.exists():
+        return JsonResponse({'success': False, 'message': 'Chưa có test case cho bài này'})
+    
+    # Chạy test
+    ket_qua_test = []
+    tong_diem = 0
+    so_test_pass = 0
+    diem_toi_da = sum([tc.diem_so for tc in test_cases])
+    
+    for test_case in test_cases:
+        try:
+            # Tạo file tạm để chạy code với encoding UTF-8
+            with tempfile.NamedTemporaryFile(mode='w', suffix='.py', delete=False, encoding='utf-8') as f:
+                # Thêm encoding declaration và sửa code để tương thích với tiếng Việt
+                code_to_run = f"""# -*- coding: utf-8 -*-
+import sys
+import os
+import locale
+
+# Set UTF-8 encoding for output
+sys.stdout.reconfigure(encoding='utf-8')
+os.environ['PYTHONIOENCODING'] = 'utf-8'
+
+# Set locale to support Vietnamese
+try:
+    locale.setlocale(locale.LC_ALL, 'vi_VN.UTF-8')
+except:
+    try:
+        locale.setlocale(locale.LC_ALL, 'Vietnamese_Vietnam.1258')
+    except:
+        pass
+
+{bai_lam.code_nop}
+"""
+                f.write(code_to_run)
+                temp_file = f.name
+            
+            # Chạy code với input và environment UTF-8 cho tiếng Việt
+            env = os.environ.copy()
+            env['PYTHONIOENCODING'] = 'utf-8'
+            env['LANG'] = 'vi_VN.UTF-8'
+            env['LC_ALL'] = 'vi_VN.UTF-8'
+            
+            process = subprocess.Popen(
+                ['python', temp_file],
+                stdin=subprocess.PIPE,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True,
+                env=env,
+                encoding='utf-8'
+            )
+            
+            try:
+                stdout, stderr = process.communicate(input=test_case.input_data, timeout=5)
+            except subprocess.TimeoutExpired:
+                process.kill()
+                raise subprocess.TimeoutExpired(process.args, 5)
+            
+            # So sánh output (Vietnamese-aware comparison)
+            output_sinh_vien = stdout.strip()
+            expected_output = test_case.expected_output.strip()
+            
+            # Import Vietnamese helper functions
+            import unicodedata
+            import re
+            
+            def normalize_vietnamese_text(text):
+                if not text:
+                    return ""
+                normalized = unicodedata.normalize('NFC', text)
+                return normalized.strip()
+            
+            def compare_vietnamese_output(actual, expected):
+                actual_norm = normalize_vietnamese_text(actual)
+                expected_norm = normalize_vietnamese_text(expected)
+                
+                # Direct comparison first
+                if actual_norm == expected_norm:
+                    return True, actual_norm, expected_norm
+                
+                # Try case-insensitive comparison
+                if actual_norm.lower() == expected_norm.lower():
+                    return True, actual_norm, expected_norm
+                
+                # Try extracting numbers for flexible comparison
+                actual_numbers = re.findall(r'-?\d+', actual_norm)
+                expected_numbers = re.findall(r'-?\d+', expected_norm)
+                
+                if actual_numbers and expected_numbers:
+                    if actual_numbers[-1] == expected_numbers[-1]:
+                        return True, actual_numbers[-1], expected_numbers[-1]
+                
+                return False, actual_norm, expected_norm
+            
+            # Use Vietnamese-aware comparison
+            is_match, processed_actual, processed_expected = compare_vietnamese_output(
+                output_sinh_vien, expected_output
+            )
+            
+            # Update values for final comparison
+            if is_match and processed_actual != output_sinh_vien:
+                output_sinh_vien = processed_actual
+                expected_output = processed_expected
+            
+            if output_sinh_vien == expected_output:
+                ket_qua = 'PASS'
+                diem_dat = test_case.diem_so
+                tong_diem += diem_dat
+                so_test_pass += 1
+            else:
+                ket_qua = 'FAIL'
+                diem_dat = 0
+            
+            ket_qua_test.append({
+                'ten_test': test_case.ten_test,
+                'input': test_case.input_data,
+                'expected': expected_output,
+                'actual': output_sinh_vien,
+                'ket_qua': ket_qua,
+                'diem_dat': diem_dat,
+                'diem_toi_da': test_case.diem_so,
+                'error': stderr if stderr else None,
+                'original_output': stdout.strip()  # Giữ lại output gốc để debug
+            })
+            
+            # Xóa file tạm
+            os.unlink(temp_file)
+            
+        except subprocess.TimeoutExpired:
+            ket_qua_test.append({
+                'ten_test': test_case.ten_test,
+                'input': test_case.input_data,
+                'expected': test_case.expected_output,
+                'actual': '',
+                'ket_qua': 'TIMEOUT',
+                'diem_dat': 0,
+                'diem_toi_da': test_case.diem_so,
+                'error': 'Code chạy quá lâu (timeout)'
+            })
+            if 'temp_file' in locals():
+                os.unlink(temp_file)
+            
+        except Exception as e:
+            ket_qua_test.append({
+                'ten_test': test_case.ten_test,
+                'input': test_case.input_data,
+                'expected': test_case.expected_output,
+                'actual': '',
+                'ket_qua': 'ERROR',
+                'diem_dat': 0,
+                'diem_toi_da': test_case.diem_so,
+                'error': str(e)
+            })
+            if 'temp_file' in locals():
+                os.unlink(temp_file)
+    
+    # Tính điểm cuối cùng (thang điểm 10)
+    diem_cuoi = (tong_diem / diem_toi_da) * 10 if diem_toi_da > 0 else 0
+    
+    # Lưu kết quả
+    bai_lam.diem_so = round(diem_cuoi, 2)
+    bai_lam.da_cham = True
+    bai_lam.ket_qua_test = ket_qua_test
+    bai_lam.so_test_pass = so_test_pass
+    bai_lam.tong_so_test = len(test_cases)
+    bai_lam.save()
+    
+    return JsonResponse({
+        'success': True,
+        'diem_so': bai_lam.diem_so,
+        'ket_qua_test': ket_qua_test,
+        'tong_diem': tong_diem,
+        'diem_toi_da': diem_toi_da
+    })
+
+@login_required
+def quan_ly_test_case(request, bai_tap_id):
+    """Quản lý test case cho bài lập trình"""
+    try:
+        account = Account.objects.get(username=request.user.username)
+        if not account.is_teacher:
+            return redirect('student_home')
+    except Account.DoesNotExist:
+        return redirect('signin')
+    
+    bai_tap = get_object_or_404(BaiTap, id=bai_tap_id, nguoi_tao=request.user)
+    
+    if bai_tap.loai_baitap != 'code':
+        messages.error(request, 'Chỉ có thể tạo test case cho bài lập trình!')
+        return redirect('cham_diem')
+    
+    if request.method == 'POST':
+        ten_test = request.POST.get('ten_test')
+        input_data = request.POST.get('input_data')
+        expected_output = request.POST.get('expected_output')
+        diem_so = float(request.POST.get('diem_so', 1.0))
+        
+        TestCase.objects.create(
+            bai_tap=bai_tap,
+            ten_test=ten_test,
+            input_data=input_data,
+            expected_output=expected_output,
+            diem_so=diem_so
+        )
+        
+        messages.success(request, 'Thêm test case thành công!')
+        return redirect('quan_ly_test_case', bai_tap_id=bai_tap_id)
+    
+    test_cases = TestCase.objects.filter(bai_tap=bai_tap)
+    
+    context = {
+        'bai_tap': bai_tap,
+        'test_cases': test_cases,
+        'title': f'Test Case: {bai_tap.tieu_de}'
+    }
+    return render(request, 'teacher_page/quan_ly_test_case.html', context)
+
+@login_required
+def debug_csrf(request):
+    """Debug view để test CSRF token"""
+    try:
+        account = Account.objects.get(username=request.user.username)
+        if not account.is_teacher:
+            return redirect('student_home')
+    except Account.DoesNotExist:
+        return redirect('signin')
+    
+    if request.method == 'POST':
+        messages.success(request, 'CSRF test thành công!')
+    
+    return render(request, 'teacher_page/debug_csrf.html')
+
+@login_required
+def test_create_assignment(request):
+    """Test view để tạo bài tập đơn giản"""
+    try:
+        account = Account.objects.get(username=request.user.username)
+        if not account.is_teacher:
+            return redirect('student_home')
+    except Account.DoesNotExist:
+        return redirect('signin')
+    
+    if request.method == 'POST':
+        try:
+            tieu_de = request.POST.get('tieu_de')
+            mo_ta = request.POST.get('mo_ta')
+            loai_baitap = request.POST.get('loai_baitap')
+            han_nop = request.POST.get('han_nop')
+            
+            # Validate data
+            if not all([tieu_de, loai_baitap, han_nop]):
+                messages.error(request, 'Vui lòng điền đầy đủ thông tin!')
+                return render(request, 'teacher_page/test_create_assignment.html')
+            
+            # Parse datetime
+            from datetime import datetime
+            han_nop_datetime = datetime.fromisoformat(han_nop.replace('T', ' '))
+            
+            # Create assignment
+            baitap = BaiTap.objects.create(
+                tieu_de=tieu_de,
+                mo_ta=mo_ta,
+                loai_baitap=loai_baitap,
+                han_nop=han_nop_datetime,
+                nguoi_tao=request.user
+            )
+            
+            messages.success(request, f'Tạo bài tập "{tieu_de}" thành công!')
+            
+            if loai_baitap == 'quiz':
+                return redirect('add_questions', assignment_id=baitap.id)
+            else:
+                return redirect('assignment_list')
+                
+        except Exception as e:
+            messages.error(request, f'Lỗi khi tạo bài tập: {str(e)}')
+    
+    return render(request, 'teacher_page/test_create_assignment.html')
+
+@login_required
+def tao_test_case_tu_dong(request, bai_tap_id):
+    """Tạo test cases tự động cho bài lập trình"""
+    try:
+        account = Account.objects.get(username=request.user.username)
+        if not account.is_teacher:
+            return redirect('student_home')
+    except Account.DoesNotExist:
+        return redirect('signin')
+    
+    bai_tap = get_object_or_404(BaiTap, id=bai_tap_id, nguoi_tao=request.user)
+    
+    if bai_tap.loai_baitap != 'code':
+        messages.error(request, 'Chỉ có thể tạo test case cho bài lập trình!')
+        return redirect('quan_ly_test_case', bai_tap_id=bai_tap_id)
+    
+    # Xóa test cases cũ nếu có
+    TestCase.objects.filter(bai_tap=bai_tap).delete()
+    
+    # Tạo test cases mẫu dựa trên tên bài tập (Vietnamese-friendly)
+    if 'vị trí' in bai_tap.tieu_de.lower() or 'vi tri' in bai_tap.tieu_de.lower():
+        # Test cases cho bài "Tìm vị trí phần tử âm đầu tiên" - Flexible với tiếng Việt
+        test_cases_data = [
+            {
+                'ten_test': 'Test 1: Có phần tử âm ở vị trí 1',
+                'input_data': '',
+                'expected_output': '1',  # Chỉ số, sẽ match với "Vị trí phần tử âm đầu tiên là: 1"
+                'diem_so': 2.5
+            },
+            {
+                'ten_test': 'Test 2: Phần tử âm ở đầu',
+                'input_data': '',
+                'expected_output': '0',  # Sẽ match với "Vị trí phần tử âm đầu tiên là: 0"
+                'diem_so': 2.5
+            },
+            {
+                'ten_test': 'Test 3: Không có phần tử âm',
+                'input_data': '',
+                'expected_output': '-1',  # Sẽ cần xử lý đặc biệt cho câu "Không có..."
+                'diem_so': 2.5
+            },
+            {
+                'ten_test': 'Test 4: Nhiều phần tử âm',
+                'input_data': '',
+                'expected_output': '2',  # Lấy vị trí đầu tiên
+                'diem_so': 2.5
+            }
+        ]
+    elif 'số nguyên tố' in bai_tap.tieu_de.lower():
+        # Test cases cho bài kiểm tra số nguyên tố
+        test_cases_data = [
+            {
+                'ten_test': 'Test 1: Số nguyên tố',
+                'input_data': '7',
+                'expected_output': 'YES',
+                'diem_so': 2.5
+            },
+            {
+                'ten_test': 'Test 2: Không phải số nguyên tố',
+                'input_data': '8',
+                'expected_output': 'NO',
+                'diem_so': 2.5
+            },
+            {
+                'ten_test': 'Test 3: Số 1',
+                'input_data': '1',
+                'expected_output': 'NO',
+                'diem_so': 2.5
+            },
+            {
+                'ten_test': 'Test 4: Số 2',
+                'input_data': '2',
+                'expected_output': 'YES',
+                'diem_so': 2.5
+            }
+        ]
+    else:
+        # Test cases mặc định
+        test_cases_data = [
+            {
+                'ten_test': 'Test 1: Input cơ bản',
+                'input_data': '5',
+                'expected_output': '5',
+                'diem_so': 5.0
+            },
+            {
+                'ten_test': 'Test 2: Input đặc biệt',
+                'input_data': '0',
+                'expected_output': '0',
+                'diem_so': 5.0
+            }
+        ]
+    
+    # Tạo test cases
+    for data in test_cases_data:
+        TestCase.objects.create(
+            bai_tap=bai_tap,
+            ten_test=data['ten_test'],
+            input_data=data['input_data'],
+            expected_output=data['expected_output'],
+            diem_so=data['diem_so']
+        )
+    
+    messages.success(request, f'Đã tạo {len(test_cases_data)} test cases tự động!')
+    return redirect('quan_ly_test_case', bai_tap_id=bai_tap_id)
+
+@login_required
+def xoa_test_case(request, test_case_id):
+    """Xóa một test case"""
+    try:
+        account = Account.objects.get(username=request.user.username)
+        if not account.is_teacher:
+            return redirect('student_home')
+    except Account.DoesNotExist:
+        return redirect('signin')
+    
+    test_case = get_object_or_404(TestCase, id=test_case_id, bai_tap__nguoi_tao=request.user)
+    bai_tap_id = test_case.bai_tap.id
+    
+    if request.method == 'POST':
+        test_case.delete()
+        messages.success(request, 'Đã xóa test case!')
+        return redirect('quan_ly_test_case', bai_tap_id=bai_tap_id)
+    
+    return render(request, 'teacher_page/confirm_delete_test_case.html', {
+        'test_case': test_case,
+        'bai_tap': test_case.bai_tap
+    })
+
+@login_required
+def ket_qua_cham_diem(request, bai_lam_id):
+    """Xem kết quả chấm điểm chi tiết"""
+    try:
+        account = Account.objects.get(username=request.user.username)
+        if not account.is_teacher:
+            return redirect('student_home')
+    except Account.DoesNotExist:
+        return redirect('signin')
+    
+    bai_lam = get_object_or_404(BaiLam, id=bai_lam_id)
+    
+    # Kiểm tra quyền
+    if bai_lam.bai_tap.nguoi_tao != request.user:
+        messages.error(request, 'Không có quyền xem bài này!')
+        return redirect('cham_diem')
+    
+    context = {
+        'bai_lam': bai_lam,
+        'title': f'Kết quả chấm điểm: {bai_lam.sinh_vien.username}'
+    }
+    return render(request, 'teacher_page/ket_qua_cham_diem.html', context)
+
+@login_required
+def sua_diem(request, bai_lam_id):
+    """Sửa điểm thủ công"""
+    try:
+        account = Account.objects.get(username=request.user.username)
+        if not account.is_teacher:
+            return JsonResponse({'success': False, 'message': 'Không có quyền truy cập'})
+    except Account.DoesNotExist:
+        return JsonResponse({'success': False, 'message': 'Không có quyền truy cập'})
+    
+    bai_lam = get_object_or_404(BaiLam, id=bai_lam_id)
+    
+    # Kiểm tra quyền
+    if bai_lam.bai_tap.nguoi_tao != request.user:
+        return JsonResponse({'success': False, 'message': 'Không có quyền sửa bài này'})
+    
+    if request.method == 'POST':
+        import json
+        data = json.loads(request.body)
+        diem_so = data.get('diem_so')
+        
+        if diem_so is None or not (0 <= diem_so <= 10):
+            return JsonResponse({'success': False, 'message': 'Điểm phải từ 0 đến 10'})
+        
+        bai_lam.diem_so = diem_so
+        bai_lam.da_cham = True
+        bai_lam.save()
+        
+        return JsonResponse({'success': True, 'diem_so': diem_so})
+    
+    return JsonResponse({'success': False, 'message': 'Method not allowed'})
 
