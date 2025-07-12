@@ -1,0 +1,268 @@
+/* Edit Assignment Page Styles */
+
+.edit-assignment-container {
+    max-width: 900px;
+    margin: 30px auto;
+    background: #fff;
+    padding: 32px 40px;
+    border-radius: 8px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+}
+
+.edit-assignment-title {
+    color: #1976d2;
+    font-weight: 700;
+    margin-bottom: 24px;
+    font-size: 28px;
+    text-align: center;
+    border-bottom: 3px solid #e3f2fd;
+    padding-bottom: 12px;
+}
+
+.edit-assignment-form {
+    margin-top: 24px;
+}
+
+.edit-assignment-form p {
+    margin-bottom: 20px;
+}
+
+.edit-assignment-form label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #333;
+    font-size: 16px;
+}
+
+.edit-assignment-form input,
+.edit-assignment-form textarea,
+.edit-assignment-form select {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #e0e0e0;
+    border-radius: 6px;
+    font-size: 16px;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    box-sizing: border-box;
+}
+
+.edit-assignment-form input:focus,
+.edit-assignment-form textarea:focus,
+.edit-assignment-form select:focus {
+    outline: none;
+    border-color: #2196f3;
+    box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
+}
+
+.edit-assignment-form textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+.form-actions {
+    text-align: center;
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid #e0e0e0;
+}
+
+.save-btn {
+    background: linear-gradient(135deg, #4caf50, #45a049);
+    color: #fff;
+    padding: 14px 28px;
+    border: none;
+    border-radius: 6px;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-right: 12px;
+}
+
+.save-btn:hover {
+    background: linear-gradient(135deg, #45a049, #4caf50);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+}
+
+.cancel-btn {
+    background: #757575;
+    color: #fff;
+    padding: 12px 24px;
+    text-decoration: none;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 500;
+    transition: background-color 0.2s ease;
+}
+
+.cancel-btn:hover {
+    background: #616161;
+    color: #fff;
+    text-decoration: none;
+}
+
+/* Questions section */
+.questions-section {
+    margin-top: 40px;
+    padding-top: 32px;
+    border-top: 2px solid #e3f2fd;
+}
+
+.questions-title {
+    color: #1976d2;
+    font-weight: 600;
+    margin-bottom: 16px;
+    font-size: 22px;
+}
+
+.add-question-btn {
+    background: #4caf50;
+    color: #fff;
+    padding: 10px 20px;
+    text-decoration: none;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 500;
+    margin-bottom: 20px;
+    display: inline-block;
+    transition: background-color 0.2s ease;
+}
+
+.add-question-btn:hover {
+    background: #45a049;
+    color: #fff;
+    text-decoration: none;
+}
+
+.questions-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 16px;
+    font-size: 15px;
+}
+
+.questions-table th {
+    background: #f5f5f5;
+    color: #333;
+    padding: 12px 10px;
+    border: 1px solid #ddd;
+    font-weight: 600;
+    text-align: left;
+}
+
+.questions-table td {
+    padding: 10px 10px;
+    border: 1px solid #ddd;
+    vertical-align: top;
+}
+
+.questions-table tbody tr:nth-child(even) {
+    background: #fafafa;
+}
+
+.questions-table tbody tr:nth-child(odd) {
+    background: #fff;
+}
+
+.questions-table tbody tr:hover {
+    background: #e8f4fd;
+    transition: background-color 0.2s ease;
+}
+
+.question-content {
+    max-width: 300px;
+    word-wrap: break-word;
+}
+
+.question-actions {
+    display: flex;
+    gap: 6px;
+    flex-wrap: wrap;
+}
+
+.edit-question-btn, .delete-question-btn {
+    padding: 4px 10px;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.edit-question-btn {
+    background: #ff9800;
+    color: #fff;
+}
+
+.edit-question-btn:hover {
+    background: #f57c00;
+    color: #fff;
+    text-decoration: none;
+}
+
+.delete-question-btn {
+    background: #f44336;
+    color: #fff;
+}
+
+.delete-question-btn:hover {
+    background: #d32f2f;
+    color: #fff;
+    text-decoration: none;
+}
+
+.no-questions {
+    text-align: center;
+    padding: 20px;
+    color: #666;
+    font-style: italic;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .edit-assignment-container {
+        margin: 15px;
+        padding: 24px 20px;
+    }
+    
+    .edit-assignment-title {
+        font-size: 24px;
+    }
+    
+    .edit-assignment-form input,
+    .edit-assignment-form textarea,
+    .edit-assignment-form select {
+        padding: 10px 12px;
+        font-size: 14px;
+    }
+    
+    .save-btn {
+        padding: 12px 24px;
+        font-size: 16px;
+        margin-bottom: 12px;
+        margin-right: 0;
+    }
+    
+    .form-actions {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .questions-table {
+        font-size: 13px;
+    }
+    
+    .questions-table th,
+    .questions-table td {
+        padding: 6px 4px;
+    }
+    
+    .question-actions {
+        flex-direction: column;
+        gap: 3px;
+    }
+}

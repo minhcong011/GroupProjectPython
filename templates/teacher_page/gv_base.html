@@ -40,7 +40,7 @@
             <a href="{% url 'assignment_list' %}">Quản lý bài tập</a>
             <a href="{% url 'cham_diem' %}">Chấm điểm</a>
             <a href="#">Thống kê</a>
-            <a href="#">AI Hỗ trợ</a>
+            <a href="{% url 'AIapp:ai_page' %}">Chatbot AI</a>
             <span class="lang">
                 Xin chào, {{ user.first_name }} |
                 <a href="{% url 'signout' %}">Đăng xuất</a>

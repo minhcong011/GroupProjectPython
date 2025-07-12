@@ -25,6 +25,7 @@ urlpatterns = [
     path('', include('cv.urls')), 
     path('', include('teacherapp.urls')),
     path('', include('authentication.urls')),
+    path('', include('AIapp.urls')),  # Thêm URL cho AIapp
     path('student/', include(('studentapp.urls', 'studentapp'), namespace='studentapp')),
     
    

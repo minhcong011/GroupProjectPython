@@ -1,0 +1,150 @@
+body {
+  background: linear-gradient(120deg, #89f7fe 0%, #66a6ff 100%);
+  font-family: 'Segoe UI', Arial, sans-serif;
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+}
+
+.otp-container {
+  background: #fff;
+  max-width: 320px;
+  margin: 70px auto;
+  padding: 28px 20px 22px 20px;
+  border-radius: 12px;
+  box-shadow: 0 8px 32px 0 rgba(102, 166, 255, 0.15);
+  text-align: center;
+}
+
+h3 {
+  color: #1976d2;
+  margin-bottom: 18px;
+  font-size: 1.3rem;
+  font-weight: 600;
+  letter-spacing: 1px;
+}
+
+form {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  align-items: center;
+}
+
+label {
+  font-size: 0.98rem;
+  color: #1976d2;
+  margin-bottom: 4px;
+  font-weight: 500;
+}
+
+input[type="text"] {
+  padding: 8px 10px;
+  border: 1px solid #66a6ff;
+  border-radius: 6px;
+  font-size: 15px;
+  text-align: center;
+  letter-spacing: 3px;
+  transition: border 0.2s;
+  width: 110px;
+  background: #f7fbff;
+}
+
+input[type="text"]:focus {
+  border: 1.5px solid #89f7fe;
+  outline: none;
+  background: #e3f2fd;
+}
+
+button {
+  background: linear-gradient(90deg, #66a6ff 0%, #89f7fe 100%);
+  color: #fff;
+  border: none;
+  border-radius: 6px;
+  padding: 9px 0;
+  font-size: 15px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background 0.2s, transform 0.1s;
+  width: 90px;
+  margin-top: 6px;
+  box-shadow: 0 2px 8px 0 rgba(102, 166, 255, 0.08);
+}
+
+button:hover {
+  background: linear-gradient(90deg, #89f7fe 0%, #66a6ff 100%);
+  transform: translateY(-2px) scale(1.03);
+}
+
+/* Messages */
+.alert {
+  margin: 10px 0;
+  padding: 8px 12px;
+  border-radius: 4px;
+  font-size: 14px;
+}
+
+.alert-success {
+  background: #e8f5e8;
+  color: #2e7d32;
+  border: 1px solid #66bb6a;
+}
+
+.alert-error {
+  background: #ffebee;
+  color: #c62828;
+  border: 1px solid #ef5350;
+}
+
+/* Links */
+.links {
+  margin-top: 15px;
+  text-align: center;
+}
+
+.links a {
+  color: #1976d2;
+  text-decoration: none;
+  font-size: 14px;
+  transition: color 0.2s;
+}
+
+.links a:hover {
+  color: #66a6ff;
+  text-decoration: underline;
+}
+
+/* Paragraph */
+p {
+  color: #555;
+  font-size: 14px;
+  line-height: 1.4;
+  margin: 15px 0;
+  text-align: center;
+}
+
+/* Footer */
+.footer {
+  position: fixed;
+  bottom: 10px;
+  left: 50%;
+  transform: translateX(-50%);
+  color: #888;
+  font-size: 12px;
+  text-align: center;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .otp-container {
+    max-width: 96vw;
+    padding: 14px 4vw 14px 4vw;
+  }
+  input[type="text"] {
+    width: 90%;
+    font-size: 14px;
+  }
+  button {
+    width: 100%;
+  }
+}

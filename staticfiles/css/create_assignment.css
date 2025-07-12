@@ -1,0 +1,155 @@
+/* Create Assignment Page Styles */
+
+.create-assignment-container {
+    max-width: 800px;
+    margin: 30px auto;
+    background: #fff;
+    padding: 32px 40px;
+    border-radius: 8px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+}
+
+.create-assignment-title {
+    color: #1976d2;
+    font-weight: 700;
+    margin-bottom: 24px;
+    font-size: 28px;
+    text-align: center;
+    border-bottom: 3px solid #e3f2fd;
+    padding-bottom: 12px;
+}
+
+.assignment-form {
+    margin-top: 24px;
+}
+
+.assignment-form p {
+    margin-bottom: 20px;
+}
+
+.assignment-form label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #333;
+    font-size: 16px;
+}
+
+.assignment-form input,
+.assignment-form textarea,
+.assignment-form select {
+    width: 100%;
+    padding: 12px 16px;
+    border: 2px solid #e0e0e0;
+    border-radius: 6px;
+    font-size: 16px;
+    font-family: 'Segoe UI', Arial, sans-serif;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    box-sizing: border-box;
+}
+
+.assignment-form input:focus,
+.assignment-form textarea:focus,
+.assignment-form select:focus {
+    outline: none;
+    border-color: #2196f3;
+    box-shadow: 0 0 0 3px rgba(33, 150, 243, 0.1);
+}
+
+.assignment-form textarea {
+    min-height: 100px;
+    resize: vertical;
+}
+
+.submit-btn {
+    background: linear-gradient(135deg, #4caf50, #45a049);
+    color: #fff;
+    padding: 14px 28px;
+    border: none;
+    border-radius: 6px;
+    font-size: 18px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    margin-top: 20px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.submit-btn:hover {
+    background: linear-gradient(135deg, #45a049, #4caf50);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(76, 175, 80, 0.3);
+}
+
+.submit-btn:active {
+    transform: translateY(0);
+}
+
+.form-actions {
+    text-align: center;
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid #e0e0e0;
+}
+
+.cancel-btn {
+    background: #757575;
+    color: #fff;
+    padding: 12px 24px;
+    text-decoration: none;
+    border-radius: 6px;
+    font-size: 16px;
+    font-weight: 500;
+    margin-left: 12px;
+    transition: background-color 0.2s ease;
+}
+
+.cancel-btn:hover {
+    background: #616161;
+    color: #fff;
+    text-decoration: none;
+}
+
+/* Form field specific styles */
+.form-field-required {
+    position: relative;
+}
+
+.form-field-required label::after {
+    content: '*';
+    color: #f44336;
+    margin-left: 4px;
+}
+
+.help-text {
+    font-size: 14px;
+    color: #666;
+    margin-top: 4px;
+    font-style: italic;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .create-assignment-container {
+        margin: 15px;
+        padding: 24px 20px;
+    }
+    
+    .create-assignment-title {
+        font-size: 24px;
+    }
+    
+    .assignment-form input,
+    .assignment-form textarea,
+    .assignment-form select {
+        padding: 10px 12px;
+        font-size: 14px;
+    }
+    
+    .submit-btn {
+        padding: 12px 24px;
+        font-size: 16px;
+    }
+}

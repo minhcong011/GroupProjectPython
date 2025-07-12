@@ -1,0 +1,73 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot AI - Hỗ trợ học tập</title>
+    <link rel="stylesheet" href="{% static 'css/chatbot.css' %}">
+</head>
+<body>
+    <div class="chatbot-container">
+        <!-- Feature Cards as Header -->
+        <div class="welcome-message">
+            <div class="welcome-header">
+                <h3 class="ai-assistant-title"> AI Assistant</h3>
+                <a href="javascript:history.back()" class="back-button">← Quay lại</a>
+            </div>
+            
+            <div class="feature-grid">
+                <div class="feature-card" onclick="selectMode('chat')">
+                    <h4> Hỗ trợ học tập</h4>
+                    <p>Perl & Python</p>
+                </div>
+                <div class="feature-card" onclick="selectMode('review')">
+                    <h4> Review Code</h4>
+                    <p>Phân tích lỗi</p>
+                </div>
+                <div class="feature-card" onclick="selectMode('assessment')">
+                    <h4> Đánh giá</h4>
+                    <p>Theo dõi tiến độ</p>
+                </div>
+                <div class="feature-card" onclick="selectMode('quiz')">
+                    <h4> Quiz</h4>
+                    <p>Tạo bài tập</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="chat-messages" id="chatMessages">
+        </div>
+
+        <div class="typing-indicator" id="typingIndicator">
+            <span>AI đang trả lời</span>
+            <div class="typing-dots">
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+            </div>
+        </div>
+
+        <div class="chat-input">
+            <div class="input-container">
+                <div class="input-tools">
+                    <button class="tool-btn" onclick="attachCode()" title="Attach Code">📎</button>
+                    <button class="tool-btn" onclick="selectMode('review')" title="Code Review">🔍</button>
+                    <button class="tool-btn" onclick="selectMode('quiz')" title="Generate Quiz">📝</button>
+                </div>
+                <input type="text" id="messageInput" placeholder="Nhập câu hỏi về Python hoặc Perl..." autocomplete="off">
+                <button class="send-button" id="sendButton" onclick="sendMessage()">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+                        <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
+                    </svg>
+                </button>
+            </div>
+            <div class="mode-indicator" id="modeIndicator">
+                 Chế độ: Trò chuyện thông thường
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'js/chatbot.js' %}"></script>
+</body>
+</html>

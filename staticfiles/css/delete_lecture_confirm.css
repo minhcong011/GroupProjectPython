@@ -1,0 +1,27 @@
+/* Style xác nhận xóa đề cương */
+.delete-lecture-confirm-container {
+    background: #fff3f3;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(234,67,53,0.07);
+    padding: 32px 24px;
+    max-width: 500px;
+    margin: 48px auto;
+    color: #b71c1c;
+    text-align: center;
+}
+.delete-lecture-confirm-container h2 {
+    color: #ea4335;
+    margin-bottom: 16px;
+}
+.btn {
+    display: inline-block;
+    margin: 4px 8px 4px 0;
+    padding: 6px 16px;
+    border-radius: 6px;
+    text-decoration: none;
+    color: #fff;
+    background: #ea4335;
+    transition: background 0.2s;
+}
+.btn-secondary { background: #6c757d; }
+.btn:hover { filter: brightness(0.9); }

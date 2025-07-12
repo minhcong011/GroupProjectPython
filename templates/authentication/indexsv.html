@@ -19,7 +19,7 @@
       <a href="{% url 'studentapp:course' %}">Khóa học</a>
       <a href="{% url 'studentapp:assignment_list' %}">Bài tập</a>
       <a href="{% url 'studentapp:ide_online' %}">IDE Online</a>
-      <a href="{% url 'studentapp:chatbot' %}">Chatbot AI</a>
+      <a href="{% url 'AIapp:ai_page' %}">Chatbot AI</a>
       <span class="lang">Xin chào, {{ user.first_name }} | <a href="{% url 'signout' %}">Đăng xuất</a></span>
     </div>
   </div>
@@ -47,7 +47,7 @@
           <li><a href="{% url 'studentapp:assignment_list' %}">Bài tập</a></li>
           <li><a href="{% url 'studentapp:nop_bai' %}">Nộp bài</a></li>
           <li><a href="{% url 'studentapp:ide_online' %}">IDE Online</a></li>
-          <li><a href="{% url 'studentapp:chatbot' %}">Chatbot AI</a></li>
+          <li><a href="{% url 'AIapp:ai_page' %}">Chatbot AI</a></li>
           <li><a href="#">Thông báo</a></li>
           <li><a href="#">Đánh giá khóa học</a></li>
           <li><a href="#">Tài liệu học tập</a></li>

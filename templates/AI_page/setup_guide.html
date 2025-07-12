@@ -1,0 +1,214 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Hướng dẫn cấu hình API - AI Assistant</title>
+    <link rel="stylesheet" href="{% static 'css/chatbot.css' %}">
+    <style>
+        .guide-container {
+            max-width: 1000px;
+            margin: 40px auto;
+            padding: 40px;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+        }
+        
+        .step-card {
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 24px;
+            margin: 20px 0;
+            position: relative;
+        }
+        
+        .step-number {
+            position: absolute;
+            top: -12px;
+            left: 24px;
+            background: #3b82f6;
+            color: white;
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 14px;
+        }
+        
+        .screenshot {
+            border: 2px solid #e2e8f0;
+            border-radius: 8px;
+            margin: 16px 0;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+        
+        .code-example {
+            background: #1f2937;
+            color: #e5e7eb;
+            padding: 16px;
+            border-radius: 8px;
+            font-family: 'Consolas', monospace;
+            margin: 12px 0;
+            overflow-x: auto;
+        }
+        
+        .highlight {
+            background: #fef3c7;
+            padding: 2px 6px;
+            border-radius: 4px;
+            color: #92400e;
+        }
+        
+        .success-box {
+            background: #dcfce7;
+            border: 1px solid #bbf7d0;
+            color: #166534;
+            padding: 16px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+        
+        .warning-box {
+            background: #fef3c7;
+            border: 1px solid #fde68a;
+            color: #92400e;
+            padding: 16px;
+            border-radius: 8px;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="guide-container">
+        <div style="text-align: center; margin-bottom: 40px;">
+            <h1>🔑 Hướng dẫn cấu hình Google Gemini 2.0 Flash API</h1>
+            <p style="color: #6b7280; font-size: 18px;">Thiết lập AI Assistant với model mới nhất cho CS466 Project</p>
+        </div>
+
+        <div class="step-card">
+            <div class="step-number">1</div>
+            <h3>Truy cập Google AI Studio</h3>
+            <p>Mở trình duyệt và truy cập vào:</p>
+            <div class="code-example">
+                https://makersuite.google.com/app/apikey
+            </div>
+            <p>Hoặc tìm kiếm "Google AI Studio API key" trên Google</p>
+        </div>
+
+        <div class="step-card">
+            <div class="step-number">2</div>
+            <h3>Đăng nhập Google Account</h3>
+            <p>Sử dụng tài khoản Google của bạn để đăng nhập. Nếu chưa có, tạo tài khoản miễn phí tại gmail.com</p>
+            <div class="warning-box">
+                ⚠️ <strong>Lưu ý:</strong> Cần có tài khoản Google để sử dụng dịch vụ này
+            </div>
+        </div>
+
+        <div class="step-card">
+            <div class="step-number">3</div>
+            <h3>Tạo API Key</h3>
+            <p>Trong Google AI Studio:</p>
+            <ol>
+                <li>Nhấn nút <span class="highlight">"Create API Key"</span></li>
+                <li>Chọn <span class="highlight">"Create API key in new project"</span></li>
+                <li>Đợi vài giây để hệ thống tạo key</li>
+                <li>Copy API key (dạng: AIza...)</li>
+            </ol>
+            <div class="success-box">
+                ✅ <strong>Thành công!</strong> Bạn đã có API key miễn phí với Gemini 2.0 Flash - model mạnh mẽ nhất hiện tại!
+            </div>
+        </div>
+
+        <div class="step-card">
+            <div class="step-number">4</div>
+            <h3>Cấu hình trong Project</h3>
+            <p>Mở file <code>static/js/chatbot.js</code> trong VS Code:</p>
+            
+            <p><strong>Tìm dòng này:</strong></p>
+            <div class="code-example">
+const API_KEY = 'YOUR_GOOGLE_GEMINI_API_KEY_HERE';
+            </div>
+            
+            <p><strong>Thay thế bằng:</strong></p>
+            <div class="code-example">
+const API_KEY = 'AIzaSyC1234567890abcdefghijk...'; // API key của bạn
+            </div>
+            
+            <div class="warning-box">
+                ⚠️ <strong>Bảo mật:</strong> Không chia sẻ API key trên GitHub hoặc nơi công cộng
+            </div>
+        </div>
+
+        <div class="step-card">
+            <div class="step-number">5</div>
+            <h3>Test và Sử dụng</h3>
+            <p>Sau khi cấu hình xong:</p>
+            <ol>
+                <li>Lưu file <code>chatbot.js</code></li>
+                <li>Refresh trang web</li>
+                <li>Thử gửi tin nhắn: "Hello AI!"</li>
+                <li>AI sẽ phản hồi bằng tiếng Việt</li>
+            </ol>
+            
+            <div class="success-box">
+                🎉 <strong>Hoàn thành!</strong> AI Assistant với Gemini 2.0 Flash đã sẵn sàng hỗ trợ học tập Perl & Python
+            </div>
+            
+            <p><strong>💡 Test commands gợi ý:</strong></p>
+            <div class="code-example">
+# Test chat thông thường
+"Giải thích Python decorator"
+
+# Test code review  
+"Review code này: def fibonacci(n): return n if n <= 1 else fibonacci(n-1) + fibonacci(n-2)"
+
+# Test tạo quiz
+"Tạo quiz Python OOP với 5 câu hỏi"
+
+# Test đánh giá năng lực
+"Tôi đã học Python 3 tháng, có thể làm list comprehension"
+            </div>
+        </div>
+
+        <div class="step-card" style="background: #f0f9ff; border-color: #0ea5e9;">
+            <div class="step-number" style="background: #0ea5e9;">⚡</div>
+            <h3>Gemini 2.0 Flash - Model mới nhất</h3>
+            <p><strong>Ưu điểm của Gemini 2.0 Flash:</strong></p>
+            <ul>
+                <li>🚀 <strong>Tốc độ nhanh hơn:</strong> Response time giảm 50%</li>
+                <li>🧠 <strong>Hiểu biết sâu hơn:</strong> Code analysis chính xác hơn</li>
+                <li>💬 <strong>Tiếng Việt tốt hơn:</strong> Ngữ pháp và từ vựng chuyên ngành</li>
+                <li>🔥 <strong>API call format mới:</strong> Sử dụng X-goog-api-key header</li>
+                <li>📊 <strong>Multimodal:</strong> Hỗ trợ text, image, code tốt hơn</li>
+            </ul>
+            <div class="success-box">
+                💡 <strong>Tip:</strong> Gemini 2.0 Flash đặc biệt giỏi trong việc giải thích code và tạo bài tập lập trình!
+            </div>
+        </div>
+
+        <div class="step-card" style="background: #fef7ff; border-color: #e879f9;">
+            <div class="step-number" style="background: #a855f7;">💡</div>
+            <h3>Tính năng nâng cao</h3>
+            <p><strong>AI Assistant hỗ trợ:</strong></p>
+            <ul>
+                <li>🔍 <strong>Code Review:</strong> Phân tích và gợi ý sửa lỗi code</li>
+                <li>📊 <strong>Đánh giá năng lực:</strong> Theo dõi tiến độ học tập</li>
+                <li>📝 <strong>Sinh câu hỏi:</strong> Tạo quiz và bài tập tự động</li>
+                <li>💬 <strong>Chat thông minh:</strong> Trả lời câu hỏi về Perl & Python</li>
+            </ul>
+        </div>
+
+        <div style="text-align: center; margin-top: 40px;">
+            <a href="{% url 'AIapp:ai_page' %}" class="back-button" style="display: inline-block; padding: 12px 24px; font-size: 16px;">
+                🚀 Bắt đầu sử dụng AI Assistant
+            </a>
+        </div>
+    </div>
+</body>
+</html>
