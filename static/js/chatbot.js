@@ -9,7 +9,7 @@ let modeIndicator = document.getElementById('modeIndicator');
 let currentMode = 'chat'; // chat, review, assessment, quiz
 
 // API Configuration - Using Groq API (Free alternative)
-
+ // Lấy từ https://console.groq.com/keys
 const API_URL = 'https://api.groq.com/openai/v1/chat/completions';
 const MODEL_NAME = 'llama-3.1-8b-instant'; // Updated to available model
 
@@ -140,10 +140,10 @@ function selectMode(mode) {
     
     // Update mode indicator and placeholder
     const modeTexts = {
-        chat: '💬 Chế độ: Trò chuyện thông thường',
-        review: '🔍 Chế độ: Review code - Paste code để phân tích',
-        assessment: '📊 Chế độ: Đánh giá năng lực',
-        quiz: '📝 Chế độ: Tạo câu hỏi - Nhập chủ đề'
+        chat: ' Chế độ: Trò chuyện thông thường',
+        review: ' Chế độ: Review code - Paste code để phân tích',
+        assessment: ' Chế độ: Đánh giá năng lực',
+        quiz: ' Chế độ: Tạo câu hỏi - Nhập chủ đề'
     };
     
     const placeholders = {
@@ -158,10 +158,10 @@ function selectMode(mode) {
     
     // Add mode-specific intro message
     const modeIntros = {
-        chat: '💬 Chế độ Hỗ trợ học tập đã được kích hoạt! Hỏi tôi bất cứ điều gì về Python và Perl.',
-        review: '🔍 Chế độ Review Code đã sẵn sàng! Paste code của bạn để tôi phân tích và đưa ra gợi ý cải thiện.',
-        assessment: '📊 Chế độ Đánh giá năng lực đã kích hoạt! Mô tả những gì bạn đã học để tôi đánh giá và đề xuất lộ trình.',
-        quiz: '📝 Chế độ Tạo Quiz đã sẵn sàng! Cho tôi biết chủ đề để tạo câu hỏi và bài tập phù hợp.'
+        chat: ' Chế độ Hỗ trợ học tập đã được kích hoạt! Hỏi tôi bất cứ điều gì về Python và Perl.',
+        review: ' Chế độ Review Code đã sẵn sàng! Paste code của bạn để tôi phân tích và đưa ra gợi ý cải thiện.',
+        assessment: ' Chế độ Đánh giá năng lực đã kích hoạt! Mô tả những gì bạn đã học để tôi đánh giá và đề xuất lộ trình.',
+        quiz: ' Chế độ Tạo Quiz đã sẵn sàng! Cho tôi biết chủ đề để tạo câu hỏi và bài tập phù hợp.'
     };
     
     // Only add intro if chat is empty
@@ -232,7 +232,7 @@ async function sendToAI(message) {
 
         console.log('Response status:', response.status);
         const data = await response.json();
-        console.log('Response received:', data.choices ? '✅ Success' : '❌ No choices');
+        console.log('Response received:', data.choices ? ' Success' : ' No choices');
         
         if (response.ok && data.choices && data.choices[0] && data.choices[0].message) {
             const aiResponse = data.choices[0].message.content;
@@ -247,7 +247,7 @@ async function sendToAI(message) {
             throw new Error('Không thể nhận được phản hồi từ AI');
         }
     } catch (error) {
-        console.error('❌ Lỗi khi gọi API:', error);
+        console.error(' Lỗi khi gọi API:', error);
         hideTypingIndicator();
         
         let errorMessage = 'Xin lỗi, đã có lỗi xảy ra: ';
@@ -268,7 +268,7 @@ async function testAPIConnection() {
     const testButton = document.querySelector('.status-indicator');
     if (!testButton) return;
     
-    testButton.textContent = '🔄 Testing...';
+    testButton.textContent = ' Testing...';
     testButton.className = 'status-indicator loading';
     
     try {
@@ -298,16 +298,16 @@ async function testAPIConnection() {
         console.log('Test response data:', data);
         
         if (response.ok && data.choices && data.choices[0]) {
-            testButton.textContent = '✅ Llama 3.1-8B';
+            testButton.textContent = ' Llama 3.1-8B';
             testButton.className = 'status-indicator online';
-            console.log('✅ API connection successful!');
-            addMessageToChat('🎉 AI đã sẵn sàng! Bạn có thể bắt đầu trò chuyện.', 'ai');
+            console.log(' API connection successful!');
+            addMessageToChat(' AI đã sẵn sàng! Bạn có thể bắt đầu trò chuyện.', 'ai');
         } else {
             throw new Error(`API Error: ${data.error?.message || JSON.stringify(data)}`);
         }
     } catch (error) {
-        console.error('❌ API test failed:', error);
-        testButton.textContent = '❌ Lỗi API';
+        console.error(' API test failed:', error);
+        testButton.textContent = ' Lỗi API';
         testButton.className = 'status-indicator offline';
         
         // Show helpful error message
@@ -335,11 +335,11 @@ function validateAPIKey() {
     console.log('- Model:', MODEL_NAME);
     
     if (API_KEY.length !== 56) {
-        console.warn('⚠️ API key length seems incorrect. Groq keys should be 56 characters.');
+        console.warn(' API key length seems incorrect. Groq keys should be 56 characters.');
     }
     
     if (!API_KEY.startsWith('gsk_')) {
-        console.warn('⚠️ API key should start with "gsk_"');
+        console.warn(' API key should start with "gsk_"');
     }
 }
 
@@ -381,7 +381,7 @@ function addFollowUpSuggestions(mode) {
     const followUpDiv = document.createElement('div');
     followUpDiv.className = 'follow-up-suggestions';
     followUpDiv.innerHTML = `
-        <p><strong>💡 Tiếp tục với:</strong></p>
+        <p><strong> Tiếp tục với:</strong></p>
         <div class="suggestion-buttons">
             ${suggestions[mode].map(suggestion => 
                 `<button class="suggestion-btn small" onclick="sendQuickMessage('${suggestion}')">${suggestion}</button>`
@@ -424,7 +424,7 @@ function formatMessageAdvanced(text) {
         return `<div class="code-block">
             <div class="code-header">
                 <span class="code-lang">${language}</span>
-                <button class="copy-btn" onclick="copyCode(this)">📋 Copy</button>
+                <button class="copy-btn" onclick="copyCode(this)"> Copy</button>
             </div>
             <pre><code class="language-${language}">${code.trim()}</code></pre>
         </div>`;
@@ -457,9 +457,9 @@ function copyCode(button) {
     const code = codeBlock.textContent;
     
     navigator.clipboard.writeText(code).then(() => {
-        button.textContent = '✅ Copied!';
+        button.textContent = ' Copied!';
         setTimeout(() => {
-            button.innerHTML = '📋 Copy';
+            button.innerHTML = ' Copy';
         }, 2000);
     });
 }

@@ -135,11 +135,12 @@ body {
 }
 
 .message.bot .message-content {
-    background: white;
-    color: #333;
+    background: rgba(255, 255, 255, 0.95); /* Nền trắng đậm */
+    color: #1a1a1a; /* Chữ đen rõ ràng */
     border: 1px solid #e0e0e0;
     border-bottom-left-radius: 6px;
-    box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    font-weight: 500; /* Làm đậm chữ */
 }
 
 .message-avatar {
@@ -338,22 +339,26 @@ body {
     border-left: 4px solid #4caf50;
 }
 
-/* Code formatting */
+/* Code formatting - Sửa độ tương phản */
 .message-content pre {
-    background: #f4f4f4;
+    background: #2d3748; /* Nền đen đậm hơn */
+    color: #f7fafc; /* Chữ trắng rõ ràng */
     padding: 12px;
     border-radius: 8px;
     overflow-x: auto;
     margin: 8px 0;
-    border: 1px solid #e0e0e0;
+    border: 1px solid #4a5568;
+    font-weight: 500; /* Làm đậm chữ */
 }
 
 .message-content code {
-    background: #f4f4f4;
+    background: #2d3748; /* Nền đen đậm */
+    color: #f7fafc; /* Chữ trắng rõ ràng */
     padding: 2px 6px;
     border-radius: 4px;
     font-family: 'Courier New', Consolas, monospace;
     font-size: 13px;
+    font-weight: 600; /* Làm đậm code */
 }
 
 .message-content pre code {
@@ -362,13 +367,14 @@ body {
 }
 
 .message-content strong {
-    font-weight: 600;
-    color: #2c3e50;
+    font-weight: 700; /* Làm đậm hơn */
+    color: #1a1a1a; /* Chữ đen rõ ràng */
 }
 
 .message-content em {
     font-style: italic;
-    color: #34495e;
+    color: #2d3748; /* Chữ đen đậm hơn */
+    font-weight: 500;
 }
 
 /* Loading animation */
@@ -603,67 +609,83 @@ body {
     color: #374151;
 }
 
-/* Enhanced Code Blocks */
+/* Enhanced Code Blocks - Cải thiện độ tương phản */
 .code-block {
-    background: #1f2937;
+    background: #1a202c; /* Nền đen đậm hơn */
     border-radius: 8px;
     margin: 12px 0;
     overflow: hidden;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    border: 2px solid #2d3748;
 }
 
 .code-header {
-    background: #374151;
+    background: #2d3748; /* Nền xám đậm */
     padding: 8px 16px;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    border-bottom: 1px solid #4b5563;
+    border-bottom: 1px solid #4a5568;
 }
 
 .code-lang {
-    color: #9ca3af;
+    color: #f7fafc; /* Chữ trắng rõ ràng */
     font-size: 12px;
-    font-weight: 500;
+    font-weight: 600; /* Làm đậm */
     text-transform: uppercase;
 }
 
 .copy-btn {
-    background: #4b5563;
-    color: #d1d5db;
+    background: #4a5568;
+    color: #f7fafc; /* Chữ trắng rõ ràng */
     border: none;
     padding: 4px 8px;
     border-radius: 4px;
     font-size: 12px;
     cursor: pointer;
     transition: all 0.2s ease;
+    font-weight: 600; /* Làm đậm */
 }
 
 .copy-btn:hover {
-    background: #6b7280;
+    background: #718096;
     color: #ffffff;
+    transform: translateY(-1px);
 }
 
+.welcome-message {
+    background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%); /* Nền xanh đậm */
+    color: white; /* Chữ trắng */
+}
+.feature-card p {
+    margin: 0;
+    font-size: 12px;
+    color: #666; /* Thêm màu rõ ràng thay vì opacity */
+}
 .code-block pre {
     margin: 0;
     padding: 16px;
     overflow-x: auto;
+    background: #1a202c; /* Nền đen đậm */
 }
 
 .code-block code {
-    color: #e5e7eb;
+    color: #f7fafc; /* Chữ trắng rõ ràng */
     font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
     font-size: 14px;
     line-height: 1.5;
+    font-weight: 500; /* Làm đậm code */
 }
 
 .inline-code {
-    background: #f3f4f6;
-    color: #dc2626;
-    padding: 2px 6px;
+    background: #2d3748; /* Nền đen đậm */
+    color: #f7fafc; /* Chữ trắng rõ ràng */
+    padding: 3px 6px;
     border-radius: 4px;
     font-family: 'Consolas', 'Monaco', 'Courier New', monospace;
     font-size: 0.9em;
+    font-weight: 600; /* Làm đậm code */
+    border: 1px solid #4a5568;
 }
 
 /* Lists Styling */
@@ -725,20 +747,21 @@ body {
 }
 
 .ai-message .message-content {
-    background: #f8fafc;
-    color: #374151;
+    background: rgba(255, 255, 255, 0.95); /* Nền trắng đậm hơn */
+    color: #1a1a1a; /* Chữ đen rõ ràng */
     padding: 16px;
     border-radius: 4px 18px 18px 18px;
     max-width: 90%;
     border: 1px solid #e2e8f0;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    font-weight: 500; /* Làm đậm chữ */
 }
 
 /* Welcome Message Styles */
 .welcome-message {
     padding: 20px 24px;
     background: linear-gradient(135deg, #3b82f6 0%, #1e40af 100%);
-    color: white;
+    color: #ffffff; /* Chữ trắng rõ ràng */
     border-radius: 0;
     margin-bottom: 0;
     box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
@@ -756,21 +779,25 @@ body {
     margin: 0;
     font-size: 20px;
     font-weight: 600;
+    color: #ffffff; /* Chữ trắng rõ ràng */
+    text-shadow: 0 1px 2px rgba(0,0,0,0.1); /* Thêm shadow cho rõ hơn */
 }
 
 .back-button {
     font-size: 12px;
     padding: 6px 12px;
     text-decoration: none;
-    background: rgba(255,255,255,0.15);
+    background: rgba(255,255,255,0.2); /* Tăng độ mờ cho nổi bật hơn */
     border-radius: 8px;
-    color: white;
+    color: #ffffff; /* Chữ trắng rõ ràng */
     font-weight: 500;
+    border: 1px solid rgba(255,255,255,0.3); /* Thêm border */
 }
 
 .back-button:hover {
-    background: rgba(255,255,255,0.25);
+    background: rgba(255,255,255,0.3);
     transition: background 0.3s ease;
+    transform: translateY(-1px); /* Thêm hiệu ứng hover */
 }
 
 /* Feature Grid Styles */
@@ -795,12 +822,14 @@ body {
     margin: 0 0 6px 0;
     font-size: 14px;
     font-weight: 600;
+    color: #1a1a1a; /* Chữ đen rõ ràng thay vì mặc định */
 }
 
 .feature-card p {
     margin: 0;
     font-size: 12px;
-    opacity: 0.85;
+    color: #333333; /* Chữ xám đậm thay vì opacity */
+    font-weight: 500; /* Làm đậm chữ hơn */
 }
 
 /* Chat Input Container */
@@ -818,8 +847,10 @@ body {
 /* Mode Indicator */
 .mode-indicator {
     font-size: 12px;
-    color: #666;
+    color: #1a1a1a; /* Chữ đen rõ ràng thay vì #666 */
     margin-top: 8px;
+    font-weight: 500; /* Làm đậm chữ */
+    text-align: center;
 }
 
 /* Responsive Design */
