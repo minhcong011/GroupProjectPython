@@ -227,7 +227,42 @@
     }
     
     function xemChiTiet(baiLamId) {
-        alert('Chức năng xem chi tiết đang được phát triển');
+        fetch(`/teacher/xem-chi-tiet/${baiLamId}/`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    let content = `
+                        <h4>Chi tiết bài làm</h4>
+                        <p><strong>Sinh viên:</strong> ${data.sinh_vien}</p>
+                        <p><strong>Bài tập:</strong> ${data.bai_tap}</p>
+                        <p><strong>Thời gian nộp:</strong> ${data.thoi_gian_nop}</p>
+                        <p><strong>Điểm:</strong> ${data.diem_so || '--'}/10</p>
+                    `;
+                    
+                    if (data.code_nop) {
+                        content += `
+                            <h5>Code đã nộp:</h5>
+                            <pre><code>${data.code_nop}</code></pre>
+                        `;
+                    }
+                    
+                    if (data.dap_an_json) {
+                        content += `
+                            <h5>Đáp án đã chọn:</h5>
+                            <pre>${JSON.stringify(data.dap_an_json, null, 2)}</pre>
+                        `;
+                    }
+                    
+                    document.getElementById('modalBody').innerHTML = content;
+                    document.getElementById('detailModal').style.display = 'block';
+                } else {
+                    alert('Lỗi: ' + data.message);
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Có lỗi xảy ra!');
+            });
     }
     
     function closeModal() {
