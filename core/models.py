@@ -41,3 +41,42 @@ class Lecture(models.Model):
 
     def __str__(self):
         return self.title
+
+class SystemLog(models.Model):
+    LOG_LEVELS = [
+        ('DEBUG', 'Debug'),
+        ('INFO', 'Info'),
+        ('WARNING', 'Warning'),
+        ('ERROR', 'Error'),
+        ('CRITICAL', 'Critical'),
+    ]
+    
+    ACTION_TYPES = [
+        ('LOGIN', 'Đăng nhập'),
+        ('LOGOUT', 'Đăng xuất'),
+        ('CREATE', 'Tạo mới'),
+        ('UPDATE', 'Cập nhật'),
+        ('DELETE', 'Xóa'),
+        ('VIEW', 'Xem'),
+        ('BACKUP', 'Sao lưu'),
+        ('RESTORE', 'Phục hồi'),
+        ('SYSTEM', 'Hệ thống'),
+    ]
+    
+    user = models.ForeignKey(User, on_delete=models.SET_NULL, null=True, blank=True, verbose_name="Người dùng")
+    action_type = models.CharField("Loại hành động", max_length=20, choices=ACTION_TYPES)
+    level = models.CharField("Mức độ", max_length=10, choices=LOG_LEVELS, default='INFO')
+    message = models.TextField("Thông điệp")
+    ip_address = models.GenericIPAddressField("Địa chỉ IP", null=True, blank=True)
+    user_agent = models.TextField("User Agent", blank=True)
+    timestamp = models.DateTimeField("Thời gian", auto_now_add=True)
+    details = models.JSONField("Chi tiết", null=True, blank=True)
+    
+    class Meta:
+        verbose_name = "Log Hệ thống"
+        verbose_name_plural = "Logs Hệ thống"
+        ordering = ['-timestamp']
+    
+    def __str__(self):
+        user_info = self.user.username if self.user else "Anonymous"
+        return f"{self.timestamp.strftime('%Y-%m-%d %H:%M:%S')} - {user_info} - {self.get_action_type_display()}"

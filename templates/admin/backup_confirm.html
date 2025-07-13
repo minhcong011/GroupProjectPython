@@ -1,0 +1,78 @@
+{% extends "admin/base_site.html" %}
+{% load i18n admin_urls static admin_modify %}
+
+{% block title %}{{ title }} | {{ site_title|default:_('Django site admin') }}{% endblock %}
+
+{% block extrahead %}
+{{ block.super }}
+<style>
+    .info-box {
+        background: #d1ecf1;
+        border: 1px solid #bee5eb;
+        border-radius: 5px;
+        padding: 15px;
+        margin: 20px 0;
+        color: #0c5460;
+    }
+    .backup-info {
+        background: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 5px;
+        padding: 15px;
+        margin: 20px 0;
+    }
+</style>
+{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+<a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
+&rsaquo; <a href="{% url 'admin:dashboard' %}">Dashboard</a>
+&rsaquo; {{ title }}
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="content">
+    <h1>{{ title }}</h1>
+    
+    <div class="info-box">
+        <strong>ℹ️ Thông tin:</strong> Chức năng này sẽ tạo file backup chứa toàn bộ dữ liệu của hệ thống.
+        <br>File backup sẽ được lưu trong thư mục <code>backups/</code> với tên file chứa timestamp.
+    </div>
+    
+    <div class="backup-info">
+        <h3>📦 Dữ liệu sẽ được sao lưu:</h3>
+        <ul>
+            <li>✅ Tất cả tài khoản người dùng</li>
+            <li>✅ Thông tin khóa học và bài giảng</li>
+            <li>✅ Bài tập và câu hỏi trắc nghiệm</li>
+            <li>✅ Bài làm của học sinh</li>
+            <li>✅ Logs hệ thống</li>
+            <li>✅ Cấu hình và phân quyền</li>
+        </ul>
+    </div>
+    
+    <div class="module">
+        <h2>Tạo Backup Database</h2>
+        
+        <form method="post">
+            {% csrf_token %}
+            <div class="submit-row">
+                <input type="submit" value="🗄️ Tạo Backup Ngay" class="default" 
+                       onclick="return confirm('Bạn có chắc muốn tạo backup database không?\n\nQuá trình này có thể mất vài phút tùy thuộc vào lượng dữ liệu.');">
+                <a href="{% url 'admin:dashboard' %}" class="button cancel-link">❌ Hủy</a>
+            </div>
+        </form>
+        
+        <div style="margin-top: 20px;">
+            <p><strong>💡 Lưu ý:</strong></p>
+            <ul>
+                <li>Backup sẽ được tạo ở định dạng JSON</li>
+                <li>File backup có thể được sử dụng để phục hồi dữ liệu</li>
+                <li>Nên tạo backup định kỳ để đảm bảo an toàn dữ liệu</li>
+            </ul>
+        </div>
+    </div>
+</div>
+{% endblock %}

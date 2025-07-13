@@ -18,9 +18,11 @@ from django.contrib import admin
 from django.urls import path, include
 from django.conf.urls.static import static
 from django.conf import settings
+from core.admin_site import admin_site
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('admin/', admin_site.urls),  # Sử dụng custom admin site
+    path('django-admin/', admin.site.urls),  # Giữ lại admin mặc định cho backup
     path('', include('authentication.urls')),
     path('', include('cv.urls')), 
     path('', include('teacherapp.urls')),

@@ -1,0 +1,86 @@
+{% extends "admin/base_site.html" %}
+{% load i18n admin_urls static admin_modify %}
+
+{% block title %}{{ title }} | {{ site_title|default:_('Django site admin') }}{% endblock %}
+
+{% block extrahead %}
+{{ block.super }}
+<style>
+    .backup-file-info {
+        background: #f8f9fa;
+        border: 1px solid #dee2e6;
+        border-radius: 5px;
+        padding: 15px;
+        margin: 10px 0;
+    }
+    .backup-file-name {
+        font-weight: bold;
+        color: #2c5aa0;
+    }
+    .backup-file-details {
+        font-size: 0.9em;
+        color: #666;
+        margin-top: 5px;
+    }
+    .warning-box {
+        background: #fff3cd;
+        border: 1px solid #ffeaa7;
+        border-radius: 5px;
+        padding: 15px;
+        margin: 20px 0;
+        color: #856404;
+    }
+</style>
+{% endblock %}
+
+{% block breadcrumbs %}
+<div class="breadcrumbs">
+<a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
+&rsaquo; <a href="{% url 'admin:dashboard' %}">Dashboard</a>
+&rsaquo; {{ title }}
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="content">
+    <h1>{{ title }}</h1>
+    
+    <div class="warning-box">
+        <strong>⚠️ CẢNH BÁO:</strong> Thao tác này sẽ xóa toàn bộ dữ liệu hiện tại và thay thế bằng dữ liệu từ file backup!
+        <br>Hãy đảm bảo bạn đã tạo backup hiện tại trước khi thực hiện.
+    </div>
+    
+    <div class="module">
+        <h2>Chọn file backup để phục hồi</h2>
+        
+        {% if backup_files %}
+        <form method="post">
+            {% csrf_token %}
+            
+            {% for file in backup_files %}
+            <div class="backup-file-info">
+                <label>
+                    <input type="radio" name="backup_file" value="{{ file.path }}" required>
+                    <span class="backup-file-name">{{ file.name }}</span>
+                </label>
+                <div class="backup-file-details">
+                    📅 Ngày tạo: {{ file.modified|date:"d/m/Y H:i:s" }} | 
+                    📦 Kích thước: {{ file.size|filesizeformat }}
+                </div>
+            </div>
+            {% endfor %}
+            
+            <div class="submit-row">
+                <input type="submit" value="🔄 Phục hồi Database" class="default" 
+                       onclick="return confirm('CẢNH BÁO: Thao tác này sẽ xóa toàn bộ dữ liệu hiện tại!\n\nBạn có chắc muốn tiếp tục phục hồi từ file backup đã chọn?');">
+                <a href="{% url 'admin:dashboard' %}" class="button cancel-link">❌ Hủy</a>
+            </div>
+        </form>
+        {% else %}
+        <p>❌ Không tìm thấy file backup nào trong thư mục <code>backups/</code></p>
+        <p>💡 Hãy tạo backup trước bằng cách sử dụng chức năng <a href="{% url 'admin:backup_database' %}">Sao lưu Database</a>.</p>
+        <a href="{% url 'admin:dashboard' %}" class="button">🏠 Quay lại Dashboard</a>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
