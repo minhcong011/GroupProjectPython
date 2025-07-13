@@ -211,6 +211,29 @@ class CustomAdminSite(AdminSite):
             'active_users': active_users,
             'monthly_assignments': monthly_assignments,
         }
+    
+    def index(self, request, extra_context=None):
+        """Override index view để thêm thống kê"""
+        extra_context = extra_context or {}
+        
+        # Thêm thống kê cơ bản
+        try:
+            extra_context.update({
+                'total_users': User.objects.count(),
+                'total_courses': Course.objects.count(),
+                'total_assignments': BaiTap.objects.count(),
+                'total_submissions': BaiLam.objects.count(),
+            })
+        except Exception:
+            # Nếu có lỗi, set giá trị mặc định
+            extra_context.update({
+                'total_users': 0,
+                'total_courses': 0,
+                'total_assignments': 0,
+                'total_submissions': 0,
+            })
+        
+        return super().index(request, extra_context)
 
 
 # Khởi tạo custom admin site

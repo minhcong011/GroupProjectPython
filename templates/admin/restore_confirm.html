@@ -1,5 +1,5 @@
 {% extends "admin/base_site.html" %}
-{% load i18n admin_urls static admin_modify %}
+{% load i18n admin_urls static %}
 
 {% block title %}{{ title }} | {{ site_title|default:_('Django site admin') }}{% endblock %}
 
@@ -35,8 +35,8 @@
 
 {% block breadcrumbs %}
 <div class="breadcrumbs">
-<a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
-&rsaquo; <a href="{% url 'admin:dashboard' %}">Dashboard</a>
+<a href="{% url 'custom_admin:index' %}">{% trans 'Home' %}</a>
+&rsaquo; <a href="{% url 'custom_admin:dashboard' %}">Dashboard</a>
 &rsaquo; {{ title }}
 </div>
 {% endblock %}
@@ -73,13 +73,13 @@
             <div class="submit-row">
                 <input type="submit" value="🔄 Phục hồi Database" class="default" 
                        onclick="return confirm('CẢNH BÁO: Thao tác này sẽ xóa toàn bộ dữ liệu hiện tại!\n\nBạn có chắc muốn tiếp tục phục hồi từ file backup đã chọn?');">
-                <a href="{% url 'admin:dashboard' %}" class="button cancel-link">❌ Hủy</a>
+                <a href="{% url 'custom_admin:dashboard' %}" class="button cancel-link">❌ Hủy</a>
             </div>
         </form>
         {% else %}
         <p>❌ Không tìm thấy file backup nào trong thư mục <code>backups/</code></p>
-        <p>💡 Hãy tạo backup trước bằng cách sử dụng chức năng <a href="{% url 'admin:backup_database' %}">Sao lưu Database</a>.</p>
-        <a href="{% url 'admin:dashboard' %}" class="button">🏠 Quay lại Dashboard</a>
+        <p>💡 Hãy tạo backup trước bằng cách sử dụng chức năng <a href="{% url 'custom_admin:backup_database' %}">Sao lưu Database</a>.</p>
+        <a href="{% url 'custom_admin:dashboard' %}" class="button">🏠 Quay lại Dashboard</a>
         {% endif %}
     </div>
 </div>

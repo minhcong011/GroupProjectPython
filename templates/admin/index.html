@@ -110,7 +110,7 @@
     
     <!-- Quick Actions -->
     <div style="text-align: center; margin: 20px 0;">
-        <a href="{% url 'admin:dashboard' %}" class="module-action" style="font-size: 1.1em; padding: 12px 25px;">
+        <a href="{% url 'custom_admin:dashboard' %}" class="module-action" style="font-size: 1.1em; padding: 12px 25px;">
             📊 Xem Dashboard Chi tiết
         </a>
     </div>
@@ -125,9 +125,9 @@
                 Quản lý tài khoản, phân quyền và thông tin người dùng trong hệ thống
             </div>
             <div class="module-actions">
-                <a href="{% url 'admin:auth_user_changelist' %}" class="module-action">Danh sách Users</a>
-                <a href="{% url 'admin:core_account_changelist' %}" class="module-action">Tài khoản</a>
-                <a href="{% url 'admin:auth_group_changelist' %}" class="module-action">Nhóm quyền</a>
+                <a href="{% url 'custom_admin:auth_user_changelist' %}" class="module-action">Danh sách Users</a>
+                <a href="{% url 'custom_admin:core_account_changelist' %}" class="module-action">Tài khoản</a>
+                <a href="{% url 'custom_admin:auth_group_changelist' %}" class="module-action">Nhóm quyền</a>
             </div>
         </div>
         
@@ -139,8 +139,8 @@
                 Tạo và quản lý các khóa học, bài giảng và tài liệu học tập
             </div>
             <div class="module-actions">
-                <a href="{% url 'admin:teacherapp_course_changelist' %}" class="module-action">Khóa học</a>
-                <a href="{% url 'admin:core_lecture_changelist' %}" class="module-action">Bài giảng</a>
+                <a href="{% url 'custom_admin:teacherapp_course_changelist' %}" class="module-action">Khóa học</a>
+                <a href="{% url 'custom_admin:core_lecture_changelist' %}" class="module-action">Bài giảng</a>
             </div>
         </div>
         
@@ -152,9 +152,9 @@
                 Tạo bài tập, câu hỏi trắc nghiệm và theo dõi bài làm của học sinh
             </div>
             <div class="module-actions">
-                <a href="{% url 'admin:teacherapp_baitap_changelist' %}" class="module-action">Bài tập</a>
-                <a href="{% url 'admin:teacherapp_cauhoi_changelist' %}" class="module-action">Câu hỏi</a>
-                <a href="{% url 'admin:teacherapp_bailam_changelist' %}" class="module-action">Bài làm</a>
+                <a href="{% url 'custom_admin:teacherapp_baitap_changelist' %}" class="module-action">Bài tập</a>
+                <a href="{% url 'custom_admin:teacherapp_cauhoi_changelist' %}" class="module-action">Câu hỏi</a>
+                <a href="{% url 'custom_admin:teacherapp_bailam_changelist' %}" class="module-action">Bài làm</a>
             </div>
         </div>
         
@@ -166,8 +166,8 @@
                 Tạo backup và phục hồi dữ liệu hệ thống để đảm bảo an toàn
             </div>
             <div class="module-actions">
-                <a href="{% url 'admin:backup_database' %}" class="module-action">Tạo Backup</a>
-                <a href="{% url 'admin:restore_database' %}" class="module-action">Phục hồi</a>
+                <a href="{% url 'custom_admin:backup_database' %}" class="module-action">Tạo Backup</a>
+                <a href="{% url 'custom_admin:restore_database' %}" class="module-action">Phục hồi</a>
             </div>
         </div>
         
@@ -179,9 +179,9 @@
                 Theo dõi hoạt động hệ thống và xem thống kê chi tiết
             </div>
             <div class="module-actions">
-                <a href="{% url 'admin:core_systemlog_changelist' %}" class="module-action">System Logs</a>
-                <a href="{% url 'admin:system_stats' %}" class="module-action">Thống kê</a>
-                <a href="{% url 'admin:dashboard' %}" class="module-action">Dashboard</a>
+                <a href="{% url 'custom_admin:core_systemlog_changelist' %}" class="module-action">System Logs</a>
+                <a href="{% url 'custom_admin:system_stats' %}" class="module-action">Thống kê</a>
+                <a href="{% url 'custom_admin:dashboard' %}" class="module-action">Dashboard</a>
             </div>
         </div>
         
@@ -193,7 +193,7 @@
                 Cấu hình và tùy chỉnh các thiết lập hệ thống
             </div>
             <div class="module-actions">
-                <a href="{% url 'admin:teacherapp_testcase_changelist' %}" class="module-action">Test Cases</a>
+                <a href="{% url 'custom_admin:teacherapp_testcase_changelist' %}" class="module-action">Test Cases</a>
                 <a href="/django-admin/" class="module-action" target="_blank">Django Admin</a>
             </div>
         </div>

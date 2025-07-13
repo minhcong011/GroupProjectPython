@@ -41,8 +41,8 @@
 
 {% block breadcrumbs %}
 <div class="breadcrumbs">
-<a href="{% url 'admin:index' %}">{% trans 'Home' %}</a>
-&rsaquo; <a href="{% url 'admin:dashboard' %}">Dashboard</a>
+<a href="{% url 'custom_admin:index' %}">{% trans 'Home' %}</a>
+&rsaquo; <a href="{% url 'custom_admin:dashboard' %}">Dashboard</a>
 &rsaquo; {{ title }}
 </div>
 {% endblock %}
