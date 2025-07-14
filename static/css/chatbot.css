@@ -497,7 +497,7 @@ body {
 }
 
 .input-tools {
-    display: flex;
+    display: none;
     gap: 4px;
     padding: 0 8px;
 }
