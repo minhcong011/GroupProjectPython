@@ -6,11 +6,15 @@ from .models import BaiTap, CauHoi, Course, BaiLam, TestCase
 from django.http import HttpResponseForbidden, JsonResponse
 from core.models import Lecture, Account
 from django.contrib import messages
+
 from django.utils import timezone
 import json
 import subprocess
 import tempfile
 import os
+
+from django.db.models import Q
+
 
 @login_required
 def edit_question(request, question_id):
@@ -194,11 +198,32 @@ def lecture_list(request):
         'selected_course': selected_course,
     })
 
+
 @login_required
 def course_management(request):
+    query = request.GET.get('q', '')
+    lang = request.GET.get('lang', '')
+
+    # Lọc theo người dùng tạo
     courses = Course.objects.filter(created_by=request.user)
+
+    # Tìm kiếm theo tên chứa từ khóa (không phân biệt hoa thường)
+    if query:
+        courses = courses.filter(name__icontains=query)
+
+    # Lọc theo từ "Python" hoặc "Perl" xuất hiện trong tên
+    if lang in ['Python', 'Perl']:
+        courses = courses.filter(name__icontains=lang)
+
     form = CourseForm()
-    return render(request, 'teacher_page/course_management.html', {'courses': courses, 'form': form})
+    context = {
+        'courses': courses,
+        'form': form,
+        'query': query,
+        'filter_lang': lang,
+    }
+    return render(request, 'teacher_page/course_management.html', context)
+
 
 def create_course(request):
     if request.method == 'POST':
@@ -235,9 +260,7 @@ def edit_course(request, course_id):
 
     return render(request, 'teacher_page/edit_course.html', {'form': form, 'course': course})
 
-def random_question_ai_view(request):
-    # 
-    return render(request, 'random_question_ai.html')  # sửa theo thực tế
+
 
 @login_required
 def cham_diem(request):

@@ -10,7 +10,6 @@ urlpatterns = [
     path('bai-tap/<int:assignment_id>/nop-code/', views.submit_code_assignment, name='submit_code'),
     path('ide-online/', views.ide_online, name='ide_online'),
     path('run-code/', views.run_code, name='run_code'),
-    path('khoa-hoc/', views.khoa_hoc, name='khoa_hoc'),  
     path('chatbot/', views.chatbot, name='chatbot'), 
     path('nop-bai/', views.nop_bai, name='nop_bai'),
     path('course/', views.course, name='course'),
