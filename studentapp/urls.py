@@ -13,5 +13,6 @@ urlpatterns = [
     path('chatbot/', views.chatbot, name='chatbot'), 
     path('nop-bai/', views.nop_bai, name='nop_bai'),
     path('course/', views.course, name='course'),
-     path('api/courses/increment_participants/', views.increment_participants, name='increment_participants'),
+    path('course/<int:course_id>/lectures/', views.lecture_list, name='lecture_list'),
+    path('api/courses/increment_participants/', views.increment_participants, name='increment_participants'),
 ]

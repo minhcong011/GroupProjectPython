@@ -55,6 +55,7 @@
                 <td>{{ course.participants }}</td>
                 <td>
                     <button class="enter-course-btn custom-btn" onclick="checkCheckbox(this, {{ course.id }})">Vào khóa học</button>
+                    <a href="{% url 'studentapp:lecture_list' course.id %}" class="custom-btn" style="margin-top:6px;display:inline-block;">Xem bài giảng</a>
                 </td>
             </tr>
             {% endfor %}

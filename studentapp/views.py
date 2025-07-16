@@ -4,6 +4,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db.models import Q
 from teacherapp.models import Course, BaiTap, CauHoi
+from core.models import Lecture
 
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -400,4 +401,9 @@ binmode(STDERR, ":utf8");
             'output': f'Lỗi server: {str(e)}',
             'success': False
         })
+
+def lecture_list(request, course_id):
+    course = get_object_or_404(Course, id=course_id)
+    lectures = Lecture.objects.filter(course=course).order_by('created_at')
+    return render(request, "student_page/lecture_list.html", {"course": course, "lectures": lectures})
 

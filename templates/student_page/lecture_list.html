@@ -1,0 +1,53 @@
+{% extends 'student_page/student_base.html' %}
+{% load static %}
+
+{% block extra_css %}
+    <link rel="stylesheet" href="{% static 'css/course_management.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="main-content">
+    <h2>Danh sách bài giảng của khóa học: {{ course.name }}</h2>
+    <a href="{% url 'studentapp:course' %}">&larr; Quay lại danh sách khóa học</a>
+    <table class="class-table">
+        <thead>
+            <tr>
+                <th>Tiêu đề</th>
+                <th>Mô tả</th>
+                <th>Môn học</th>
+                <th>Ngày tạo</th>
+                <th>Video</th>
+                <th>PDF</th>
+                <th>Slide</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for lecture in lectures %}
+            <tr>
+                <td>{{ lecture.title }}</td>
+                <td>{{ lecture.description|truncatechars:80 }}</td>
+                <td>{{ lecture.subject }}</td>
+                <td>{{ lecture.created_at|date:"d-m-Y H:i" }}</td>
+                <td>
+                  {% if lecture.video_url %}
+                    <a href="{{ lecture.video_url }}" target="_blank">Xem video</a>
+                  {% else %}-{% endif %}
+                </td>
+                <td>
+                  {% if lecture.pdf_file %}
+                    <a href="{{ lecture.pdf_file.url }}" target="_blank">Tải PDF</a>
+                  {% else %}-{% endif %}
+                </td>
+                <td>
+                  {% if lecture.slide_file %}
+                    <a href="{{ lecture.slide_file.url }}" target="_blank">Tải slide</a>
+                  {% else %}-{% endif %}
+                </td>
+            </tr>
+            {% empty %}
+            <tr><td colspan="7">Chưa có bài giảng nào cho khóa học này.</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
