@@ -11,7 +11,15 @@
     <div class="page-header">
         <h2>Danh sách các khóa học</h2>
         <div class="header-actions">
-            <input type="text" placeholder="Nhập từ khoá tìm kiếm">
+         <form method="get" style="display: flex; gap: 8px;">
+                <input type="text" name="q" placeholder="Nhập từ khoá tìm kiếm" value="{{ query|default:'' }}">
+                <select name="lang">
+                    <option value="">Tất cả</option>
+                    <option value="Python" {% if filter_lang == "Python" %}selected{% endif %}>Python</option>
+                    <option value="Perl" {% if filter_lang == "Perl" %}selected{% endif %}>Perl</option>
+                </select>
+                <button type="submit">Tìm kiếm</button>
+        </form>
         </div>
     </div>
     <table class="class-table">
@@ -47,6 +55,7 @@
                 <td>{{ course.participants }}</td>
                 <td>
                     <button class="enter-course-btn custom-btn" onclick="checkCheckbox(this, {{ course.id }})">Vào khóa học</button>
+                    <a href="{% url 'studentapp:lecture_list' course.id %}" class="custom-btn" style="margin-top:6px;display:inline-block;">Xem bài giảng</a>
                 </td>
             </tr>
             {% endfor %}
@@ -71,7 +80,7 @@ function checkCheckbox(btn, courseId) {
     let currentParticipants = parseInt(participantsCell.innerText) || 0;
 
     if (!entered) {
-        btn.innerText = "Vào lại";
+        btn.innerText = "Đã vào";
         btn.classList.add("btn-reenter");
         localStorage.setItem(storageKey, 'true');
         // Gửi request lên server để tăng số người tham gia bằng id
@@ -94,7 +103,7 @@ function checkCheckbox(btn, courseId) {
             participantsCell.innerText = currentParticipants + 1;
         });
     } else {
-        btn.innerText = "Vào lại";
+        btn.innerText = "Đã vào";
         btn.classList.add("btn-reenter");
     }
 }
@@ -122,7 +131,7 @@ window.addEventListener('DOMContentLoaded', function() {
         const courseName = row.querySelector('td').innerText.trim();
         const storageKey = 'entered_course_' + courseName;
         if (localStorage.getItem(storageKey)) {
-            btn.innerText = "Vào lại";
+            btn.innerText = "Đã vào";
             btn.classList.add("btn-reenter");
         } else {
             btn.innerText = "Vào khóa học";

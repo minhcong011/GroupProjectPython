@@ -26,10 +26,6 @@ urlpatterns = [
     path('', include('authentication.urls')),
     path('', include('cv.urls')), 
     path('', include('teacherapp.urls')),
-    path('', include('authentication.urls')),
-    path('', include('AIapp.urls')),  # Thêm URL cho AIapp
+    path('', include('AIapp.urls')),  # URL cho AIapp
     path('student/', include(('studentapp.urls', 'studentapp'), namespace='studentapp')),
-    
-   
-
 ]  + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

@@ -19,11 +19,12 @@ INSTALLED_APPS = [
     'django.contrib.messages',
     'django.contrib.staticfiles',
     
-    'authentication',  # <-- Thêm app của bạn vào đây
-    'cv', # Thêm app cv
-    'core',
-    'teacherapp',
-    'AIapp'  # Thêm app AI
+    'authentication',  # App xác thực
+    'cv',  # App CV
+    'core',  # App core
+    'teacherapp',  # App giáo viên
+    'studentapp',  # App sinh viên
+    'AIapp'  # App AI
 ]
 
 # ==================== MIDDLEWARE ====================

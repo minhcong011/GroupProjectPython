@@ -2,7 +2,9 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
+from django.db.models import Q
 from teacherapp.models import Course, BaiTap, CauHoi
+from core.models import Lecture
 
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
@@ -24,9 +26,32 @@ def assignment_list(request):
 def ide_online(request):
     return render(request, "student_page/IDE_Onl.html")
 
-def khoa_hoc(request):
-    courses = Course.objects.all()  # Lấy tất cả các khóa học do giáo viên tạo
-    return render(request, "student_page/Khoa_hoc.html", {"courses": courses}) 
+
+
+
+def course(request):
+    query = request.GET.get('q', '').strip()
+    lang = request.GET.get('lang', '').strip()
+
+    courses = Course.objects.all()
+
+    # Lọc theo tên khóa học nếu chọn Python/Perl
+    if lang in ['Python', 'Perl']:
+        courses = courses.filter(name__icontains=lang)
+
+    # Lọc tiếp theo từ khóa tìm kiếm
+    if query:
+        courses = courses.filter(name__icontains=query)
+
+    context = {
+        'courses': courses,
+        'query': query,
+        'filter_lang': lang,
+    }
+    return render(request, "student_page/course.html", context)
+
+
+
 
 def chatbot(request):
     return render(request, "student_page/Chat_bot.html")
@@ -180,8 +205,25 @@ def submit_code_assignment(request, assignment_id):
 
 
 def course(request):
-    courses = Course.objects.all().order_by('-id')
-    return render(request, "student_page/course.html", {"courses": courses})
+    query = request.GET.get('q', '').strip()
+    lang = request.GET.get('lang', '').strip()
+
+    courses = Course.objects.all()
+
+    # Lọc theo tên khóa học nếu chọn Python/Perl
+    if lang in ['Python', 'Perl']:
+        courses = courses.filter(name__icontains=lang)
+
+    # Lọc tiếp theo từ khóa tìm kiếm
+    if query:
+        courses = courses.filter(name__icontains=query)
+
+    context = {
+        'courses': courses,
+        'query': query,
+        'filter_lang': lang,
+    }
+    return render(request, "student_page/course.html", context)
 
 
 @csrf_exempt
@@ -359,4 +401,9 @@ binmode(STDERR, ":utf8");
             'output': f'Lỗi server: {str(e)}',
             'success': False
         })
+
+def lecture_list(request, course_id):
+    course = get_object_or_404(Course, id=course_id)
+    lectures = Lecture.objects.filter(course=course).order_by('created_at')
+    return render(request, "student_page/lecture_list.html", {"course": course, "lectures": lectures})
 

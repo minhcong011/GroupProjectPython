@@ -1,18 +1,17 @@
-// Chatbot JavaScript Functions - Simplified Version
+// Chatbot JavaScript Functions - Fixed Version
 console.log('Loading chatbot.js...');
 
-// Global variables declaration (DOM elements only)
+// API Configuration - Must be defined first
+const API_KEY = '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';
+const API_URL = 'https://api.groq.com/openai/v1/chat/completions';
+const MODEL_NAME = 'llama-3.1-8b-instant';
+
+// Global variables
 let chatMessages, messageInput, sendButton, typingIndicator, modeIndicator;
 let currentMode = 'chat';
 
-// Initialize constants immediately on window object
-window.API_KEY = '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';
-window.API_URL = 'https://api.groq.com/openai/v1/chat/completions';
-window.MODEL_NAME = 'llama-3.1-8b-instant';
-
-console.log('Constants initialized');
-console.log('window.API_KEY defined:', typeof window.API_KEY !== 'undefined');
-console.log('window.API_KEY length:', window.API_KEY ? window.API_KEY.length : 'undefined');
+console.log('API_KEY defined:', typeof API_KEY !== 'undefined');
+console.log('API_KEY length:', API_KEY.length);
 
 // Initialize when DOM is ready
 document.addEventListener('DOMContentLoaded', function() {
@@ -58,7 +57,7 @@ document.addEventListener('DOMContentLoaded', function() {
     }
     
     // Test API connection
-    if (window.API_KEY && window.API_KEY !== 'YOUR_GROQ_API_KEY_HERE') {
+    if (API_KEY && API_KEY !== 'YOUR_GROQ_API_KEY_HERE') {
         setTimeout(testAPIConnection, 1000);
     }
     
@@ -213,9 +212,9 @@ function selectMode(mode) {
 // Send to AI function
 async function sendToAI(message) {
     console.log('sendToAI called with:', message);
-    console.log('window.API_KEY available:', typeof window.API_KEY !== 'undefined');
+    console.log('API_KEY available:', typeof API_KEY !== 'undefined');
     
-    if (typeof window.API_KEY === 'undefined' || !window.API_KEY) {
+    if (typeof API_KEY === 'undefined' || !API_KEY) {
         console.error('API_KEY is not defined!');
         addMessageToChat('Lỗi: API_KEY chưa được cấu hình!', 'ai');
         return;
@@ -227,14 +226,14 @@ async function sendToAI(message) {
         const prompt = getAIPrompt(message, currentMode);
         console.log('Sending request to Groq API...');
         
-        const response = await fetch(window.API_URL, {
+        const response = await fetch(API_URL, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${window.API_KEY}`
+                'Authorization': `Bearer ${API_KEY}`
             },
             body: JSON.stringify({
-                model: window.MODEL_NAME,
+                model: MODEL_NAME,
                 messages: [
                     {
                         role: "user",
@@ -283,14 +282,14 @@ async function testAPIConnection() {
     console.log('Testing API connection...');
     
     try {
-        const response = await fetch(window.API_URL, {
+        const response = await fetch(API_URL, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
-                'Authorization': `Bearer ${window.API_KEY}`
+                'Authorization': `Bearer ${API_KEY}`
             },
             body: JSON.stringify({
-                model: window.MODEL_NAME,
+                model: MODEL_NAME,
                 messages: [
                     {
                         role: "user",
@@ -320,21 +319,21 @@ async function testAPIConnection() {
 function validateAPIKey() {
     console.log('Validating API key...');
     
-    if (typeof window.API_KEY === 'undefined') {
+    if (typeof API_KEY === 'undefined') {
         console.error('API_KEY is not defined!');
         return false;
     }
     
-    console.log('- Key length:', window.API_KEY.length);
-    console.log('- Key starts with gsk_:', window.API_KEY.startsWith('gsk_'));
-    console.log('- API URL:', window.API_URL);
-    console.log('- Model:', window.MODEL_NAME);
+    console.log('- Key length:', API_KEY.length);
+    console.log('- Key starts with gsk_:', API_KEY.startsWith('gsk_'));
+    console.log('- API URL:', API_URL);
+    console.log('- Model:', MODEL_NAME);
     
-    if (window.API_KEY.length !== 56) {
+    if (API_KEY.length !== 56) {
         console.warn('API key length seems incorrect. Groq keys should be 56 characters.');
     }
     
-    if (!window.API_KEY.startsWith('gsk_')) {
+    if (!API_KEY.startsWith('gsk_')) {
         console.warn('API key should start with "gsk_"');
     }
     
