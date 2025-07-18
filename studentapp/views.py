@@ -51,7 +51,20 @@ def course(request):
     return render(request, "student_page/course.html", context)
 
 
-
+@csrf_exempt
+@require_POST
+def increment_participants(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            course_id = data.get("id")
+            course = Course.objects.get(id=course_id)
+            course.participants += 1
+            course.save()
+            return JsonResponse({"success": True, "participants": course.participants})
+        except Course.DoesNotExist:
+            return JsonResponse({"success": False, "error": "Course not found"})
+    return JsonResponse({"success": False, "error": "Invalid method"})
 
 def chatbot(request):
     return render(request, "student_page/Chat_bot.html")
@@ -203,42 +216,25 @@ def submit_code_assignment(request, assignment_id):
     return redirect('studentapp:assignment_detail', assignment_id=assignment_id)
 
 
-
-def course(request):
-    query = request.GET.get('q', '').strip()
-    lang = request.GET.get('lang', '').strip()
-
-    courses = Course.objects.all()
-
-    # Lọc theo tên khóa học nếu chọn Python/Perl
-    if lang in ['Python', 'Perl']:
-        courses = courses.filter(name__icontains=lang)
-
-    # Lọc tiếp theo từ khóa tìm kiếm
-    if query:
-        courses = courses.filter(name__icontains=query)
-
-    context = {
-        'courses': courses,
-        'query': query,
-        'filter_lang': lang,
-    }
-    return render(request, "student_page/course.html", context)
-
-
 @csrf_exempt
 @require_POST
 def increment_participants(request):
-    course_id = request.GET.get('id')
-    if not course_id:
-        return JsonResponse({'success': False, 'error': 'Missing course id'})
     try:
+        data = json.loads(request.body)
+        course_id = data.get('id')
+        if not course_id:
+            return JsonResponse({'success': False, 'error': 'Missing course id'})
+        
         course = Course.objects.get(id=course_id)
         course.participants += 1
         course.save()
         return JsonResponse({'success': True, 'participants': course.participants})
+    except json.JSONDecodeError:
+        return JsonResponse({'success': False, 'error': 'Invalid JSON data'})
     except Course.DoesNotExist:
         return JsonResponse({'success': False, 'error': 'Course not found'})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})
 
 @csrf_exempt
 @require_http_methods(["POST"])

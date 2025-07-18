@@ -63,52 +63,13 @@
     </table>
 </div>
 
+<script>
+    const currentUsername = "{{ request.user.username }}";
+</script>
 
 
 <script>
-
-// Sử dụng localStorage để lưu trạng thái đã vào khóa học cho từng khóa học
-function checkCheckbox(btn, courseId) {
-    // Lấy tên hoặc id khóa học từ dòng hiện tại
-    const row = btn.closest('tr');
-    const courseName = row.querySelector('td').innerText.trim();
-    const storageKey = 'entered_course_' + courseName;
-    let entered = localStorage.getItem(storageKey);
-
-    // Lấy ô số người tham gia (ô thứ 11 trong bảng, index 10)
-    const participantsCell = row.querySelectorAll('td')[10];
-    let currentParticipants = parseInt(participantsCell.innerText) || 0;
-
-    if (!entered) {
-        btn.innerText = "Đã vào";
-        btn.classList.add("btn-reenter");
-        localStorage.setItem(storageKey, 'true');
-        // Gửi request lên server để tăng số người tham gia bằng id
-       fetch(`/student/api/courses/increment_participants/?id=${courseId}`, {
-    method: 'POST',
-    headers: {
-        'X-CSRFToken': getCookie('csrftoken'),
-    },
-})
-
-        .then(response => response.json())
-        .then(data => {
-            if (data.success) {
-                participantsCell.innerText = data.participants;
-            } else {
-                participantsCell.innerText = currentParticipants + 1; // fallback
-            }
-        })
-        .catch(() => {
-            participantsCell.innerText = currentParticipants + 1;
-        });
-    } else {
-        btn.innerText = "Đã vào";
-        btn.classList.add("btn-reenter");
-    }
-}
-
-// Hàm lấy CSRF token cho fetch
+// Hàm lấy CSRF token
 function getCookie(name) {
     let cookieValue = null;
     if (document.cookie && document.cookie !== '') {
@@ -124,18 +85,63 @@ function getCookie(name) {
     return cookieValue;
 }
 
-// Khi load trang, cập nhật trạng thái nút dựa trên localStorage
-window.addEventListener('DOMContentLoaded', function() {
-    document.querySelectorAll('.enter-course-btn').forEach(function(btn) {
+// Gọi khi nhấn nút "Vào khóa học"
+function checkCheckbox(btn, courseId) {
+    const row = btn.closest('tr');
+    const storageKey = 'entered_course_' + currentUsername + '_' + courseId;
+    let entered = localStorage.getItem(storageKey);
+
+    const participantsCell = row.querySelectorAll('td')[10];
+    let currentParticipants = parseInt(participantsCell.innerText) || 0;
+
+    if (!entered) {
+        btn.innerText = "Đã vào";
+        btn.classList.add("btn-reenter");
+        localStorage.setItem(storageKey, 'true');
+
+        fetch(`/student/api/courses/increment_participants/`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken'),
+            },
+            body: JSON.stringify({ id: courseId })
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                participantsCell.innerText = data.participants;
+            } else {
+                participantsCell.innerText = currentParticipants + 1;
+            }
+        })
+        .catch(() => {
+            participantsCell.innerText = currentParticipants + 1;
+        });
+    } else {
+        btn.innerText = "Đã vào";
+        btn.classList.add("btn-reenter");
+    }
+}
+
+// Khi load trang, cập nhật nút theo localStorage + username
+window.addEventListener('DOMContentLoaded', function () {
+    document.querySelectorAll('.enter-course-btn').forEach(function (btn) {
         const row = btn.closest('tr');
-        const courseName = row.querySelector('td').innerText.trim();
-        const storageKey = 'entered_course_' + courseName;
-        if (localStorage.getItem(storageKey)) {
-            btn.innerText = "Đã vào";
-            btn.classList.add("btn-reenter");
-        } else {
-            btn.innerText = "Vào khóa học";
-            btn.classList.remove("btn-reenter");
+        const onclickAttr = btn.getAttribute('onclick');
+        const courseIdMatch = onclickAttr.match(/checkCheckbox\(.*?,\s*(\d+)\)/);
+
+        if (courseIdMatch && courseIdMatch[1]) {
+            const courseId = courseIdMatch[1];
+            const storageKey = 'entered_course_' + currentUsername + '_' + courseId;
+
+            if (localStorage.getItem(storageKey)) {
+                btn.innerText = "Đã vào";
+                btn.classList.add("btn-reenter");
+            } else {
+                btn.innerText = "Vào khóa học";
+                btn.classList.remove("btn-reenter");
+            }
         }
     });
 });
