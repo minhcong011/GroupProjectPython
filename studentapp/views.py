@@ -59,7 +59,10 @@ def increment_participants(request):
         except Course.DoesNotExist:
             return JsonResponse({"success": False, "error": "Course not found"})
     return JsonResponse({"success": False, "error": "Invalid method"})
+<<<<<<< HEAD
 
+=======
+>>>>>>> 8b522c9872a629a5dbf401c2c8a2402eeb1b197d
 
 def chatbot(request):
     return render(request, "student_page/Chat_bot.html")
