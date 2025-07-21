@@ -1,68 +1,121 @@
-<!-- filepath: d:\GitHub\GroupProjectPython\templates\student_page\nop_bai.html -->
+{% extends 'student_page/student_base.html' %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="vi">
-<head>
-  <meta charset="UTF-8">
-  <title>Nộp bài tập</title>
-  <link rel="stylesheet" href="{% static 'css/assignment_list.css' %}">
-  <link rel="stylesheet" href="{% static 'css/nop_bai.css' %}">
-</head>
-<body>
 
-  <div class="header">
-    <div class="logo">
-      <img src="{% static 'image/PvsP.jpg' %}" alt="Perl/Python Logo">
-      <span class="title">PERL & PYTHON</span>
+{% block title %}
+{% if assignment %}
+Nộp bài: {{ assignment.tieu_de }}
+{% else %}
+Nộp bài tập
+{% endif %}
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/nop_bai.css' %}">
+{% endblock %}
+
+{% block content %}
+<div class="nopbai-container">
+  <div class="nopbai-header">
+    <button class="back-btn" onclick="window.location.href='{% url 'studentapp:assignment_list' %}'">
+      🔙 Quay lại danh sách bài tập
+    </button>
+    
+    {% if assignment %}
+    <h2 class="assignment-title">{{ assignment.tieu_de }}</h2>
+    
+    <div class="assignment-info">
+      <div class="info-row">
+        <strong>Deadline:</strong> {{ assignment.han_nop|date:'d/m/Y H:i' }}
+      </div>
+      <div class="info-row">
+        <strong>Loại bài tập:</strong> {{ assignment.get_loai_baitap_display }}
+      </div>
+      <div class="info-row">
+        <strong>Giảng viên:</strong> {{ assignment.nguoi_tao.get_full_name|default:assignment.nguoi_tao.username }}
+      </div>
+      <div class="info-row">
+        <strong>Ngày tạo:</strong> {{ assignment.ngay_tao|date:'d/m/Y H:i' }}
+      </div>
     </div>
-    <div class="nav">
-      <a href="{% url 'student_home' %}">Trang chủ</a>
-      <a href="{% url 'studentapp:course' %}">Khóa học</a>
-      <a href="{% url 'studentapp:assignment_list' %}">Bài tập</a>
-      <a href="{% url 'studentapp:ide_online' %}">IDE Online</a>
-      <a href="{% url 'studentapp:chatbot' %}">Chatbot AI</a>
-      <span class="lang">Xin chào, {{ user.first_name }} | <a href="{% url 'signout' %}">Đăng xuất</a></span>
+    
+    <div class="assignment-description">
+      <h3>Đề bài:</h3>
+      <div class="description-content">
+        {{ assignment.mo_ta|linebreaks }}
+      </div>
     </div>
+    {% else %}
+    <h2 class="assignment-title">Nộp bài tập</h2>
+    <div class="no-assignment">
+      <p>Vui lòng chọn bài tập cụ thể để nộp bài.</p>
+    </div>
+    {% endif %}
   </div>
 
-  <div class="banner">
-    <span>
-      <b>Hệ thống học tập môn PERL & PYTHON</b>
-      <span class="course-code"></span>
-    </span>
-    <span class="right">
-      {{ now|date:"l, d/m/Y" }}
-    </span>
-  </div>
-  
-  <div class="nopbai-layout">
-    <div class="nopbai-left">
-      <button class="action-btn" onclick="window.location.href='{% url 'studentapp:assignment_list' %}'">🔙 Quay lại danh sách bài tập</button>
-      <h2 class="main-title">Tiêu đề bài tập: Bài 3 – Hàm kiểm tra số nguyên tố</h2>
-      <div class="info info-full">
-        <b>Deadline:</b> 01/07/2025 - 23:59<br>
-        <b>Môn học:</b> Python Cơ bản<br>
-        <b>Giảng viên:</b> Nguyễn Văn A
-        <hr>
-        <b>Đề bài:</b><br>
-        Viết một hàm kiểm tra một số nguyên <b>n</b> có phải là số nguyên tố không.<br>
-        In ra <b>"YES"</b> nếu đúng, <b>"NO"</b> nếu không.
-        <hr style="margin:18px 0;">
-        <h2 class="upload-title">Upload file để nộp bài</h2>
-        <form method="post" action="" enctype="multipart/form-data" style="margin-bottom: 18px;">
-          {% csrf_token %}
-          <label for="file"><b>Chọn tệp để nộp:</b></label>
-          <input type="file" id="file" name="file" accept=".py,.pl,.zip">
-          <div class="note">Hỗ trợ .py, .pl, .zip (tối đa 5MB)</div>
-          <div class="btn-group">
-            <button type="submit" class="action-btn">Upload</button>
-          </div>
-        </form>
-        <b>Trạng thái hiện tại:</b><br>
-        <span style="color:#e6b800;">Chưa nộp (đang soạn thảo)</span><br>
-        <span style="color:#1976d2;">Lần lưu gần nhất: 10:22 sáng, 26/06/2025</span>
+  {% if assignment %}
+  <div class="submission-section">
+    <h3>Upload file để nộp bài</h3>
+    
+    {% if message %}
+    <div class="alert alert-success">
+      {{ message }}
+    </div>
+    {% endif %}
+    
+    {% if error %}
+    <div class="alert alert-error">
+      {{ error }}
+    </div>
+    {% endif %}
+    
+    {% if submitted_file %}
+    <div class="alert alert-info">
+      <strong>File đã nộp:</strong> {{ submitted_file.name }}<br>
+      {% if submitted_file.size %}<strong>Kích thước:</strong> {{ submitted_file.size|filesizeformat }}<br>{% endif %}
+      <strong>Thời gian:</strong> {{ submitted_file.time|date:'d/m/Y H:i' }}
+    </div>
+    {% endif %}
+    
+    <form method="post" enctype="multipart/form-data" class="submission-form">
+      {% csrf_token %}
+      <div class="form-group">
+        <label for="file"><strong>Chọn tệp để nộp:</strong></label>
+        <input type="file" id="file" name="file" accept=".py,.pl,.zip,.rar,.pdf,.doc,.docx,.txt" required>
+        <div class="file-note">
+          Hỗ trợ các định dạng: .py, .pl, .zip, .rar, .pdf, .doc, .docx, .txt (tối đa 10MB)
+        </div>
+      </div>
+      
+      <div class="form-actions">
+        <button type="submit" class="submit-btn">
+          📤 Nộp bài
+        </button>
+        <button type="button" class="cancel-btn" onclick="window.location.href='{% url 'studentapp:assignment_list' %}'">
+          ✖️ Hủy
+        </button>
+      </div>
+    </form>
+    
+    <div class="submission-status">
+      <h4>Trạng thái nộp bài:</h4>
+      <div class="status-info">
+        {% if submitted_file %}
+        <span class="status submitted">✅ Đã nộp bài</span><br>
+        <span class="last-updated">Lần cập nhật cuối: {{ submitted_file.time|date:'H:i d/m/Y' }}</span>
+        {% else %}
+        <span class="status pending">⏳ Chưa nộp bài</span><br>
+        <span class="deadline-warning">
+          {% now "Y-m-d H:i" as current_time %}
+          {% if assignment.han_nop|date:"Y-m-d H:i" < current_time %}
+          ⚠️ Đã quá hạn nộp bài
+          {% else %}
+          📅 Còn lại: {{ assignment.han_nop|timeuntil }}
+          {% endif %}
+        </span>
+        {% endif %}
       </div>
     </div>
   </div>
-</body>
-</html>
+  {% endif %}
+</div>
+{% endblock %}

@@ -73,6 +73,78 @@ body, html {
     border-radius: 4px;
     margin-top: 0.5rem;
 }
+
+/* CSS cho action buttons */
+.action-buttons {
+    display: flex;
+    gap: 10px;
+    align-items: center;
+    justify-content: flex-start;
+    margin-top: 2rem;
+    padding: 1rem 0;
+}
+
+.btn {
+    padding: 0.6rem 1.2rem;
+    border-radius: 6px;
+    font-weight: 600;
+    font-size: 0.875rem;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    border: none;
+    cursor: pointer;
+    width: 110px;
+    height: 40px;
+    line-height: 1;
+    white-space: nowrap;
+    text-align: center;
+    box-sizing: border-box;
+}
+
+.btn-secondary {
+    background: linear-gradient(135deg, #6c757d 0%, #495057 100%);
+    color: white;
+    box-shadow: 0 2px 4px rgba(108, 117, 125, 0.3);
+}
+
+.btn-secondary:hover {
+    background: linear-gradient(135deg, #5a6268 0%, #3d4449 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(108, 117, 125, 0.4);
+    color: white;
+    text-decoration: none;
+}
+
+.btn-primary {
+    background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+    color: white;
+    box-shadow: 0 2px 4px rgba(40, 167, 69, 0.3);
+}
+
+.btn-primary:hover {
+    background: linear-gradient(135deg, #218838 0%, #1a9e7e 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(40, 167, 69, 0.4);
+    color: white;
+    text-decoration: none;
+}
+
+.btn-warning {
+    background: linear-gradient(135deg, #1976d2 0%, #2d3a4e 100%);
+    color: white;
+    box-shadow: 0 2px 4px rgba(25, 118, 210, 0.3);
+}
+
+.btn-warning:hover {
+    background: linear-gradient(135deg, #1565c0 0%, #253344 100%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 8px rgba(25, 118, 210, 0.4);
+    color: white;
+    text-decoration: none;
+}
 </style>
 {% endblock %}
 
@@ -90,6 +162,24 @@ body, html {
                 {% if bai_lam.da_cham %}Đã chấm{% else %}Chưa chấm{% endif %}
             </span>
         </p>
+        {% if bai_lam.nhan_xet %}
+        <p><strong>Nhận xét:</strong> 
+            <div class="comment-box">{{ bai_lam.nhan_xet|linebreaks }}</div>
+        </p>
+        {% endif %}
+        {% if bai_lam.file_nop %}
+        <p><strong>File nộp:</strong> 
+            <a href="{% url 'download_file' bai_lam.id %}" class="file-download-btn" title="Tải xuống file: {{ bai_lam.file_name }}">
+                {% if bai_lam.file_name|slice:"-3:" == ".py" %}
+                {% elif bai_lam.file_name|slice:"-4:" == ".zip" %}
+                {% elif bai_lam.file_name|slice:"-4:" == ".rar" %}
+                {% elif bai_lam.file_name|slice:"-4:" == ".pdf" %}
+                {% elif bai_lam.file_name|slice:"-4:" == ".doc" or bai_lam.file_name|slice:"-5:" == ".docx" %}📝
+                {% else %}
+                {% endif %} {{ bai_lam.file_name }}
+            </a>
+        </p>
+        {% endif %}
     </div>
 
     {% if bai_lam.code_nop %}
@@ -149,10 +239,10 @@ body, html {
         <a href="{% url 'chi_tiet_bai_tap' bai_lam.bai_tap.id %}" class="btn btn-secondary">← Quay lại</a>
         
         {% if bai_lam.bai_tap.loai_baitap == 'code' %}
-        <button onclick="chamLaiTestCase({{ bai_lam.id }})" class="btn btn-primary">🔄 Chấm lại</button>
+        <button onclick="chamLaiTestCase({{ bai_lam.id }})" class="btn btn-primary"> Chấm lại</button>
         {% endif %}
         
-        <button onclick="suaDiem({{ bai_lam.id }})" class="btn btn-warning">✏️ Sửa điểm</button>
+        <button onclick="suaDiem({{ bai_lam.id }})" class="btn btn-warning"> Sửa điểm</button>
     </div>
 </div>
 

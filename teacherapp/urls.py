@@ -31,6 +31,7 @@ urlpatterns = [
     path('xoa-test-case/<int:test_case_id>/', views.xoa_test_case, name='xoa_test_case'),
     path('ket-qua-cham-diem/<int:bai_lam_id>/', views.ket_qua_cham_diem, name='ket_qua_cham_diem'),
     path('sua-diem/<int:bai_lam_id>/', views.sua_diem, name='sua_diem'),
+    path('download-file/<int:bai_lam_id>/', views.download_file, name='download_file'),
 
     # Debug
     path('debug-csrf/', views.debug_csrf, name='debug_csrf'),

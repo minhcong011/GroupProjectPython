@@ -3,9 +3,10 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from .forms import LectureForm, BaiTapForm, CauHoiForm, CourseForm, CourseEditForm
 from .models import BaiTap, CauHoi, Course, BaiLam, TestCase
-from django.http import HttpResponseForbidden, JsonResponse
+from django.http import HttpResponseForbidden, JsonResponse, HttpResponse
 from core.models import Lecture, Account
 from django.contrib import messages
+from django.conf import settings
 
 from django.utils import timezone
 import json
@@ -306,6 +307,14 @@ def chi_tiet_bai_tap(request, bai_tap_id):
     
     bai_tap = get_object_or_404(BaiTap, id=bai_tap_id, nguoi_tao=request.user)
     bai_lam_list = BaiLam.objects.filter(bai_tap=bai_tap).select_related('sinh_vien').order_by('-thoi_gian_nop')
+    
+    # Thêm tên file đã xử lý cho mỗi bài làm
+    for bai_lam in bai_lam_list:
+        if bai_lam.file_nop:
+            import os
+            bai_lam.file_name = os.path.basename(bai_lam.file_nop.name)
+        else:
+            bai_lam.file_name = None
     
     context = {
         'bai_tap': bai_tap,
@@ -814,6 +823,13 @@ def ket_qua_cham_diem(request, bai_lam_id):
         messages.error(request, 'Không có quyền xem bài này!')
         return redirect('cham_diem')
     
+    # Thêm tên file đã xử lý
+    if bai_lam.file_nop:
+        import os
+        bai_lam.file_name = os.path.basename(bai_lam.file_nop.name)
+    else:
+        bai_lam.file_name = None
+    
     context = {
         'bai_lam': bai_lam,
         'title': f'Kết quả chấm điểm: {bai_lam.sinh_vien.username}'
@@ -840,15 +856,60 @@ def sua_diem(request, bai_lam_id):
         import json
         data = json.loads(request.body)
         diem_so = data.get('diem_so')
+        nhan_xet = data.get('nhan_xet', '')
         
         if diem_so is None or not (0 <= diem_so <= 10):
             return JsonResponse({'success': False, 'message': 'Điểm phải từ 0 đến 10'})
         
         bai_lam.diem_so = diem_so
+        bai_lam.nhan_xet = nhan_xet
         bai_lam.da_cham = True
         bai_lam.save()
         
         return JsonResponse({'success': True, 'diem_so': diem_so})
     
     return JsonResponse({'success': False, 'message': 'Method not allowed'})
+
+
+@login_required
+def download_file(request, bai_lam_id):
+    """Download file nộp của sinh viên"""
+    try:
+        account = Account.objects.get(username=request.user.username)
+        if not account.is_teacher:
+            return HttpResponseForbidden('Không có quyền truy cập')
+    except Account.DoesNotExist:
+        return HttpResponseForbidden('Không có quyền truy cập')
+    
+    bai_lam = get_object_or_404(BaiLam, id=bai_lam_id)
+    
+    # Kiểm tra quyền - chỉ giáo viên tạo bài tập mới được download
+    if bai_lam.bai_tap.nguoi_tao != request.user:
+        return HttpResponseForbidden('Không có quyền download file này')
+    
+    # Kiểm tra xem có file không
+    if not bai_lam.file_nop:
+        return HttpResponse('Sinh viên chưa nộp file', status=404)
+    
+    # Tạo response với file
+    try:
+        import os
+        import mimetypes
+        
+        file_path = bai_lam.file_nop.path
+        file_name = os.path.basename(bai_lam.file_nop.name)
+        
+        # Xác định content type
+        content_type, _ = mimetypes.guess_type(file_path)
+        if content_type is None:
+            content_type = 'application/octet-stream'
+        
+        with open(file_path, 'rb') as f:
+            response = HttpResponse(f.read(), content_type=content_type)
+            response['Content-Disposition'] = f'attachment; filename="{file_name}"'
+            return response
+    except FileNotFoundError:
+        return HttpResponse('File không tồn tại trên server', status=404)
+    except Exception as e:
+        return HttpResponse(f'Lỗi khi tải file: {str(e)}', status=500)
 

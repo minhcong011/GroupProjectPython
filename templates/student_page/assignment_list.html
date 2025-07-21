@@ -33,6 +33,9 @@
           <a href="{% url 'studentapp:assignment_detail' assignment.id %}" class="do-assignment-btn">
             Làm bài
           </a>
+          <a href="{% url 'studentapp:nop_bai_detail' assignment.id %}" class="submit-assignment-btn">
+            Nộp bài
+          </a>
         </td>
       </tr>
       {% empty %}

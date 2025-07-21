@@ -12,6 +12,7 @@ urlpatterns = [
     path('run-code/', views.run_code, name='run_code'),
     path('chatbot/', views.chatbot, name='chatbot'), 
     path('nop-bai/', views.nop_bai, name='nop_bai'),
+    path('nop-bai/<int:assignment_id>/', views.nop_bai, name='nop_bai_detail'),
     path('course/', views.course, name='course'),
     path('course/<int:course_id>/lectures/', views.lecture_list, name='lecture_list'),
     path('api/courses/increment_participants/', views.increment_participants, name='increment_participants'),

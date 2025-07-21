@@ -43,6 +43,7 @@
                         <th>Thời gian nộp</th>
                         <th>Trạng thái</th>
                         <th>Điểm số</th>
+                        <th>File nộp</th>
                         <th>Thao tác</th>
                     </tr>
                 </thead>
@@ -90,26 +91,46 @@
                                             </span>
                                         </small>
                                     {% endif %}
+                                    {% if bai_lam.nhan_xet %}
+                                        <br><small class="comment-preview" title="{{ bai_lam.nhan_xet }}">
+                                            💬 <em>{{ bai_lam.nhan_xet|truncatechars:50 }}</em>
+                                        </small>
+                                    {% endif %}
                                 {% else %}
                                     <span class="no-score">--</span>
                                 {% endif %}
                             </span>
                         </td>
                         <td>
+                            {% if bai_lam.file_nop %}
+                                <a href="{% url 'download_file' bai_lam.id %}" class="btn btn-sm btn-outline-primary" title="Tải xuống file">
+                                    {% if bai_lam.file_name|slice:"-3:" == ".py" %}
+                                    {% elif bai_lam.file_name|slice:"-4:" == ".zip" %}
+                                    {% elif bai_lam.file_name|slice:"-4:" == ".rar" %}
+                                    {% elif bai_lam.file_name|slice:"-4:" == ".pdf" %}
+                                    {% elif bai_lam.file_name|slice:"-4:" == ".doc" or bai_lam.file_name|slice:"-5:" == ".docx" %}
+                                    {% else %}
+                                    {% endif %} {{ bai_lam.file_name }}
+                                </a>
+                            {% else %}
+                                <span class="text-muted">Không có file</span>
+                            {% endif %}
+                        </td>
+                        <td>
                             <div class="action-buttons">
                                 {% if bai_tap.loai_baitap == 'quiz' %}
-                                    <button class="btn btn-sm btn-primary" onclick="chamBaiTracNghiem({{ bai_lam.id }})">
+                                    <button class="btn btn-sm btn-primary action-btn" onclick="chamBaiTracNghiem({{ bai_lam.id }})">
                                         {% if bai_lam.da_cham %}Chấm lại{% else %}Chấm điểm{% endif %}
                                     </button>
                                 {% else %}
-                                    <button class="btn btn-sm btn-primary" onclick="chamBaiLapTrinh({{ bai_lam.id }})">
+                                    <button class="btn btn-sm btn-primary action-btn" onclick="chamBaiLapTrinh({{ bai_lam.id }})">
                                         {% if bai_lam.da_cham %}Chấm lại{% else %}Chấm điểm{% endif %}
                                     </button>
                                 {% endif %}
-                                <button class="btn btn-sm btn-secondary" onclick="xemChiTiet({{ bai_lam.id }})">
-                                    Chi tiết
+                                <button class="btn btn-sm btn-warning action-btn" onclick="nhapDiem({{ bai_lam.id }}, '{{ bai_lam.diem_so|default:0 }}', '{{ bai_lam.nhan_xet|default:""|escapejs }}')">
+                                    Nhập điểm
                                 </button>
-                                <a href="{% url 'ket_qua_cham_diem' bai_lam.id %}" class="btn btn-sm btn-info">
+                                <a href="{% url 'ket_qua_cham_diem' bai_lam.id %}" class="btn btn-sm btn-info action-btn">
                                     Kết quả
                                 </a>
                             </div>
@@ -131,15 +152,41 @@
     </div>
 </div>
 
-<!-- Modal xem chi tiết -->
-<div id="detailModal" class="modal">
+<!-- Modal kết quả test -->
+<div id="testResultModal" class="modal">
     <div class="modal-content">
         <div class="modal-header">
-            <h3>Chi tiết bài làm</h3>
-            <span class="close" onclick="closeModal()">&times;</span>
+            <h3>Kết quả chấm bài</h3>
+            <span class="close" onclick="closeTestResultModal()">&times;</span>
         </div>
-        <div class="modal-body" id="modalBody">
+        <div class="modal-body" id="testResultBody">
             <!-- Nội dung sẽ được load bằng JavaScript -->
+        </div>
+    </div>
+</div>
+
+<!-- Modal nhập điểm -->
+<div id="scoreModal" class="modal">
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Nhập điểm thủ công</h3>
+            <span class="close" onclick="closeScoreModal()">&times;</span>
+        </div>
+        <div class="modal-body">
+            <form id="scoreForm">
+                <div class="form-group">
+                    <label for="scoreInput">Điểm số (0-10):</label>
+                    <input type="number" id="scoreInput" min="0" max="10" step="0.1" class="form-control" required>
+                </div>
+                <div class="form-group">
+                    <label for="commentInput">Nhận xét (tùy chọn):</label>
+                    <textarea id="commentInput" class="form-control" rows="3" placeholder="Nhập nhận xét cho sinh viên..."></textarea>
+                </div>
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">Lưu điểm</button>
+                    <button type="button" class="btn btn-secondary" onclick="closeScoreModal()">Hủy</button>
+                </div>
+            </form>
         </div>
     </div>
 </div>
@@ -222,52 +269,73 @@
         
         resultHtml += '</div>';
         
-        document.getElementById('modalBody').innerHTML = resultHtml;
-        document.getElementById('detailModal').style.display = 'block';
+        document.getElementById('testResultBody').innerHTML = resultHtml;
+        document.getElementById('testResultModal').style.display = 'block';
     }
     
-    function xemChiTiet(baiLamId) {
-        fetch(`/teacher/xem-chi-tiet/${baiLamId}/`)
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    let content = `
-                        <h4>Chi tiết bài làm</h4>
-                        <p><strong>Sinh viên:</strong> ${data.sinh_vien}</p>
-                        <p><strong>Bài tập:</strong> ${data.bai_tap}</p>
-                        <p><strong>Thời gian nộp:</strong> ${data.thoi_gian_nop}</p>
-                        <p><strong>Điểm:</strong> ${data.diem_so || '--'}/10</p>
-                    `;
-                    
-                    if (data.code_nop) {
-                        content += `
-                            <h5>Code đã nộp:</h5>
-                            <pre><code>${data.code_nop}</code></pre>
-                        `;
-                    }
-                    
-                    if (data.dap_an_json) {
-                        content += `
-                            <h5>Đáp án đã chọn:</h5>
-                            <pre>${JSON.stringify(data.dap_an_json, null, 2)}</pre>
-                        `;
-                    }
-                    
-                    document.getElementById('modalBody').innerHTML = content;
-                    document.getElementById('detailModal').style.display = 'block';
-                } else {
-                    alert('Lỗi: ' + data.message);
-                }
+    function closeTestResultModal() {
+        document.getElementById('testResultModal').style.display = 'none';
+    }
+    
+    // Functions cho modal nhập điểm
+    let currentBaiLamId = null;
+    
+    function nhapDiem(baiLamId, currentScore, currentComment) {
+        currentBaiLamId = baiLamId;
+        document.getElementById('scoreInput').value = currentScore || '';
+        document.getElementById('commentInput').value = currentComment || '';
+        document.getElementById('scoreModal').style.display = 'block';
+    }
+    
+    function closeScoreModal() {
+        document.getElementById('scoreModal').style.display = 'none';
+        currentBaiLamId = null;
+    }
+    
+    // Xử lý submit form nhập điểm
+    document.getElementById('scoreForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const score = parseFloat(document.getElementById('scoreInput').value);
+        const comment = document.getElementById('commentInput').value;
+        
+        if (score < 0 || score > 10) {
+            alert('Điểm phải từ 0 đến 10!');
+            return;
+        }
+        
+        if (!currentBaiLamId) {
+            alert('Lỗi: Không xác định được bài làm!');
+            return;
+        }
+        
+        // Gửi request cập nhật điểm
+        fetch(`/sua-diem/${currentBaiLamId}/`, {
+            method: 'POST',
+            headers: {
+                'X-CSRFToken': getCookie('csrftoken'),
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ 
+                diem_so: score,
+                nhan_xet: comment 
             })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Có lỗi xảy ra!');
-            });
-    }
-    
-    function closeModal() {
-        document.getElementById('detailModal').style.display = 'none';
-    }
+        })
+        .then(response => response.json())
+        .then(data => {
+            if (data.success) {
+                alert(`Đã cập nhật điểm thành công: ${score}/10`);
+                closeScoreModal();
+                location.reload();
+            } else {
+                alert('Lỗi: ' + data.message);
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Có lỗi xảy ra khi cập nhật điểm!');
+        });
+    });
     
     function getCookie(name) {
         let cookieValue = null;

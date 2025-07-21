@@ -35,6 +35,7 @@ class BaiLam(models.Model):
     thoi_gian_nop = models.DateTimeField(auto_now_add=True)
     diem_so = models.FloatField(null=True, blank=True)
     da_cham = models.BooleanField(default=False)
+    nhan_xet = models.TextField(null=True, blank=True)  # Nhận xét của giáo viên
     
     # Cho bài trắc nghiệm
     dap_an_json = models.JSONField(null=True, blank=True)  # Lưu đáp án sinh viên chọn
@@ -43,6 +44,7 @@ class BaiLam(models.Model):
     
     # Cho bài lập trình
     code_nop = models.TextField(null=True, blank=True)  # Code sinh viên nộp
+    file_nop = models.FileField(upload_to='bai_lam/', null=True, blank=True)  # File nộp (.py, .zip, etc.)
     ket_qua_test = models.JSONField(null=True, blank=True)  # Kết quả chạy test
     so_test_pass = models.IntegerField(null=True, blank=True)  # Số test case pass
     tong_so_test = models.IntegerField(null=True, blank=True)  # Tổng số test case

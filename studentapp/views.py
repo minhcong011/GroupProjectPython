@@ -63,24 +63,56 @@ def increment_participants(request):
 def chatbot(request):
     return render(request, "student_page/Chat_bot.html")
 
-def nop_bai(request):
-    context = {}
+def nop_bai(request, assignment_id=None):
+    assignment = None
+    if assignment_id:
+        assignment = get_object_or_404(BaiTap, id=assignment_id)
+    
+    context = {'assignment': assignment}
+    
     if request.method == "POST":
         if 'code' in request.POST:
-            
             code = request.POST.get('code')
             language = request.POST.get('language')
-            
             context['message'] = "Đã nhận code. (Chưa xử lý lưu/chấm thực tế)"
         elif 'file' in request.FILES:
-            
             file = request.FILES['file']
             
-            context['submitted_file'] = {
-                'name': file.name,
-                'time': timezone.now()
-            }
-            context['message'] = "Đã nhận file. (Chưa xử lý lưu thực tế)"
+            # Kiểm tra kích thước file (10MB)
+            if file.size > 10 * 1024 * 1024:  # 10MB
+                context['error'] = "File quá lớn! Vui lòng chọn file nhỏ hơn 10MB."
+            else:
+                # Kiểm tra định dạng file
+                allowed_extensions = ['.py', '.pl', '.zip', '.rar', '.pdf', '.doc', '.docx', '.txt']
+                file_name = file.name.lower()
+                if not any(file_name.endswith(ext) for ext in allowed_extensions):
+                    context['error'] = "Định dạng file không được hỗ trợ! Vui lòng chọn file: .py, .pl, .zip, .rar, .pdf, .doc, .docx, .txt"
+                else:
+                    # Lưu file vào database
+                    if assignment and request.user.is_authenticated:
+                        from teacherapp.models import BaiLam
+                        bai_lam, created = BaiLam.objects.get_or_create(
+                            sinh_vien=request.user,
+                            bai_tap=assignment,
+                            defaults={
+                                'file_nop': file,
+                                'da_cham': False
+                            }
+                        )
+                        
+                        if not created:
+                            # Cập nhật file nếu đã tồn tại
+                            bai_lam.file_nop = file
+                            bai_lam.da_cham = False
+                            bai_lam.save()
+                    
+                    context['submitted_file'] = {
+                        'name': file.name,
+                        'size': file.size,
+                        'time': timezone.now()
+                    }
+                    context['message'] = f"Đã nộp file thành công: {file.name} ({file.size} bytes)"
+    
     return render(request, "student_page/nop_bai.html", context)
 def cvsv_edit(request):
     # Nếu sau này có phân quyền, kiểm tra user là sinh viên hay giáo viên ở đây

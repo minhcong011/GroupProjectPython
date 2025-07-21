@@ -63,10 +63,29 @@
     font-weight: 500;
     display: inline-block;
     transition: background-color 0.2s ease;
+    margin-right: 8px;
 }
 
 .do-assignment-btn:hover {
     background: #45a049;
+    color: #fff;
+    text-decoration: none;
+}
+
+.submit-assignment-btn {
+    background: #2196f3;
+    color: #fff;
+    padding: 6px 14px;
+    text-decoration: none;
+    border-radius: 4px;
+    font-size: 14px;
+    font-weight: 500;
+    display: inline-block;
+    transition: background-color 0.2s ease;
+}
+
+.submit-assignment-btn:hover {
+    background: #1976d2;
     color: #fff;
     text-decoration: none;
 }
@@ -97,6 +116,14 @@
     .do-assignment-btn {
         padding: 4px 8px;
         font-size: 12px;
+        margin-right: 4px;
+        margin-bottom: 4px;
+    }
+    
+    .submit-assignment-btn {
+        padding: 4px 8px;
+        font-size: 12px;
+        margin-bottom: 4px;
     }
 }
 
