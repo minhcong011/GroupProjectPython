@@ -18,6 +18,7 @@
         border: 1px solid #ddd;
         border-radius: 8px;
         padding: 20px;
+        color: #333;
     }
     .chart-container {
         width: 100%;
@@ -32,9 +33,31 @@
         padding: 8px;
         text-align: left;
         border-bottom: 1px solid #ddd;
+        color: #333;
     }
     th {
         background-color: #f2f2f2;
+        color: #333;
+        font-weight: bold;
+    }
+    
+    /* Override admin styles for better visibility */
+    .content h1 {
+        color: white !important;
+    }
+    
+    .stats-section h3 {
+        color: #333 !important;
+        margin-bottom: 15px;
+    }
+    
+    .breadcrumbs a {
+        color: white !important;
+        text-decoration: none;
+    }
+    
+    .breadcrumbs {
+        color: white !important;
     }
 </style>
 {% endblock %}
@@ -52,30 +75,6 @@
     <h1>{{ title }}</h1>
     
     <div class="stats-container">
-        <!-- Log Statistics -->
-        <div class="stats-section">
-            <h3>Thống kê Hoạt động</h3>
-            <div class="chart-container">
-                <canvas id="logChart"></canvas>
-            </div>
-            <table>
-                <thead>
-                    <tr>
-                        <th>Loại hoạt động</th>
-                        <th>Số lượng</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    {% for stat in log_stats %}
-                    <tr>
-                        <td>{{ stat.action_type }}</td>
-                        <td>{{ stat.count }}</td>
-                    </tr>
-                    {% endfor %}
-                </tbody>
-            </table>
-        </div>
-        
         <!-- Active Users -->
         <div class="stats-section">
             <h3>Người dùng hoạt động (30 ngày)</h3>
@@ -108,32 +107,6 @@
 </div>
 
 <script>
-// Biểu đồ logs
-const logCtx = document.getElementById('logChart').getContext('2d');
-const logChart = new Chart(logCtx, {
-    type: 'doughnut',
-    data: {
-        labels: [{% for stat in log_stats %}'{{ stat.action_type }}'{% if not forloop.last %},{% endif %}{% endfor %}],
-        datasets: [{
-            data: [{% for stat in log_stats %}{{ stat.count }}{% if not forloop.last %},{% endif %}{% endfor %}],
-            backgroundColor: [
-                '#FF6384',
-                '#36A2EB',
-                '#FFCE56',
-                '#4BC0C0',
-                '#9966FF',
-                '#FF9F40',
-                '#FF6384',
-                '#C9CBCF'
-            ]
-        }]
-    },
-    options: {
-        responsive: true,
-        maintainAspectRatio: false
-    }
-});
-
 // Biểu đồ bài tập theo tháng
 const assignmentCtx = document.getElementById('assignmentChart').getContext('2d');
 const assignmentChart = new Chart(assignmentCtx, {
