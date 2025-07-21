@@ -59,10 +59,6 @@ def increment_participants(request):
         except Course.DoesNotExist:
             return JsonResponse({"success": False, "error": "Course not found"})
     return JsonResponse({"success": False, "error": "Invalid method"})
-<<<<<<< HEAD
-
-=======
->>>>>>> 8b522c9872a629a5dbf401c2c8a2402eeb1b197d
 
 def chatbot(request):
     return render(request, "student_page/Chat_bot.html")
@@ -212,27 +208,6 @@ def submit_code_assignment(request, assignment_id):
         return render(request, "student_page/code_submission_result.html", context)
     
     return redirect('studentapp:assignment_detail', assignment_id=assignment_id)
-
-
-@csrf_exempt
-@require_POST
-def increment_participants(request):
-    try:
-        data = json.loads(request.body)
-        course_id = data.get('id')
-        if not course_id:
-            return JsonResponse({'success': False, 'error': 'Missing course id'})
-        
-        course = Course.objects.get(id=course_id)
-        course.participants += 1
-        course.save()
-        return JsonResponse({'success': True, 'participants': course.participants})
-    except json.JSONDecodeError:
-        return JsonResponse({'success': False, 'error': 'Invalid JSON data'})
-    except Course.DoesNotExist:
-        return JsonResponse({'success': False, 'error': 'Course not found'})
-    except Exception as e:
-        return JsonResponse({'success': False, 'error': str(e)})
 
 @csrf_exempt
 @require_http_methods(["POST"])
