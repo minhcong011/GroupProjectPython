@@ -17,9 +17,9 @@ def cv_edit(request):
         account.first_name = request.POST.get('first_name', '')
         account.last_name = request.POST.get('last_name', '')
         account.phone_number = request.POST.get('phone_number', '')
-        account.company = request.POST.get('address', '')  # đổi thành address nếu bạn rename trường trong model
+        account.company = request.POST.get('address', '')
         account.save()
-        return redirect('cv_edit')  # hoặc redirect lại chính URL để load lại
+        return redirect('cv_edit')
 
     context = {
         'email': account.email if account else '',
@@ -30,7 +30,7 @@ def cv_edit(request):
         'timezone': account.timezone if account else '',
         'phone_number': account.phone_number if account else '',
     }
-    # Phân loại tài khoản để render đúng template
+    
     if hasattr(account, 'is_teacher') and account.is_teacher:
         return render(request, 'cv/cv_teacher.html', context)
     else:
@@ -48,12 +48,12 @@ def password_2fa(request):
             new_password = request.POST.get('new_password')
             confirm_password = request.POST.get('confirm_password')
             
-            # Kiểm tra mật khẩu hiện tại
+            
             if not request.user.check_password(current_password):
                 messages.error(request, 'Mật khẩu hiện tại không đúng!')
                 return redirect('cv:password_2fa')
             
-            # Kiểm tra mật khẩu mới
+            
             if new_password != confirm_password:
                 messages.error(request, 'Mật khẩu xác nhận không khớp!')
                 return redirect('cv:password_2fa')
@@ -62,11 +62,11 @@ def password_2fa(request):
                 messages.error(request, 'Mật khẩu mới phải có ít nhất 8 ký tự!')
                 return redirect('cv:password_2fa')
             
-            # Cập nhật mật khẩu
+            
             request.user.set_password(new_password)
             request.user.save()
             
-            # Cập nhật session để không bị logout
+            
             from django.contrib.auth import update_session_auth_hash
             update_session_auth_hash(request, request.user)
             
@@ -76,7 +76,7 @@ def password_2fa(request):
         elif action == 'toggle_2fa':
             enable_2fa = request.POST.get('enable_2fa') == 'true'
             
-            # Cập nhật trạng thái 2FA cho user
+            
             try:
                 account = Account.objects.get(username=request.user.username)
                 account.two_factor_enabled = enable_2fa
@@ -101,11 +101,11 @@ def profile(request):
         account = None
 
     if request.method == 'POST' and account:
-        # Xử lý upload avatar
+        
         if 'avatar' in request.FILES:
             account.avatar = request.FILES['avatar']
         
-        # Cập nhật thông tin
+        
         account.email = request.POST.get('email', '')
         account.first_name = request.POST.get('first_name', '')
         account.last_name = request.POST.get('last_name', '')
@@ -114,7 +114,7 @@ def profile(request):
         account.title = request.POST.get('title', '')
         account.timezone = request.POST.get('timezone', 'Asia/Ho_Chi_Minh')
         
-        # Cập nhật User model
+
         user = request.user
         user.email = account.email
         user.first_name = account.first_name

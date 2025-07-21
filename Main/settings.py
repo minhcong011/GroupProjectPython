@@ -114,5 +114,12 @@ EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 EMAIL_HOST_USER = 'phuockhoamai@gmail.com'        # <-- Thay bằng Gmail của bạn
 EMAIL_HOST_PASSWORD = 'ajxzihidyzkcfrsa'         # <-- App Password của bạn
+
+# ==================== GROQ AI API CONFIGURATION ====================
+# Use the new valid API key that user provided
+# Should be moved to environment variables
+
+
+# ==================== MEDIA FILES ====================
 MEDIA_URL = '/uploads/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'uploads')

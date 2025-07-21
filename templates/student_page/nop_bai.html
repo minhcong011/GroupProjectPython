@@ -17,7 +17,7 @@
     </div>
     <div class="nav">
       <a href="{% url 'student_home' %}">Trang chủ</a>
-      <a href="{% url 'studentapp:khoa_hoc' %}">Khóa học</a>
+      <a href="{% url 'studentapp:course' %}">Khóa học</a>
       <a href="{% url 'studentapp:assignment_list' %}">Bài tập</a>
       <a href="{% url 'studentapp:ide_online' %}">IDE Online</a>
       <a href="{% url 'studentapp:chatbot' %}">Chatbot AI</a>
@@ -28,7 +28,7 @@
   <div class="banner">
     <span>
       <b>Hệ thống học tập môn PERL & PYTHON</b>
-      <span class="course-code">CS466</span>
+      <span class="course-code"></span>
     </span>
     <span class="right">
       {{ now|date:"l, d/m/Y" }}

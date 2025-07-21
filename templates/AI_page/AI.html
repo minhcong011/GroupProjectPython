@@ -5,6 +5,10 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Chatbot AI - Hỗ trợ học tập</title>
+    <meta name="csrf-token" content="{{ csrf_token }}">
+    {% if user.is_authenticated %}
+        <meta name="groq-api-key" content="{{ groq_api_key|default:'' }}">
+    {% endif %}
     <link rel="stylesheet" href="{% static 'css/chatbot.css' %}">
 </head>
 <body>
@@ -17,19 +21,19 @@
             </div>
             
             <div class="feature-grid">
-                <div class="feature-card" onclick="selectMode('chat')">
+                <div class="feature-card" data-mode="chat">
                     <h4> Hỗ trợ học tập</h4>
                     <p>Perl & Python</p>
                 </div>
-                <div class="feature-card" onclick="selectMode('review')">
+                <div class="feature-card" data-mode="review">
                     <h4> Review Code</h4>
                     <p>Phân tích lỗi</p>
                 </div>
-                <div class="feature-card" onclick="selectMode('assessment')">
+                <div class="feature-card" data-mode="assessment">
                     <h4> Đánh giá</h4>
                     <p>Theo dõi tiến độ</p>
                 </div>
-                <div class="feature-card" onclick="selectMode('quiz')">
+                <div class="feature-card" data-mode="quiz">
                     <h4> Quiz</h4>
                     <p>Tạo bài tập</p>
                 </div>
@@ -51,7 +55,7 @@
         <div class="chat-input">
             <div class="input-container">
                 <input type="text" id="messageInput" placeholder="Nhập câu hỏi về Python hoặc Perl..." autocomplete="off">
-                <button class="send-button" id="sendButton" onclick="sendMessage()">
+                <button class="send-button" id="sendButton">
                     <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
                         <path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/>
                     </svg>
@@ -59,6 +63,17 @@
             </div>
             <div class="mode-indicator" id="modeIndicator">
                  Chế độ: Trò chuyện thông thường
+            </div>
+            <div class="api-status" style="text-align: center; margin-top: 10px;">
+                <button id="testApiButton" class="test-api-btn" style="
+                    background: #4CAF50; 
+                    color: white; 
+                    border: none; 
+                    padding: 8px 16px; 
+                    border-radius: 4px; 
+                    cursor: pointer;
+                    font-size: 12px;
+                ">🔧 Test API Connection</button>
             </div>
         </div>
     </div>

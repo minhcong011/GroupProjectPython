@@ -3,20 +3,16 @@ from django.utils import timezone
 from django.contrib.auth.decorators import login_required
 from django.contrib import messages
 from django.db.models import Q
-from teacherapp.models import Course, BaiTap, CauHoi
-from core.models import Lecture
-
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.http import require_POST
+from django.views.decorators.http import require_POST, require_http_methods
+from teacherapp.models import Course, BaiTap, CauHoi
+from core.models import Lecture
 
 import subprocess
 import json
 import tempfile
 import os
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-from django.views.decorators.http import require_http_methods
 
 
 def assignment_list(request):
@@ -25,8 +21,6 @@ def assignment_list(request):
 
 def ide_online(request):
     return render(request, "student_page/IDE_Onl.html")
-
-
 
 
 def course(request):
@@ -51,6 +45,20 @@ def course(request):
     return render(request, "student_page/course.html", context)
 
 
+@csrf_exempt
+@require_POST
+def increment_participants(request):
+    if request.method == "POST":
+        try:
+            data = json.loads(request.body)
+            course_id = data.get("id")
+            course = Course.objects.get(id=course_id)
+            course.participants += 1
+            course.save()
+            return JsonResponse({"success": True, "participants": course.participants})
+        except Course.DoesNotExist:
+            return JsonResponse({"success": False, "error": "Course not found"})
+    return JsonResponse({"success": False, "error": "Invalid method"})
 
 
 def chatbot(request):
@@ -203,42 +211,25 @@ def submit_code_assignment(request, assignment_id):
     return redirect('studentapp:assignment_detail', assignment_id=assignment_id)
 
 
-
-def course(request):
-    query = request.GET.get('q', '').strip()
-    lang = request.GET.get('lang', '').strip()
-
-    courses = Course.objects.all()
-
-    # Lọc theo tên khóa học nếu chọn Python/Perl
-    if lang in ['Python', 'Perl']:
-        courses = courses.filter(name__icontains=lang)
-
-    # Lọc tiếp theo từ khóa tìm kiếm
-    if query:
-        courses = courses.filter(name__icontains=query)
-
-    context = {
-        'courses': courses,
-        'query': query,
-        'filter_lang': lang,
-    }
-    return render(request, "student_page/course.html", context)
-
-
 @csrf_exempt
 @require_POST
 def increment_participants(request):
-    course_id = request.GET.get('id')
-    if not course_id:
-        return JsonResponse({'success': False, 'error': 'Missing course id'})
     try:
+        data = json.loads(request.body)
+        course_id = data.get('id')
+        if not course_id:
+            return JsonResponse({'success': False, 'error': 'Missing course id'})
+        
         course = Course.objects.get(id=course_id)
         course.participants += 1
         course.save()
         return JsonResponse({'success': True, 'participants': course.participants})
+    except json.JSONDecodeError:
+        return JsonResponse({'success': False, 'error': 'Invalid JSON data'})
     except Course.DoesNotExist:
         return JsonResponse({'success': False, 'error': 'Course not found'})
+    except Exception as e:
+        return JsonResponse({'success': False, 'error': str(e)})
 
 @csrf_exempt
 @require_http_methods(["POST"])

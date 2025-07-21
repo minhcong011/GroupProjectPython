@@ -25,6 +25,7 @@ urlpatterns = [
     path('django-admin/', admin.site.urls),  # Giữ lại admin mặc định cho backup
     path('', include('authentication.urls')),
     path('', include('cv.urls')), 
+    path('', include('core.urls')),  # Core API endpoints
     path('', include('teacherapp.urls')),
     path('', include('AIapp.urls')),  # URL cho AIapp
     path('student/', include(('studentapp.urls', 'studentapp'), namespace='studentapp')),

@@ -1,11 +1,25 @@
 from django.shortcuts import render
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
+from django.conf import settings
 import json
 
 def ai_page(request):
     """View để hiển thị trang AI Chatbot"""
-    return render(request, 'AI_page/AI.html')
+    context = {}
+    
+    # Chỉ cung cấp API key cho authenticated users
+    if request.user.is_authenticated:
+        # Lấy API key từ settings
+        api_key = getattr(settings, 'GROQ_API_KEY', '')
+        if not api_key:
+            # Fallback to environment variable
+            import os
+            api_key = os.environ.get('GROQ_API_KEY', '')
+        
+        context['groq_api_key'] = api_key
+    
+    return render(request, 'AI_page/AI.html', context)
 
 def setup_guide(request):
     """Trang hướng dẫn cấu hình API"""
@@ -19,15 +33,12 @@ def chat_api(request):
             data = json.loads(request.body)
             message = data.get('message', '')
             
-            # Placeholder response - sẽ được thay thế bằng AI thực tế
             response = {
                 'status': 'success',
                 'message': f'Đã nhận tin nhắn: {message}',
                 'suggestion': 'Vui lòng cấu hình API key để sử dụng AI Assistant'
             }
-            
             return JsonResponse(response)
         except Exception as e:
             return JsonResponse({'status': 'error', 'message': str(e)})
-    
     return JsonResponse({'status': 'error', 'message': 'Method not allowed'})
