@@ -1,0 +1,266 @@
+{% extends 'teacher_page/gv_base.html' %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/thong_ke_bao_cao.css' %}">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+{% endblock %}
+
+{% block content %}
+<div class="stats-container">
+    <!-- Header -->
+    <div class="header-stats">
+        <h1> {{ title }}</h1>
+        <p>Tổng quan và phân tích chi tiết về tiến độ học tập của sinh viên</p>
+    </div>
+
+    <!-- Export Buttons -->
+    <div class="export-section">
+        <a href="{% url 'export_excel' %}" class="btn btn-success">
+             Xuất Excel
+        </a>
+        <a href="{% url 'export_pdf' %}" class="btn btn-primary">
+             Xuất PDF
+        </a>
+        <a href="{% url 'assignment_list' %}" class="btn btn-secondary">
+            ← Quay lại
+        </a>
+    </div>
+
+    <!-- Overview Cards -->
+    <div class="overview-cards">
+        <div class="card">
+            <h3>Tổng số bài tập</h3>
+            <p class="number">{{ tong_bai_tap }}</p>
+            <p class="description">Bài tập đã tạo</p>
+        </div>
+        
+        <div class="card">
+            <h3>Tổng bài nộp</h3>
+            <p class="number">{{ tong_bai_nop }}</p>
+            <p class="description">Bài làm đã nhận</p>
+        </div>
+        
+        <div class="card">
+            <h3>Đã chấm điểm</h3>
+            <p class="number">{{ bai_da_cham }}</p>
+            <p class="description">Bài làm đã hoàn thành</p>
+        </div>
+        
+        <div class="card">
+            <h3>Điểm trung bình</h3>
+            <p class="number">{{ diem_trung_binh }}/10</p>
+            <p class="description">Điểm TB toàn khóa</p>
+        </div>
+    </div>
+
+    <!-- Monthly Chart -->
+    <div class="chart-section">
+        <h3> Thống kê bài nộp theo tháng</h3>
+        <div class="chart-container">
+            <canvas id="monthlyChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Assignment Statistics -->
+    <div class="table-section">
+        <h3> Chi tiết theo bài tập</h3>
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Tên bài tập</th>
+                        <th>Loại</th>
+                        <th>Tổng nộp</th>
+                        <th>Đã chấm</th>
+                        <th>Tiến độ</th>
+                        <th>Điểm TB</th>
+                        <th>Trạng thái</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for stat in bai_tap_stats %}
+                    <tr>
+                        <td><strong>{{ stat.bai_tap.tieu_de }}</strong></td>
+                        <td>
+                            <span class="badge {% if stat.bai_tap.loai_baitap == 'code' %}badge-info{% else %}badge-warning{% endif %}">
+                                {% if stat.bai_tap.loai_baitap == 'code' %}Lập trình{% else %}Trắc nghiệm{% endif %}
+                            </span>
+                        </td>
+                        <td>{{ stat.tong_nop }}</td>
+                        <td>{{ stat.da_cham }}</td>
+                        <td>
+                            <div class="progress-bar">
+                                <div class="progress-fill" style="width: {{ stat.ti_le_hoan_thanh }}%"></div>
+                            </div>
+                            <small>{{ stat.ti_le_hoan_thanh }}%</small>
+                        </td>
+                        <td>
+                            {% if stat.diem_tb > 0 %}
+                                <strong>{{ stat.diem_tb }}/10</strong>
+                            {% else %}
+                                <span style="color: #999;">--</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if stat.chua_cham > 0 %}
+                                <span class="badge badge-warning">{{ stat.chua_cham }} chưa chấm</span>
+                            {% else %}
+                                <span class="badge badge-success">Hoàn thành</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" style="text-align: center; color: #999; padding: 2rem;">
+                            Chưa có bài tập nào được tạo
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Student Performance -->
+    <div class="table-section">
+        <h3>👥 Thành tích sinh viên</h3>
+        <div class="table-responsive">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Sinh viên</th>
+                        <th>Tổng bài nộp</th>
+                        <th>Đã chấm</th>
+                        <th>Điểm trung bình</th>
+                        <th>Xếp hạng</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for stat in sinh_vien_stats %}
+                    <tr>
+                        <td>
+                            <strong>
+                                {% if stat.sinh_vien__first_name %}
+                                    {{ stat.sinh_vien__first_name }} {{ stat.sinh_vien__last_name }}
+                                {% else %}
+                                    {{ stat.sinh_vien__username }}
+                                {% endif %}
+                            </strong>
+                        </td>
+                        <td>{{ stat.tong_bai_nop }}</td>
+                        <td>{{ stat.bai_da_cham }}</td>
+                        <td>
+                            {% if stat.diem_tb %}
+                                <strong>{{ stat.diem_tb|floatformat:1 }}/10</strong>
+                            {% else %}
+                                <span style="color: #999;">--</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            {% if stat.diem_tb %}
+                                {% if stat.diem_tb >= 8 %}
+                                    <span class="badge badge-success">Xuất sắc</span>
+                                {% elif stat.diem_tb >= 6.5 %}
+                                    <span class="badge badge-info">Khá</span>
+                                {% elif stat.diem_tb >= 5 %}
+                                    <span class="badge badge-warning">Trung bình</span>
+                                {% else %}
+                                    <span class="badge" style="background: #ffebee; color: #c62828;">Cần cải thiện</span>
+                                {% endif %}
+                            {% else %}
+                                <span style="color: #999;">--</span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" style="text-align: center; color: #999; padding: 2rem;">
+                            Chưa có sinh viên nào nộp bài
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<script>
+
+const ctx = document.getElementById('monthlyChart').getContext('2d');
+const monthlyChart = new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: [
+            {% for stat in monthly_stats %}
+                '{{ stat.month|date:"m/Y" }}'{% if not forloop.last %},{% endif %}
+            {% endfor %}
+        ],
+        datasets: [{
+            label: 'Số bài nộp',
+            data: [
+                {% for stat in monthly_stats %}
+                    {{ stat.count }}{% if not forloop.last %},{% endif %}
+                {% endfor %}
+            ],
+            borderColor: '#1976d2',
+            backgroundColor: 'rgba(25, 118, 210, 0.1)',
+            tension: 0.4,
+            fill: true
+        }, {
+            label: 'Điểm trung bình',
+            data: [
+                {% for stat in monthly_stats %}
+                    {{ stat.avg_score|default:0 }}{% if not forloop.last %},{% endif %}
+                {% endfor %}
+            ],
+            borderColor: '#4caf50',
+            backgroundColor: 'rgba(76, 175, 80, 0.1)',
+            tension: 0.4,
+            yAxisID: 'y1'
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: false,
+        plugins: {
+            legend: {
+                position: 'top',
+            },
+            title: {
+                display: true,
+                text: 'Xu hướng nộp bài và điểm số trong 6 tháng gần nhất'
+            }
+        },
+        scales: {
+            y: {
+                type: 'linear',
+                display: true,
+                position: 'left',
+                title: {
+                    display: true,
+                    text: 'Số bài nộp'
+                }
+            },
+            y1: {
+                type: 'linear',
+                display: true,
+                position: 'right',
+                title: {
+                    display: true,
+                    text: 'Điểm trung bình'
+                },
+                min: 0,
+                max: 10,
+                grid: {
+                    drawOnChartArea: false,
+                },
+            }
+        }
+    }
+});
+</script>
+{% endblock %}

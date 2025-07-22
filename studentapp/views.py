@@ -8,6 +8,8 @@ from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.http import require_POST, require_http_methods
 from teacherapp.models import Course, BaiTap, CauHoi
 from core.models import Lecture
+from .models import DanhGiaKhoaHoc
+from django.contrib.auth.models import User
 
 import subprocess
 import json
@@ -407,4 +409,83 @@ def lecture_list(request, course_id):
     course = get_object_or_404(Course, id=course_id)
     lectures = Lecture.objects.filter(course=course).order_by('created_at')
     return render(request, "student_page/lecture_list.html", {"course": course, "lectures": lectures})
+
+
+@login_required
+def danh_gia_khoa_hoc(request):
+    """View hiển thị trang đánh giá khóa học"""
+    # Lấy các bài tập để sinh viên có thể đánh giá cụ thể
+    bai_tap_list = BaiTap.objects.all().order_by('-ngay_tao')
+    
+    # Lấy danh sách khóa học
+    khoa_hoc_list = Course.objects.all().order_by('name')
+    
+    # Lấy danh sách giảng viên (users có quyền staff hoặc superuser)
+    giang_vien_list = User.objects.filter(Q(is_staff=True) | Q(is_superuser=True)).order_by('first_name', 'last_name')
+    
+    # Lấy đánh giá đã gửi của sinh viên hiện tại
+    danh_gia_da_gui = DanhGiaKhoaHoc.objects.filter(sinh_vien=request.user).order_by('-ngay_tao')
+    
+    context = {
+        'title': 'Đánh giá khóa học',
+        'bai_tap_list': bai_tap_list,
+        'khoa_hoc_list': khoa_hoc_list,
+        'giang_vien_list': giang_vien_list,
+        'danh_gia_da_gui': danh_gia_da_gui,
+    }
+    return render(request, 'student_page/danh_gia_khoa_hoc.html', context)
+
+
+@login_required
+def gui_danh_gia(request):
+    """View xử lý gửi đánh giá từ sinh viên"""
+    if request.method == 'POST':
+        loai_danh_gia = request.POST.get('loai_danh_gia')
+        khoa_hoc_id = request.POST.get('khoa_hoc_id')
+        bai_tap_id = request.POST.get('bai_tap_id')
+        giang_vien_id = request.POST.get('giang_vien_id')
+        diem_sao = request.POST.get('diem_sao')
+        tieu_de = request.POST.get('tieu_de')
+        noi_dung = request.POST.get('noi_dung')
+        gop_y = request.POST.get('gop_y')
+        
+        # Validation
+        if not all([loai_danh_gia, diem_sao, tieu_de, noi_dung]):
+            messages.error(request, 'Vui lòng điền đầy đủ thông tin bắt buộc!')
+            return redirect('studentapp:danh_gia_khoa_hoc')
+        
+        try:
+            # Tạo đánh giá mới
+            danh_gia = DanhGiaKhoaHoc(
+                sinh_vien=request.user,
+                loai_danh_gia=loai_danh_gia,
+                diem_sao=int(diem_sao),
+                tieu_de=tieu_de,
+                noi_dung=noi_dung,
+                gop_y=gop_y or None
+            )
+            
+            # Gán đối tượng đánh giá tương ứng
+            if loai_danh_gia == 'khoa_hoc' and khoa_hoc_id:
+                khoa_hoc = get_object_or_404(Course, id=khoa_hoc_id)
+                danh_gia.khoa_hoc = khoa_hoc
+            elif loai_danh_gia == 'bai_tap' and bai_tap_id:
+                bai_tap = get_object_or_404(BaiTap, id=bai_tap_id)
+                danh_gia.bai_tap = bai_tap
+            elif loai_danh_gia == 'giang_vien' and giang_vien_id:
+                giang_vien = get_object_or_404(User, id=giang_vien_id)
+                danh_gia.giang_vien = giang_vien
+            else:
+                messages.error(request, 'Vui lòng chọn đối tượng đánh giá phù hợp!')
+                return redirect('studentapp:danh_gia_khoa_hoc')
+            
+            danh_gia.save()
+            messages.success(request, 'Đánh giá đã được gửi thành công! Cảm ơn bạn đã góp ý.')
+            
+        except Exception as e:
+            messages.error(request, f'Có lỗi xảy ra: {str(e)}')
+        
+        return redirect('studentapp:danh_gia_khoa_hoc')
+    
+    return redirect('studentapp:danh_gia_khoa_hoc')
 

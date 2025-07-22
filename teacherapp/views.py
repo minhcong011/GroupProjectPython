@@ -913,3 +913,230 @@ def download_file(request, bai_lam_id):
     except Exception as e:
         return HttpResponse(f'Lỗi khi tải file: {str(e)}', status=500)
 
+
+from django.db.models import Count, Avg, Q
+from django.db.models.functions import TruncMonth
+from datetime import datetime, timedelta
+import csv
+from reportlab.pdfgen import canvas
+from reportlab.lib.pagesizes import letter, A4
+from reportlab.pdfbase import pdfmetrics
+from reportlab.pdfbase.ttfonts import TTFont
+from io import BytesIO
+
+@login_required
+def thong_ke_bao_cao(request):
+    """Trang thống kê và báo cáo cho giảng viên"""
+    user = request.user
+    
+    # Lấy tất cả bài tập của giảng viên
+    bai_taps = BaiTap.objects.filter(nguoi_tao=user)
+    
+    # Thống kê tổng quan
+    tong_bai_tap = bai_taps.count()
+    tong_bai_nop = BaiLam.objects.filter(bai_tap__nguoi_tao=user).count()
+    bai_da_cham = BaiLam.objects.filter(bai_tap__nguoi_tao=user, da_cham=True).count()
+    
+    # Tính điểm trung bình
+    diem_trung_binh = BaiLam.objects.filter(
+        bai_tap__nguoi_tao=user, 
+        da_cham=True,
+        diem_so__isnull=False
+    ).aggregate(avg_score=Avg('diem_so'))['avg_score'] or 0
+    
+    # Thống kê theo tháng (6 tháng gần nhất)
+    now = timezone.now()
+    six_months_ago = now - timedelta(days=180)
+    
+    monthly_stats = BaiLam.objects.filter(
+        bai_tap__nguoi_tao=user,
+        thoi_gian_nop__gte=six_months_ago
+    ).annotate(
+        month=TruncMonth('thoi_gian_nop')
+    ).values('month').annotate(
+        count=Count('id'),
+        avg_score=Avg('diem_so', filter=Q(da_cham=True))
+    ).order_by('month')
+    
+    # Thống kê theo bài tập
+    bai_tap_stats = []
+    for bai_tap in bai_taps:
+        bai_lams = BaiLam.objects.filter(bai_tap=bai_tap)
+        da_cham = bai_lams.filter(da_cham=True)
+        
+        avg_score = da_cham.aggregate(avg=Avg('diem_so'))['avg'] or 0
+        
+        bai_tap_stats.append({
+            'bai_tap': bai_tap,
+            'tong_nop': bai_lams.count(),
+            'da_cham': da_cham.count(),
+            'chua_cham': bai_lams.filter(da_cham=False).count(),
+            'diem_tb': round(avg_score, 1) if avg_score else 0,
+            'ti_le_hoan_thanh': round((da_cham.count() / bai_lams.count() * 100), 1) if bai_lams.count() > 0 else 0
+        })
+    
+    # Thống kê sinh viên
+    sinh_vien_stats = BaiLam.objects.filter(
+        bai_tap__nguoi_tao=user
+    ).values(
+        'sinh_vien__username',
+        'sinh_vien__first_name', 
+        'sinh_vien__last_name'
+    ).annotate(
+        tong_bai_nop=Count('id'),
+        bai_da_cham=Count('id', filter=Q(da_cham=True)),
+        diem_tb=Avg('diem_so', filter=Q(da_cham=True))
+    ).order_by('-diem_tb')
+    
+    context = {
+        'title': 'Thống kê & Báo cáo',
+        'tong_bai_tap': tong_bai_tap,
+        'tong_bai_nop': tong_bai_nop,
+        'bai_da_cham': bai_da_cham,
+        'bai_chua_cham': tong_bai_nop - bai_da_cham,
+        'diem_trung_binh': round(diem_trung_binh, 1),
+        'monthly_stats': list(monthly_stats),
+        'bai_tap_stats': bai_tap_stats,
+        'sinh_vien_stats': sinh_vien_stats,
+        'now': now,
+    }
+    
+    return render(request, 'teacher_page/thong_ke_bao_cao.html', context)
+
+@login_required
+def export_excel(request):
+    """Xuất báo cáo Excel"""
+    try:
+        import openpyxl
+        from openpyxl.styles import Font, Alignment, PatternFill
+        from django.http import HttpResponse
+        
+        # Tạo workbook
+        wb = openpyxl.Workbook()
+        ws = wb.active
+        ws.title = "Thống kê bài tập"
+        
+        # Header
+        ws['A1'] = 'BÁO CÁO THỐNG KÊ BÀI TẬP'
+        ws['A1'].font = Font(bold=True, size=16)
+        ws['A1'].alignment = Alignment(horizontal='center')
+        ws.merge_cells('A1:G1')
+        
+        ws['A3'] = f'Giảng viên: {request.user.get_full_name() or request.user.username}'
+        ws['A4'] = f'Ngày xuất: {timezone.now().strftime("%d/%m/%Y %H:%M")}'
+        
+        # Headers cho bảng
+        headers = ['STT', 'Tên bài tập', 'Loại', 'Tổng nộp', 'Đã chấm', 'Chưa chấm', 'Điểm TB']
+        for col, header in enumerate(headers, 1):
+            cell = ws.cell(row=6, column=col, value=header)
+            cell.font = Font(bold=True)
+            cell.fill = PatternFill(start_color="366092", end_color="366092", fill_type="solid")
+            cell.font = Font(bold=True, color="FFFFFF")
+        
+        # Dữ liệu
+        bai_taps = BaiTap.objects.filter(nguoi_tao=request.user)
+        for row, bai_tap in enumerate(bai_taps, 7):
+            bai_lams = BaiLam.objects.filter(bai_tap=bai_tap)
+            da_cham = bai_lams.filter(da_cham=True)
+            avg_score = da_cham.aggregate(avg=Avg('diem_so'))['avg'] or 0
+            
+            ws.cell(row=row, column=1, value=row-6)
+            ws.cell(row=row, column=2, value=bai_tap.tieu_de)
+            ws.cell(row=row, column=3, value='Lập trình' if bai_tap.loai_baitap == 'code' else 'Trắc nghiệm')
+            ws.cell(row=row, column=4, value=bai_lams.count())
+            ws.cell(row=row, column=5, value=da_cham.count())
+            ws.cell(row=row, column=6, value=bai_lams.filter(da_cham=False).count())
+            ws.cell(row=row, column=7, value=round(avg_score, 1) if avg_score else 0)
+        
+        # Tạo response
+        response = HttpResponse(content_type='application/vnd.openxmlformats-officedocument.spreadsheetml.sheet')
+        response['Content-Disposition'] = f'attachment; filename="thong_ke_bai_tap_{timezone.now().strftime("%Y%m%d")}.xlsx"'
+        
+        wb.save(response)
+        return response
+        
+    except ImportError:
+        messages.error(request, 'Chưa cài đặt openpyxl. Vui lòng cài đặt: pip install openpyxl')
+        return redirect('thong_ke_bao_cao')
+    except Exception as e:
+        messages.error(request, f'Lỗi xuất Excel: {str(e)}')
+        return redirect('thong_ke_bao_cao')
+
+@login_required  
+def export_pdf(request):
+    """Xuất báo cáo PDF"""
+    try:
+        from reportlab.pdfgen import canvas
+        from reportlab.lib.pagesizes import A4
+        from reportlab.pdfbase import pdfmetrics
+        from reportlab.pdfbase.ttfonts import TTFont
+        from reportlab.lib.units import inch
+        
+        # Tạo response
+        response = HttpResponse(content_type='application/pdf')
+        response['Content-Disposition'] = f'attachment; filename="bao_cao_thong_ke_{timezone.now().strftime("%Y%m%d")}.pdf"'
+        
+        # Tạo PDF
+        buffer = BytesIO()
+        p = canvas.Canvas(buffer, pagesize=A4)
+        width, height = A4
+        
+        # Tiêu đề
+        p.setFont("Helvetica-Bold", 16)
+        p.drawCentredText(width/2, height-50, "BÁO CÁO THỐNG KÊ BÀI TẬP")
+        
+        # Thông tin
+        p.setFont("Helvetica", 12)
+        p.drawString(50, height-100, f"Giảng viên: {request.user.get_full_name() or request.user.username}")
+        p.drawString(50, height-120, f"Ngày xuất: {timezone.now().strftime('%d/%m/%Y %H:%M')}")
+        
+        # Thống kê tổng quan
+        bai_taps = BaiTap.objects.filter(nguoi_tao=request.user)
+        tong_bai_nop = BaiLam.objects.filter(bai_tap__nguoi_tao=request.user).count()
+        bai_da_cham = BaiLam.objects.filter(bai_tap__nguoi_tao=request.user, da_cham=True).count()
+        
+        y_pos = height - 160
+        p.drawString(50, y_pos, f"Tổng số bài tập: {bai_taps.count()}")
+        p.drawString(50, y_pos-20, f"Tổng bài nộp: {tong_bai_nop}")
+        p.drawString(50, y_pos-40, f"Đã chấm: {bai_da_cham}")
+        p.drawString(50, y_pos-60, f"Chưa chấm: {tong_bai_nop - bai_da_cham}")
+        
+        # Bảng chi tiết
+        y_pos = height - 280
+        p.setFont("Helvetica-Bold", 10)
+        p.drawString(50, y_pos, "STT")
+        p.drawString(100, y_pos, "Tên bài tập")
+        p.drawString(300, y_pos, "Loại")
+        p.drawString(400, y_pos, "Tổng nộp")
+        p.drawString(470, y_pos, "Đã chấm")
+        
+        p.setFont("Helvetica", 9)
+        y_pos -= 20
+        
+        for i, bai_tap in enumerate(bai_taps[:20], 1):  # Giới hạn 20 bài
+            bai_lams = BaiLam.objects.filter(bai_tap=bai_tap)
+            da_cham = bai_lams.filter(da_cham=True)
+            
+            p.drawString(50, y_pos, str(i))
+            p.drawString(100, y_pos, bai_tap.tieu_de[:25] + ('...' if len(bai_tap.tieu_de) > 25 else ''))
+            p.drawString(300, y_pos, 'Lập trình' if bai_tap.loai_baitap == 'code' else 'Trắc nghiệm')
+            p.drawString(400, y_pos, str(bai_lams.count()))
+            p.drawString(470, y_pos, str(da_cham.count()))
+            
+            y_pos -= 15
+            if y_pos < 100:  # Hết trang
+                break
+        
+        p.showPage()
+        p.save()
+        
+        buffer.seek(0)
+        response.write(buffer.getvalue())
+        buffer.close()
+        
+        return response
+        
+    except Exception as e:
+        messages.error(request, f'Lỗi xuất PDF: {str(e)}')
+        return redirect('thong_ke_bao_cao')
+

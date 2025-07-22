@@ -33,6 +33,11 @@ urlpatterns = [
     path('sua-diem/<int:bai_lam_id>/', views.sua_diem, name='sua_diem'),
     path('download-file/<int:bai_lam_id>/', views.download_file, name='download_file'),
 
+    # Statistics and Reports
+    path('thong-ke-bao-cao/', views.thong_ke_bao_cao, name='thong_ke_bao_cao'),
+    path('export-excel/', views.export_excel, name='export_excel'),
+    path('export-pdf/', views.export_pdf, name='export_pdf'),
+
     # Debug
     path('debug-csrf/', views.debug_csrf, name='debug_csrf'),
     path('test-create-assignment/', views.test_create_assignment, name='test_create_assignment'),

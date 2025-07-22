@@ -16,4 +16,6 @@ urlpatterns = [
     path('course/', views.course, name='course'),
     path('course/<int:course_id>/lectures/', views.lecture_list, name='lecture_list'),
     path('api/courses/increment_participants/', views.increment_participants, name='increment_participants'),
+    path('danh-gia-khoa-hoc/', views.danh_gia_khoa_hoc, name='danh_gia_khoa_hoc'),
+    path('gui-danh-gia/', views.gui_danh_gia, name='gui_danh_gia'),
 ]

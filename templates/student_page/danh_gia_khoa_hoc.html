@@ -1,0 +1,230 @@
+{% extends 'student_page/student_base.html' %}
+{% load static %}
+
+{% block title %}{{ title }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{% static 'css/danh_gia_khoa_hoc.css' %}">
+{% endblock %}
+
+{% block banner %}
+<!-- Banner -->
+<div class="banner" style="background: linear-gradient(90deg, #2d3a4e 60%, #1976d2 100%); color: white; padding: 1.5rem; text-align: center; margin-bottom: 0;">
+    <span style="font-size: 1.5rem; font-weight: bold;">
+         {{ title }}
+    </span>
+    <span class="right" style="float: right; font-size: 1rem;">
+        {{ now|date:"l, d/m/Y" }}
+    </span>
+    <div style="clear: both; font-size: 1rem; margin-top: 0.5rem; opacity: 0.9;">
+        Chia sẻ ý kiến và đánh giá của bạn về khóa học
+    </div>
+</div>
+{% endblock %}
+
+{% block content %}
+<div class="evaluation-container">
+    <!-- Form đánh giá -->
+    <div class="evaluation-form-section">
+        <div class="form-card">
+            <h3> Gửi đánh giá mới</h3>
+            <form method="post" action="{% url 'studentapp:gui_danh_gia' %}">
+                {% csrf_token %}
+                
+                <!-- Loại đánh giá -->
+                <div class="form-group">
+                    <label for="loai_danh_gia">Loại đánh giá <span class="required">*</span></label>
+                    <select id="loai_danh_gia" name="loai_danh_gia" required onchange="toggleSelectionGroups()">
+                        <option value="">-- Chọn loại đánh giá --</option>
+                        <option value="khoa_hoc">Đánh giá khóa học</option>
+                        <option value="bai_tap">Đánh giá bài tập cụ thể</option>
+                        <option value="giang_vien">Đánh giá giảng viên</option>
+                    </select>
+                </div>
+
+                <!-- Chọn khóa học (hiển thị khi chọn đánh giá khóa học) -->
+                <div class="form-group" id="khoa_hoc_group" style="display: none;">
+                    <label for="khoa_hoc_id">Chọn khóa học <span class="required">*</span></label>
+                    <select id="khoa_hoc_id" name="khoa_hoc_id">
+                        <option value="">-- Chọn khóa học --</option>
+                        {% for khoa_hoc in khoa_hoc_list %}
+                        <option value="{{ khoa_hoc.id }}">{{ khoa_hoc.name }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Chọn bài tập (hiển thị khi chọn đánh giá bài tập) -->
+                <div class="form-group" id="bai_tap_group" style="display: none;">
+                    <label for="bai_tap_id">Chọn bài tập <span class="required">*</span></label>
+                    <select id="bai_tap_id" name="bai_tap_id">
+                        <option value="">-- Chọn bài tập --</option>
+                        {% for bai_tap in bai_tap_list %}
+                        <option value="{{ bai_tap.id }}">{{ bai_tap.tieu_de }} ({{ bai_tap.get_loai_baitap_display }})</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Chọn giảng viên (hiển thị khi chọn đánh giá giảng viên) -->
+                <div class="form-group" id="giang_vien_group" style="display: none;">
+                    <label for="giang_vien_id">Chọn giảng viên <span class="required">*</span></label>
+                    <select id="giang_vien_id" name="giang_vien_id">
+                        <option value="">-- Chọn giảng viên --</option>
+                        {% for giang_vien in giang_vien_list %}
+                        <option value="{{ giang_vien.id }}">
+                            {% if giang_vien.first_name %}
+                                {{ giang_vien.first_name }} {{ giang_vien.last_name }}
+                            {% else %}
+                                {{ giang_vien.username }}
+                            {% endif %}
+                        </option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <!-- Điểm đánh giá -->
+           
+
+                <!-- Tiêu đề -->
+                <div class="form-group">
+                    <label for="tieu_de">Tiêu đề đánh giá <span class="required">*</span></label>
+                    <input type="text" id="tieu_de" name="tieu_de" placeholder="Nhập tiêu đề ngắn gọn cho đánh giá..." required>
+                </div>
+
+                <!-- Nội dung đánh giá -->
+                <div class="form-group">
+                    <label for="noi_dung">Nội dung đánh giá <span class="required">*</span></label>
+                    <textarea id="noi_dung" name="noi_dung" rows="6" placeholder="Chia sẻ chi tiết về trải nghiệm của bạn..." required></textarea>
+                </div>
+
+                <!-- Góp ý thêm -->
+                <div class="form-group">
+                    <label for="gop_y">Góp ý cải thiện</label>
+                    <textarea id="gop_y" name="gop_y" rows="4" placeholder="Đề xuất cách cải thiện khóa học, bài tập hoặc phương pháp giảng dạy..."></textarea>
+                </div>
+
+                <!-- Nút gửi -->
+                <div class="form-actions">
+                    <button type="submit" class="btn btn-primary">
+                         Gửi đánh giá
+                    </button>
+                    <button type="reset" class="btn btn-secondary">
+                         Đặt lại
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Đánh giá đã gửi -->
+    <div class="submitted-evaluations">
+        <h3> Đánh giá đã gửi</h3>
+        {% if danh_gia_da_gui %}
+            <div class="evaluations-list">
+                {% for danh_gia in danh_gia_da_gui %}
+                <div class="evaluation-item">
+                    <div class="evaluation-header">
+                        <div class="evaluation-title">
+                            <h4>{{ danh_gia.tieu_de }}</h4>
+                            <div class="evaluation-meta">
+                                <span class="evaluation-type badge-{{ danh_gia.loai_danh_gia }}">
+                                    {{ danh_gia.get_loai_danh_gia_display }}
+                                </span>
+                                {% if danh_gia.khoa_hoc %}
+                                    <span class="assignment-name">{{ danh_gia.khoa_hoc.name }}</span>
+                                {% elif danh_gia.bai_tap %}
+                                    <span class="assignment-name">{{ danh_gia.bai_tap.tieu_de }}</span>
+                                {% elif danh_gia.giang_vien %}
+                                    <span class="assignment-name">
+                                        {% if danh_gia.giang_vien.first_name %}
+                                            {{ danh_gia.giang_vien.first_name }} {{ danh_gia.giang_vien.last_name }}
+                                        {% else %}
+                                            {{ danh_gia.giang_vien.username }}
+                                        {% endif %}
+                                    </span>
+                                {% endif %}
+                                <div class="star-display">
+                                    {% for i in "12345"|make_list %}
+                                        {% if forloop.counter <= danh_gia.diem_sao %}
+                                            <span class="star filled">⭐</span>
+                                        {% else %}
+                                            <span class="star empty">☆</span>
+                                        {% endif %}
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="evaluation-date">
+                            {{ danh_gia.ngay_tao|date:"d/m/Y H:i" }}
+                        </div>
+                    </div>
+                    <div class="evaluation-content">
+                        <p><strong>Đánh giá:</strong> {{ danh_gia.noi_dung }}</p>
+                        {% if danh_gia.gop_y %}
+                            <p><strong>Góp ý:</strong> {{ danh_gia.gop_y }}</p>
+                        {% endif %}
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="no-evaluations">
+                <p> Bạn chưa gửi đánh giá nào. Hãy chia sẻ ý kiến của bạn ở phần trên!</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+
+<script>
+function toggleSelectionGroups() {
+    const loaiDanhGia = document.getElementById('loai_danh_gia').value;
+    
+    // Lấy tất cả các group
+    const khoaHocGroup = document.getElementById('khoa_hoc_group');
+    const baiTapGroup = document.getElementById('bai_tap_group');
+    const giangVienGroup = document.getElementById('giang_vien_group');
+    
+    // Lấy tất cả các select
+    const khoaHocSelect = document.getElementById('khoa_hoc_id');
+    const baiTapSelect = document.getElementById('bai_tap_id');
+    const giangVienSelect = document.getElementById('giang_vien_id');
+    
+    // Ẩn tất cả và reset required
+    [khoaHocGroup, baiTapGroup, giangVienGroup].forEach(group => {
+        group.style.display = 'none';
+    });
+    
+    [khoaHocSelect, baiTapSelect, giangVienSelect].forEach(select => {
+        select.required = false;
+        select.value = '';
+    });
+    
+    // Hiển thị group phù hợp
+    if (loaiDanhGia === 'khoa_hoc') {
+        khoaHocGroup.style.display = 'block';
+        khoaHocSelect.required = true;
+    } else if (loaiDanhGia === 'bai_tap') {
+        baiTapGroup.style.display = 'block';
+        baiTapSelect.required = true;
+    } else if (loaiDanhGia === 'giang_vien') {
+        giangVienGroup.style.display = 'block';
+        giangVienSelect.required = true;
+    }
+}
+
+// Xử lý hiệu ứng sao
+document.querySelectorAll('.star-rating input').forEach(input => {
+    input.addEventListener('change', function() {
+        const value = this.value;
+        const stars = this.closest('.star-rating').querySelectorAll('label');
+        
+        stars.forEach((star, index) => {
+            if (index < value) {
+                star.style.color = '#ffd700';
+            } else {
+                star.style.color = '#ddd';
+            }
+        });
+    });
+});
+</script>
+{% endblock %}
