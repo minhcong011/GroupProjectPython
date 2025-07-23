@@ -18,8 +18,33 @@ import os
 
 
 def assignment_list(request):
-    assignments = BaiTap.objects.all().order_by('-ngay_tao')
-    return render(request, "student_page/assignment_list.html", {"assignments": assignments})
+    # Lấy khóa học được chọn từ parameter
+    selected_course_id = request.GET.get('course_id')
+    
+    # Lấy tất cả khóa học để hiển thị trong dropdown
+    courses = Course.objects.all().order_by('name')
+    
+    # Chỉ hiển thị bài tập khi đã chọn khóa học
+    if selected_course_id:
+        try:
+            selected_course = Course.objects.get(id=selected_course_id)
+            assignments = BaiTap.objects.filter(khoa_hoc=selected_course).order_by('-ngay_tao')
+        except Course.DoesNotExist:
+            assignments = BaiTap.objects.none()
+            selected_course = None
+    else:
+        # Không hiển thị bài tập nào khi chưa chọn khóa học
+        assignments = BaiTap.objects.none()
+        selected_course = None
+    
+    context = {
+        'assignments': assignments,
+        'courses': courses,
+        'selected_course': selected_course,
+        'selected_course_id': selected_course_id,
+        'show_assignments': bool(selected_course_id)  # Flag để kiểm tra có hiển thị bài tập không
+    }
+    return render(request, "student_page/assignment_list.html", context)
 
 def ide_online(request):
     return render(request, "student_page/IDE_Onl.html")

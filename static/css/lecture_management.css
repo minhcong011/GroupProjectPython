@@ -315,7 +315,8 @@ body {
     transition: all 0.2s ease;
 }
 
-.card-menu:hover .menu-dropdown {
+.card-menu:hover .menu-dropdown,
+.card-menu.active .menu-dropdown {
     opacity: 1;
     visibility: visible;
     transform: translateY(0);

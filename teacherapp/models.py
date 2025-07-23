@@ -11,6 +11,7 @@ class BaiTap(models.Model):
     loai_baitap = models.CharField("Loại bài tập", max_length=10, choices=LOAI_BAITAP_CHOICES)
     han_nop = models.DateTimeField("Hạn nộp")
     nguoi_tao = models.ForeignKey(User, on_delete=models.CASCADE, verbose_name="Người tạo")
+    khoa_hoc = models.ForeignKey('Course', on_delete=models.CASCADE, related_name='bai_tap_list', verbose_name="Khóa học", null=True, blank=True)
     ngay_tao = models.DateTimeField("Ngày tạo", auto_now_add=True)
 
     def __str__(self):

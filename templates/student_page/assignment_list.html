@@ -5,17 +5,115 @@
 
 {% block extra_css %}
 <link rel="stylesheet" href="{% static 'css/student_assignment_list.css' %}">
+<style>
+.course-filter {
+    margin-bottom: 20px;
+    padding: 20px;
+    background: #f8f9fa;
+    border-radius: 8px;
+    border: 1px solid #dee2e6;
+}
+
+.filter-form {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    flex-wrap: wrap;
+}
+
+.filter-label {
+    font-weight: 600;
+    color: #495057;
+    margin-bottom: 0;
+}
+
+.course-select {
+    padding: 8px 12px;
+    border: 1px solid #ced4da;
+    border-radius: 4px;
+    background-color: white;
+    font-size: 14px;
+    min-width: 200px;
+}
+
+.filter-btn {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: background 0.2s;
+}
+
+.filter-btn:hover {
+    background: #0056b3;
+}
+
+.clear-btn {
+    background: #6c757d;
+    color: white;
+    text-decoration: none;
+    padding: 8px 16px;
+    border-radius: 4px;
+    font-size: 14px;
+    transition: background 0.2s;
+}
+
+.clear-btn:hover {
+    background: #545b62;
+    text-decoration: none;
+    color: white;
+}
+
+.selected-course {
+    margin-top: 10px;
+    padding: 10px;
+    background: #d4edda;
+    border: 1px solid #c3e6cb;
+    border-radius: 4px;
+    color: #155724;
+}
+</style>
 {% endblock %}
-
-
 
 {% block content %}
 <div class="assignment-container">
   <h2 class="assignment-title">Danh sách bài tập</h2>
+  
+  <!-- Bộ lọc khóa học -->
+  <div class="course-filter">
+    <form method="GET" class="filter-form">
+      <label for="course_id" class="filter-label">Chọn khóa học:</label>
+      <select name="course_id" id="course_id" class="course-select">
+        <option value="">-- Chọn khóa học để xem bài tập --</option>
+        {% for course in courses %}
+          <option value="{{ course.id }}" {% if selected_course_id == course.id|stringformat:"s" %}selected{% endif %}>
+            {{ course.name }}
+          </option>
+        {% endfor %}
+      </select>
+      <button type="submit" class="filter-btn">Xem bài tập</button>
+      {% if selected_course %}
+      <a href="{% url 'studentapp:assignment_list' %}" class="clear-btn">Chọn lại khóa học</a>
+      {% endif %}
+    </form>
+    
+    {% if selected_course %}
+    <div class="selected-course">
+      <strong>Đang xem bài tập của khóa học:</strong> {{ selected_course.name }}
+    </div>
+    {% endif %}
+  </div>
+
+  {% if show_assignments %}
+  <!-- Chỉ hiển thị bảng bài tập khi đã chọn khóa học -->
   <table class="assignment-table">
     <thead>
       <tr>
         <th>Tên bài tập</th>
+        <th>Khóa học</th>
         <th>Loại</th>
         <th>Deadline</th>
         <th>Ngày tạo</th>
@@ -26,6 +124,13 @@
       {% for assignment in assignments %}
       <tr>
         <td>{{ assignment.tieu_de }}</td>
+        <td>
+          {% if assignment.khoa_hoc %}
+            <span class="course-tag">{{ assignment.khoa_hoc.name }}</span>
+          {% else %}
+            <span class="no-course">Chưa phân loại</span>
+          {% endif %}
+        </td>
         <td>{{ assignment.get_loai_baitap_display }}</td>
         <td>{{ assignment.han_nop|date:'d/m/Y H:i' }}</td>
         <td>{{ assignment.ngay_tao|date:'d/m/Y H:i' }}</td>
@@ -39,9 +144,23 @@
         </td>
       </tr>
       {% empty %}
-      <tr><td colspan="5" class="no-assignments">Chưa có bài tập nào.</td></tr>
+      <tr>
+        <td colspan="6" class="no-assignments">
+          Khóa học "{{ selected_course.name }}" chưa có bài tập nào.
+        </td>
+      </tr>
       {% endfor %}
     </tbody>
   </table>
+  {% else %}
+  <!-- Thông báo yêu cầu chọn khóa học -->
+  <div class="no-course-selected">
+    <div class="notice-box">
+      <h3> Vui lòng chọn khóa học</h3>
+      <p>Để xem danh sách bài tập, bạn cần chọn một khóa học từ dropdown bên trên.</p>
+      <p>Mỗi khóa học sẽ có các bài tập riêng biệt được thiết kế phù hợp với nội dung học tập.</p>
+    </div>
+  </div>
+  {% endif %}
 </div>
 {% endblock %}

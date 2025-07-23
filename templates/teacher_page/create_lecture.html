@@ -4,28 +4,214 @@
 {% block title %}Tạo bài giảng{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/create_lecture.css' %}">
+<link rel="stylesheet" href="{% static 'css/create_lecture_simple.css' %}">
 {% endblock %}
 
 {% block content %}
-<h2 class="page-title">+ Thêm đề cương mới</h2>
-
-<form method="post" enctype="multipart/form-data">
-    {% csrf_token %}
-    <!-- Combobox chọn khóa học -->
-    <div class="form-group">
-        <label for="id_course">Khóa học:</label>
-        <select name="course" id="id_course" required>
-            <option value="">-- Chọn khóa học --</option>
-            {% for course in courses %}
-                <option value="{{ course.id }}" {% if form.course.value == course.id|stringformat:"s" %}selected{% endif %}>
-                    {{ course.name }}
-                </option>
-            {% endfor %}
-        </select>
+<div class="main-container">
+    <!-- Header -->
+    <div class="page-header">
+        <h1 class="page-title">Tạo bài giảng mới</h1>
+        <p class="page-subtitle">Điền thông tin để tạo bài giảng cho khóa học</p>
     </div>
-    <!-- ...existing form fields... -->
-    {{ form.as_p }}
-    <button type="submit" class="btn btn-primary">Tạo bài giảng</button>
-</form>
+
+    <!-- Form Content -->
+    <div class="form-content">
+        <form method="post" enctype="multipart/form-data" class="lecture-form" id="lectureForm">
+            {% csrf_token %}
+            
+            <!-- Basic Information -->
+            <div class="form-section">
+                <h3 class="section-title"> Thông tin cơ bản</h3>
+                
+                <div class="form-grid">
+                    <!-- Course Selection -->
+                    <div class="form-group">
+                        <label for="id_course" class="form-label">
+                             Khóa học <span class="required">*</span>
+                        </label>
+                        <select name="course" id="id_course" class="form-control" required>
+                            <option value="">-- Chọn khóa học --</option>
+                            {% for course in courses %}
+                                <option value="{{ course.id }}" {% if form.course.value == course.id|stringformat:"s" %}selected{% endif %}>
+                                    {{ course.name }}
+                                </option>
+                            {% endfor %}
+                        </select>
+                        <div class="label-hint">Chọn khóa học cho bài giảng này</div>
+                    </div>
+
+                    <!-- Subject -->
+                    <div class="form-group">
+                        <label for="{{ form.subject.id_for_label }}" class="form-label">
+                            Môn học <span class="required">*</span>
+                        </label>
+                        <select name="{{ form.subject.name }}" id="{{ form.subject.id_for_label }}" class="form-control" required>
+                            <option value="">-- Chọn môn học --</option>
+                            <option value="Python" {% if form.subject.value == "Python" %}selected{% endif %}>Python</option>
+                            <option value="Perl" {% if form.subject.value == "Perl" %}selected{% endif %}>Perl</option>
+                        </select>
+                        {% if form.subject.errors %}
+                            <ul class="errorlist">
+                                {% for error in form.subject.errors %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                        <div class="label-hint">Chọn môn học tương ứng</div>
+                    </div>
+                </div>
+
+                <!-- Title -->
+                <div class="form-grid single">
+                    <div class="form-group">
+                        <label for="{{ form.title.id_for_label }}" class="form-label">
+                             Tiêu đề bài giảng <span class="required">*</span>
+                        </label>
+                        <input type="text" 
+                               name="{{ form.title.name }}" 
+                               id="{{ form.title.id_for_label }}" 
+                               class="form-control" 
+                               value="{{ form.title.value|default:'' }}" 
+                               placeholder="Nhập tiêu đề bài giảng..."
+                               required>
+                        {% if form.title.errors %}
+                            <ul class="errorlist">
+                                {% for error in form.title.errors %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                        <div class="label-hint">Tên bài giảng ngắn gọn và rõ ràng</div>
+                    </div>
+                </div>
+
+                <!-- Description -->
+                <div class="form-grid single">
+                    <div class="form-group">
+                        <label for="{{ form.description.id_for_label }}" class="form-label">
+                             Mô tả bài giảng <span class="required">*</span>
+                        </label>
+                        <textarea name="{{ form.description.name }}" 
+                                  id="{{ form.description.id_for_label }}" 
+                                  class="form-control" 
+                                  required 
+                                  placeholder="Mô tả nội dung và mục tiêu của bài giảng...">{{ form.description.value|default:'' }}</textarea>
+                        {% if form.description.errors %}
+                            <ul class="errorlist">
+                                {% for error in form.description.errors %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                        <div class="label-hint">Mô tả chi tiết về nội dung bài giảng</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Media Resources -->
+            <div class="form-section">
+                <h3 class="section-title"> Tài liệu đính kèm</h3>
+                
+                <!-- Video URL -->
+                <div class="form-grid single">
+                    <div class="form-group">
+                        <label for="{{ form.video_url.id_for_label }}" class="form-label">
+                             Link video (tùy chọn)
+                        </label>
+                        <input type="url" 
+                               name="{{ form.video_url.name }}" 
+                               id="{{ form.video_url.id_for_label }}" 
+                               class="form-control" 
+                               value="{{ form.video_url.value|default:'' }}" 
+                               placeholder="https://youtube.com/watch?v=...">
+                        {% if form.video_url.errors %}
+                            <ul class="errorlist">
+                                {% for error in form.video_url.errors %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                        <div class="label-hint">Link YouTube hoặc video khác</div>
+                    </div>
+                </div>
+
+                <!-- File Uploads -->
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label for="{{ form.pdf_file.id_for_label }}" class="form-label">
+                             File PDF (tùy chọn)
+                        </label>
+                        <div class="file-upload">
+                            <input type="file" 
+                                   name="{{ form.pdf_file.name }}" 
+                                   id="{{ form.pdf_file.id_for_label }}" 
+                                   accept=".pdf">
+                            <div class="file-upload-area">
+                                
+                                <div class="file-upload-text">Chọn file PDF</div>
+                                <div class="file-upload-hint">Click để chọn file</div>
+                            </div>
+                        </div>
+                        {% if form.pdf_file.errors %}
+                            <ul class="errorlist">
+                                {% for error in form.pdf_file.errors %}
+                                    <li>{{ error }}</li>
+                                {% endfor %}
+                            </ul>
+                        {% endif %}
+                        <div class="label-hint">Tài liệu bài giảng</div>
+                  
+                </div>
+            </div>
+
+            <!-- Actions -->
+            <div class="form-actions">
+                <a href="{% url 'lecture_list' %}" class="btn btn-secondary">
+                     Hủy bỏ
+                </a>
+                <button type="submit" class="btn btn-primary" id="submitBtn">
+                     Tạo bài giảng
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const form = document.getElementById('lectureForm');
+    const submitBtn = document.getElementById('submitBtn');
+    
+    // File upload enhancement
+    const fileInputs = form.querySelectorAll('input[type="file"]');
+    fileInputs.forEach(input => {
+        input.addEventListener('change', function() {
+            const area = this.parentNode.querySelector('.file-upload-area');
+            const textEl = area.querySelector('.file-upload-text');
+            
+            if (this.files.length > 0) {
+                textEl.textContent = this.files[0].name;
+                area.style.borderColor = '#667eea';
+                area.style.backgroundColor = '#f0f3ff';
+            } else {
+                textEl.textContent = this.name.includes('pdf') ? 'Chọn file PDF' : 'Chọn file slide';
+                area.style.borderColor = '#bdc3c7';
+                area.style.backgroundColor = '#fafbfc';
+            }
+        });
+    });
+    
+    // Form submission
+    form.addEventListener('submit', function() {
+        submitBtn.classList.add('btn-loading');
+        submitBtn.disabled = true;
+        
+        setTimeout(() => {
+            submitBtn.classList.remove('btn-loading');
+            submitBtn.disabled = false;
+        }, 5000);
+    });
+});
+</script>
 {% endblock %}

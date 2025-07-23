@@ -14,13 +14,13 @@
     <p><strong>Mô tả:</strong> {{ lecture.description }}</p>
     <div class="lecture-files">
         {% if lecture.video_url %}
-            <a href="{{ lecture.video_url }}" class="btn-link" target="_blank">🎥 Video</a>
+            <a href="{{ lecture.video_url }}" class="btn-link" target="_blank"> Video</a>
         {% endif %}
         {% if lecture.pdf_file %}
-            <a href="{{ lecture.pdf_file.url }}" class="btn-link" target="_blank">📄 PDF</a>
+            <a href="{{ lecture.pdf_file.url }}" class="btn-link" target="_blank"> PDF</a>
         {% endif %}
         {% if lecture.slide_file %}
-            <a href="{{ lecture.slide_file.url }}" class="btn-link" target="_blank">📊 Slides</a>
+            <a href="{{ lecture.slide_file.url }}" class="btn-link" target="_blank"> Slides</a>
         {% endif %}
     </div>
     <div class="lecture-actions">

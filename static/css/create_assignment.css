@@ -35,6 +35,14 @@
     font-size: 16px;
 }
 
+.form-help {
+    display: block;
+    margin-top: 4px;
+    font-size: 13px;
+    color: #666;
+    font-style: italic;
+}
+
 .assignment-form input,
 .assignment-form textarea,
 .assignment-form select {

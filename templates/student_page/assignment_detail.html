@@ -58,23 +58,23 @@
   <div class="action-section">
     {% if assignment.loai_baitap == 'code' %}
       <a href="{% url 'studentapp:assignment_detail' assignment.id %}" class="btn-code">
-        💻 Bắt đầu viết code
+         Bắt đầu viết code
       </a>
     {% elif assignment.loai_baitap == 'quiz' %}
       <a href="{% url 'studentapp:assignment_detail' assignment.id %}" class="btn-quiz">
-        📝 Làm bài trắc nghiệm
+         Làm bài trắc nghiệm
       </a>
     {% endif %}
     
     <a href="{% url 'studentapp:assignment_list' %}" class="btn-back">
-      ↩️ Quay lại danh sách
+      Quay lại danh sách
     </a>
   </div>
 
   <!-- Thời gian còn lại -->
   <div class="countdown-section">
     <div class="countdown-text">
-      ⏰ <strong>Thời gian còn lại:</strong> 
+       <strong>Thời gian còn lại:</strong> 
       <span id="countdown" class="countdown-timer"></span>
     </div>
   </div>

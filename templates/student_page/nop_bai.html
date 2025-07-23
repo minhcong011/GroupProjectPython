@@ -100,16 +100,16 @@ Nộp bài tập
       <h4>Trạng thái nộp bài:</h4>
       <div class="status-info">
         {% if submitted_file %}
-        <span class="status submitted">✅ Đã nộp bài</span><br>
+        <span class="status submitted"> Đã nộp bài</span><br>
         <span class="last-updated">Lần cập nhật cuối: {{ submitted_file.time|date:'H:i d/m/Y' }}</span>
         {% else %}
-        <span class="status pending">⏳ Chưa nộp bài</span><br>
+        <span class="status pending"> Chưa nộp bài</span><br>
         <span class="deadline-warning">
           {% now "Y-m-d H:i" as current_time %}
           {% if assignment.han_nop|date:"Y-m-d H:i" < current_time %}
           ⚠️ Đã quá hạn nộp bài
           {% else %}
-          📅 Còn lại: {{ assignment.han_nop|timeuntil }}
+           Còn lại: {{ assignment.han_nop|timeuntil }}
           {% endif %}
         </span>
         {% endif %}

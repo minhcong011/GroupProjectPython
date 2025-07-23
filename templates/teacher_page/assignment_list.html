@@ -16,6 +16,7 @@
         <thead>
             <tr>
                 <th>Tiêu đề</th>
+                <th>Khóa học</th>
                 <th>Loại</th>
                 <th>Deadline</th>
                 <th>Ngày tạo</th>
@@ -26,6 +27,13 @@
             {% for assignment in assignments %}
             <tr>
                 <td>{{ assignment.tieu_de }}</td>
+                <td>
+                    {% if assignment.khoa_hoc %}
+                        <span class="course-tag">{{ assignment.khoa_hoc.name }}</span>
+                    {% else %}
+                        <span class="no-course">Chưa gán khóa học</span>
+                    {% endif %}
+                </td>
                 <td>
                     <span class="assignment-type-badge assignment-type-{{ assignment.loai_baitap }}">
                         {{ assignment.get_loai_baitap_display }}
@@ -43,7 +51,7 @@
                 </td>
             </tr>
             {% empty %}
-            <tr><td colspan="5" class="no-assignments-teacher">Chưa có bài tập nào được tạo.</td></tr>
+            <tr><td colspan="6" class="no-assignments-teacher">Chưa có bài tập nào được tạo.</td></tr>
             {% endfor %}
         </tbody>
     </table>

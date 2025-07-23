@@ -1,7 +1,7 @@
 
 from django import forms
 from core.models import Lecture
-from .models import BaiTap, CauHoi
+from .models import BaiTap, CauHoi, Course
 
 class LectureForm(forms.ModelForm):
     class Meta:
@@ -12,8 +12,12 @@ class LectureForm(forms.ModelForm):
 class BaiTapForm(forms.ModelForm):
     class Meta:
         model = BaiTap
-        fields = ['tieu_de', 'mo_ta', 'loai_baitap', 'han_nop']
+        fields = ['khoa_hoc', 'tieu_de', 'mo_ta', 'loai_baitap', 'han_nop']
         widgets = {
+            'khoa_hoc': forms.Select(attrs={
+                'class': 'form-control',
+                'required': True
+            }),
             'tieu_de': forms.TextInput(attrs={
                 'class': 'form-control',
                 'placeholder': 'Nhập tiêu đề bài tập...'
@@ -31,6 +35,19 @@ class BaiTapForm(forms.ModelForm):
                 'type': 'datetime-local'
             })
         }
+        labels = {
+            'khoa_hoc': 'Chọn khóa học',
+            'tieu_de': 'Tiêu đề bài tập',
+            'mo_ta': 'Mô tả',
+            'loai_baitap': 'Loại bài tập',
+            'han_nop': 'Hạn nộp'
+        }
+    
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        # Chỉ hiển thị các khóa học có sẵn
+        self.fields['khoa_hoc'].queryset = Course.objects.all().order_by('name')
+        self.fields['khoa_hoc'].empty_label = "-- Chọn khóa học --"
 
 class CauHoiForm(forms.ModelForm):
     class Meta:

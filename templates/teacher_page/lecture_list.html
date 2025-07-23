@@ -1,60 +1,185 @@
 {% extends 'teacher_page/gv_base.html' %}
 {% load static %}
 
-{% block title %}Danh sách bài giảng{% endblock %}
+{% block title %}Quản lý bài giảng{% endblock %}
 
 {% block extra_css %}
-<link rel="stylesheet" href="{% static 'css/lecture_list.css' %}">
+<link rel="stylesheet" href="{% static 'css/lecture_management.css' %}">
 {% endblock %}
 
 {% block content %}
-<h2 class="page-title">📚 Bài giảng của bạn</h2>
-
-<!-- Combobox lọc bài giảng theo khóa học -->
-<form method="get" class="course-combobox-form" style="margin-bottom: 20px;">
-    <label for="course"><strong>Lọc theo khóa học:</strong></label>
-    <select name="course" id="course" onchange="this.form.submit()">
-        <option value="" {% if not selected_course %}selected{% endif %}>Tất cả</option>
-        {% for course in courses %}
-            <option value="{{ course.id }}" {% if selected_course and course.id == selected_course.id %}selected{% endif %}>
-                {{ course.name }}
-            </option>
-        {% endfor %}
-    </select>
-</form>
-
-<div class="lecture-list">
-    {% for lecture in lectures %}
-        <div class="lecture-card">
-            <div class="lecture-header">
-                <h3><a href="{% url 'lecture_detail' lecture.pk %}" class="lecture-title-link">{{ lecture.title }}</a></h3>
-                <span class="subject">{{ lecture.subject }}</span>
-                {% if lecture.course %}
-                    <span class="course-label">({{ lecture.course.name }})</span>
-                {% endif %}
+<div class="lecture-management">
+    <!-- Header Section -->
+    <div class="page-header">
+        <div class="header-content">
+            <div class="header-text">
+                <h1 class="page-title"> Quản lý bài giảng</h1>
+                <p class="page-subtitle">Tổ chức và quản lý tất cả bài giảng của bạn</p>
             </div>
-            <p class="description">{{ lecture.description }}</p>
-            <div class="resources">
-                {% if lecture.video_url %}
-                    <a href="{{ lecture.video_url }}" class="btn-link" target="_blank">🎥 Video</a>
-                {% endif %}
-                {% if lecture.pdf_file %}
-                    <a href="{{ lecture.pdf_file.url }}" class="btn-link" target="_blank">📄 PDF</a>
-                {% endif %}
-                {% if lecture.slide_file %}
-                    <a href="{{ lecture.slide_file.url }}" class="btn-link" target="_blank">📊 Slides</a>
-                {% endif %}
-            </div>
-            <div class="lecture-actions">
-                <a href="{% url 'lecture_detail' lecture.pk %}" class="btn btn-info">Xem</a>
-                <a href="{% url 'edit_lecture' lecture.pk %}" class="btn btn-warning">Sửa</a>
-                <a href="{% url 'delete_lecture' lecture.pk %}" class="btn btn-danger">Xóa</a>
+            <div class="header-actions">
+                <a href="{% url 'create_lecture' %}" class="btn-primary">
+                    <i class="icon">+</i>
+                    Thêm bài giảng mới
+                </a>
             </div>
         </div>
-    {% empty %}
-        <p class="no-lecture">Không có bài giảng nào.</p>
-    {% endfor %}
+    </div>
+
+    <!-- Filter Section -->
+    <div class="filter-section">
+        <div class="filter-card">
+            <form method="get" class="filter-form">
+                <div class="filter-group">
+                    <label for="course" class="filter-label">
+                        <span class="label-icon"></span>
+                        Lọc theo khóa học
+                    </label>
+                    <select name="course" id="course" class="filter-select" onchange="this.form.submit()">
+                        <option value="" {% if not selected_course %}selected{% endif %}>Tất cả khóa học</option>
+                        {% for course in courses %}
+                            <option value="{{ course.id }}" {% if selected_course and course.id == selected_course.id %}selected{% endif %}>
+                                {{ course.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="filter-stats">
+                    <span class="stats-item">
+                        <span class="stats-number">{{ lectures.count }}</span>
+                        <span class="stats-label">Bài giảng</span>
+                    </span>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Content Section -->
+    <div class="content-section">
+        {% if lectures %}
+            <div class="lectures-grid">
+                {% for lecture in lectures %}
+                    <div class="lecture-card">
+                        <div class="card-header">
+                            <div class="lecture-meta">
+                                <span class="subject-tag">{{ lecture.subject }}</span>
+                                {% if lecture.course %}
+                                    <span class="course-tag">{{ lecture.course.name }}</span>
+                                {% endif %}
+                            </div>
+                            <div class="card-menu">
+                                <button class="menu-btn">⋮</button>
+                                <div class="menu-dropdown">
+                                    <a href="{% url 'lecture_detail' lecture.pk %}" class="menu-item">
+                                        <span class="menu-icon"></span>
+                                        Xem chi tiết
+                                    </a>
+                                    <a href="{% url 'edit_lecture' lecture.pk %}" class="menu-item">
+                                        <span class="menu-icon"></span>
+                                        Chỉnh sửa
+                                    </a>
+                                    <a href="{% url 'delete_lecture' lecture.pk %}" class="menu-item danger">
+                                        <span class="menu-icon"></span>
+                                        Xóa bài giảng
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="card-content">
+                            <h3 class="lecture-title">
+                                <a href="{% url 'lecture_detail' lecture.pk %}" class="title-link">
+                                    {{ lecture.title }}
+                                </a>
+                            </h3>
+                            <p class="lecture-description">{{ lecture.description }}</p>
+                        </div>
+                        
+                        {% if lecture.video_url or lecture.pdf_file or lecture.slide_file %}
+                        <div class="card-resources">
+                            <div class="resources-label">Tài liệu đính kèm:</div>
+                            <div class="resources-list">
+                                {% if lecture.video_url %}
+                                    <a href="{{ lecture.video_url }}" class="resource-item video" target="_blank">
+                                        <span class="resource-icon">🎥</span>
+                                        <span class="resource-text">Video</span>
+                                    </a>
+                                {% endif %}
+                                {% if lecture.pdf_file %}
+                                    <a href="{{ lecture.pdf_file.url }}" class="resource-item pdf" target="_blank">
+                                        <span class="resource-icon"></span>
+                                        <span class="resource-text">PDF</span>
+                                    </a>
+                                {% endif %}
+                                {% if lecture.slide_file %}
+                                    <a href="{{ lecture.slide_file.url }}" class="resource-item slides" target="_blank">
+                                        <span class="resource-icon"></span>
+                                        <span class="resource-text">Slides</span>
+                                    </a>
+                                {% endif %}
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        <div class="card-actions">
+                            <a href="{% url 'lecture_detail' lecture.pk %}" class="btn-secondary">Xem</a>
+                            <a href="{% url 'delete_lecture' lecture.pk %}" class="btn-danger">Xóa</a>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        {% else %}
+            <div class="empty-state">
+                <div class="empty-icon"></div>
+                <h3 class="empty-title">Chưa có bài giảng nào</h3>
+                <p class="empty-description">
+                    {% if selected_course %}
+                        Không có bài giảng nào trong khóa học "{{ selected_course.name }}"
+                    {% else %}
+                        Hãy tạo bài giảng đầu tiên của bạn
+                    {% endif %}
+                </p>
+                <a href="{% url 'create_lecture' %}" class="btn-primary">
+                    <i class="icon">+</i>
+                    Tạo bài giảng đầu tiên
+                </a>
+            </div>
+        {% endif %}
+    </div>
 </div>
 
-<a href="{% url 'create_lecture' %}" class="btn-add">+ Thêm đề cương mới</a>
+<script>
+// Menu dropdown functionality
+document.addEventListener('DOMContentLoaded', function() {
+    // Handle dropdown menu clicks
+    document.querySelectorAll('.menu-btn').forEach(button => {
+        button.addEventListener('click', function(e) {
+            e.stopPropagation();
+            const menu = this.closest('.card-menu');
+            const isActive = menu.classList.contains('active');
+            
+            // Close all other menus
+            document.querySelectorAll('.card-menu.active').forEach(m => {
+                if (m !== menu) m.classList.remove('active');
+            });
+            
+            // Toggle current menu
+            menu.classList.toggle('active', !isActive);
+        });
+    });
+    
+    // Close menu when clicking outside
+    document.addEventListener('click', function() {
+        document.querySelectorAll('.card-menu.active').forEach(menu => {
+            menu.classList.remove('active');
+        });
+    });
+    
+    // Prevent menu from closing when clicking inside dropdown
+    document.querySelectorAll('.menu-dropdown').forEach(dropdown => {
+        dropdown.addEventListener('click', function(e) {
+            e.stopPropagation();
+        });
+    });
+});
+</script>
 {% endblock %}

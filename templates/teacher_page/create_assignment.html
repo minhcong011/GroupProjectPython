@@ -14,7 +14,16 @@
     <form method="post" class="assignment-form">
         {% csrf_token %}
         <div class="form-group">
-            <label for="id_tieu_de">Tiêu đề bài tập:</label>
+            <label for="id_khoa_hoc">{{ form.khoa_hoc.label }}:</label>
+            {{ form.khoa_hoc }}
+            {% if form.khoa_hoc.errors %}
+                <div class="error">{{ form.khoa_hoc.errors }}</div>
+            {% endif %}
+            <small class="form-help">Bắt buộc chọn khóa học để gán bài tập</small>
+        </div>
+        
+        <div class="form-group">
+            <label for="id_tieu_de">{{ form.tieu_de.label }}:</label>
             {{ form.tieu_de }}
             {% if form.tieu_de.errors %}
                 <div class="error">{{ form.tieu_de.errors }}</div>
@@ -22,7 +31,7 @@
         </div>
         
         <div class="form-group">
-            <label for="id_mo_ta">Mô tả bài tập:</label>
+            <label for="id_mo_ta">{{ form.mo_ta.label }}:</label>
             {{ form.mo_ta }}
             {% if form.mo_ta.errors %}
                 <div class="error">{{ form.mo_ta.errors }}</div>
@@ -30,7 +39,7 @@
         </div>
         
         <div class="form-group">
-            <label for="id_loai_baitap">Loại bài tập:</label>
+            <label for="id_loai_baitap">{{ form.loai_baitap.label }}:</label>
             {{ form.loai_baitap }}
             {% if form.loai_baitap.errors %}
                 <div class="error">{{ form.loai_baitap.errors }}</div>
@@ -38,7 +47,7 @@
         </div>
         
         <div class="form-group">
-            <label for="id_han_nop">Hạn nộp:</label>
+            <label for="id_han_nop">{{ form.han_nop.label }}:</label>
             {{ form.han_nop }}
             {% if form.han_nop.errors %}
                 <div class="error">{{ form.han_nop.errors }}</div>

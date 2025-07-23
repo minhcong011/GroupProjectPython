@@ -1,31 +1,17 @@
 // Chatbot JavaScript Functions - Simplified Version
 console.log('Loading chatbot.js...');
 
-// Global variables declaration
-let API_KEY, API_URL, MODEL_NAME;
 let chatMessages, messageInput, sendButton, typingIndicator, modeIndicator;
 let currentMode = 'chat';
 
-// Initialize constants immediately
-function initializeConstants() {
-    window.API_KEY = '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';
-    window.API_URL = 'https://api.groq.com/openai/v1/chat/completions';
-    window.MODEL_NAME = 'llama-3.1-8b-instant';
-    
-    // Also set local variables for compatibility
-    API_KEY = window.API_KEY;
-    API_URL = window.API_URL;
-    MODEL_NAME = window.MODEL_NAME;
-    
-    console.log('Constants initialized');
-    console.log('API_KEY defined:', typeof API_KEY !== 'undefined');
-    console.log('API_KEY length:', API_KEY ? API_KEY.length : 'undefined');
-}
+window.API_KEY = ''; 
+window.API_URL = 'https://api.groq.com/openai/v1/chat/completions';
+window.MODEL_NAME = 'llama-3.1-8b-instant';
 
-// Initialize constants immediately
-initializeConstants();
+console.log('Constants initialized');
+console.log('window.API_KEY defined:', typeof window.API_KEY !== 'undefined');
 
-// Initialize when DOM is ready
+
 document.addEventListener('DOMContentLoaded', function() {
     console.log('DOM loaded, initializing...');
     
@@ -36,15 +22,97 @@ document.addEventListener('DOMContentLoaded', function() {
     typingIndicator = document.getElementById('typingIndicator');
     modeIndicator = document.getElementById('modeIndicator');
     
-    // Check if all elements exist
+    // Check essential DOM elements
     if (!chatMessages || !messageInput || !sendButton) {
         console.error('Essential DOM elements not found!');
+        addErrorMessage('Lỗi: Không tìm thấy các phần tử giao diện cần thiết!');
         return;
     }
     
     console.log('DOM elements initialized successfully');
     
-    // Add event listeners
+    // Load API key from backend
+    loadAPIKey().then(() => {
+        initializeChatbot();
+    }).catch(error => {
+        console.error('Failed to load API key:', error);
+        // Initialize chatbot in demo mode
+        addErrorMessage(' API Key không khả dụng. Chatbot đang chạy ở chế độ demo. Vui lòng cấu hình API key để sử dụng đầy đủ tính năng.');
+        initializeChatbot();
+    });
+});
+
+// Load API key from backend securely
+async function loadAPIKey() {
+    try {
+        // Try to load from backend first
+        const response = await fetch('/api/get-groq-config/', {
+            method: 'GET',
+            headers: {
+                'Content-Type': 'application/json',
+                'X-CSRFToken': getCookie('csrftoken')
+            }
+        });
+        
+        if (response.ok) {
+            const data = await response.json();
+            if (data.success && data.api_key) {
+                window.API_KEY = data.api_key;
+                console.log('API key loaded from backend successfully');
+                return;
+            }
+        }
+        
+        // If backend fails, try meta tag
+        const metaApiKey = document.querySelector('meta[name="groq-api-key"]');
+        if (metaApiKey && metaApiKey.getAttribute('content')) {
+            window.API_KEY = metaApiKey.getAttribute('content');
+            console.log('API key loaded from meta tag');
+            return;
+        }
+        
+        // Last fallback: use a demo mode or throw error
+        console.warn('No API key found, using demo mode');
+        window.API_KEY = 'demo-mode';
+        throw new Error('No valid API key found. Please configure your Groq API key.');
+        
+    } catch (error) {
+        console.error('Error loading API key:', error);
+        throw error;
+    }
+}
+
+// Initialize chatbot after API key is loaded
+function initializeChatbot() {
+    // Add event listeners for feature cards
+    document.querySelectorAll('.feature-card').forEach(card => {
+        card.addEventListener('click', function() {
+            const mode = this.getAttribute('data-mode');
+            if (mode) {
+                selectMode(mode);
+            }
+        });
+    });
+    
+    // Add event listener for send button
+    if (sendButton) {
+        sendButton.addEventListener('click', sendMessage);
+    }
+    
+    // Add event listener for test API button
+    const testApiButton = document.getElementById('testApiButton');
+    if (testApiButton) {
+        testApiButton.addEventListener('click', function() {
+            this.disabled = true;
+            this.textContent = ' Testing...';
+            testAPIConnection().finally(() => {
+                this.disabled = false;
+                this.textContent = ' Test API Connection';
+            });
+        });
+    }
+    
+    // Add event listeners for input
     messageInput.addEventListener('keypress', function(e) {
         if (e.key === 'Enter') {
             sendMessage();
@@ -65,30 +133,82 @@ document.addEventListener('DOMContentLoaded', function() {
     console.log('Validating API key...');
     if (!validateAPIKey()) {
         console.error('API key validation failed!');
+        addErrorMessage('Lỗi: API key không hợp lệ!');
         return;
-    }
-    
-    // Test API connection
-    if (window.API_KEY && window.API_KEY !== 'YOUR_GROQ_API_KEY_HERE') {
-        setTimeout(testAPIConnection, 1000);
     }
     
     // Initialize with chat mode
     selectMode('chat');
     
+    // Initialize API status indicator
+    initializeAPIStatus();
+    
+    // Test API connection
+    if (window.API_KEY && window.API_KEY !== 'YOUR_GROQ_API_KEY_HERE' && window.API_KEY !== 'demo-mode') {
+        setTimeout(testAPIConnection, 1000);
+    }
+    
     console.log('Chatbot initialized successfully!');
-});
+}
+
+// Get CSRF token from cookie or meta tag
+function getCookie(name) {
+    // First try to get from meta tag
+    if (name === 'csrftoken') {
+        const metaTag = document.querySelector('meta[name="csrf-token"]');
+        if (metaTag) {
+            return metaTag.getAttribute('content');
+        }
+    }
+    
+    // Fallback to cookie method
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+
+// Add error message to chat
+function addErrorMessage(message) {
+    if (chatMessages) {
+        const errorDiv = document.createElement('div');
+        errorDiv.className = 'message error-message';
+        errorDiv.innerHTML = `
+            <div class="message-content">
+                <i class="fas fa-exclamation-triangle"></i> ${message}
+            </div>
+            <div class="message-time">${getCurrentTime()}</div>
+        `;
+        chatMessages.appendChild(errorDiv);
+        scrollToBottom();
+    } else {
+        // Fallback to console if chatMessages not available
+        console.error('Chat Error:', message);
+        alert('Lỗi: ' + message);
+    }
+}
 
 // Send message function
 function sendMessage() {
     const message = messageInput.value.trim();
     if (!message) return;
     
+    console.log('Sending message:', message);
+    
     // Add user message to chat
     addMessageToChat(message, 'user');
     
     // Clear input
     messageInput.value = '';
+    sendButton.disabled = true;
     
     // Send to AI
     sendToAI(message);
@@ -120,7 +240,7 @@ function addMessageToChat(message, sender) {
     scrollToBottom();
 }
 
-// Enhanced AI prompt templates for different modes
+
 function getAIPrompt(message, mode) {
     const prompts = {
         chat: `Bạn là một trợ lý AI chuyên về lập trình Python và Perl. Hãy trả lời câu hỏi sau bằng tiếng Việt một cách chi tiết và dễ hiểu, tập trung vào việc giải thích khái niệm, cung cấp ví dụ code cụ thể khi cần thiết: ${message}`,
@@ -150,11 +270,12 @@ Chủ đề: ${message}. Trả lời bằng tiếng Việt.`
     return prompts[mode] || prompts.chat;
 }
 
-// Mode selection functions
+// Mode selection
 function selectMode(mode) {
     currentMode = mode;
+
     
-    // Update feature cards styling
+
     document.querySelectorAll('.feature-card').forEach(card => {
         card.style.opacity = '0.7';
         card.style.transform = 'scale(1)';
@@ -176,17 +297,12 @@ function selectMode(mode) {
         activeCard.style.boxShadow = '0 4px 12px rgba(0,0,0,0.3)';
     }
     
-    // Update tool buttons
-    document.querySelectorAll('.tool-btn').forEach(btn => {
-        btn.classList.remove('active');
-    });
-    
     // Update mode indicator and placeholder
     const modeTexts = {
-        chat: ' Chế độ: Trò chuyện thông thường',
-        review: ' Chế độ: Review code - Paste code để phân tích',
-        assessment: ' Chế độ: Đánh giá năng lực',
-        quiz: ' Chế độ: Tạo câu hỏi - Nhập chủ đề'
+        chat: 'Chế độ: Trò chuyện thông thường',
+        review: 'Chế độ: Review code - Paste code để phân tích',
+        assessment: 'Chế độ: Đánh giá năng lực',
+        quiz: 'Chế độ: Tạo câu hỏi - Nhập chủ đề'
     };
     
     const placeholders = {
@@ -196,64 +312,67 @@ function selectMode(mode) {
         quiz: 'Nhập chủ đề để tạo câu hỏi (VD: Python OOP, Perl Regex)...'
     };
     
-    modeIndicator.textContent = modeTexts[mode];
-    messageInput.placeholder = placeholders[mode];
+    if (modeIndicator) {
+        modeIndicator.textContent = modeTexts[mode];
+    }
+    
+    if (messageInput) {
+        messageInput.placeholder = placeholders[mode];
+    }
     
     // Add mode-specific intro message
     const modeIntros = {
-        chat: ' Chế độ Hỗ trợ học tập đã được kích hoạt! Hỏi tôi bất cứ điều gì về Python và Perl.',
-        review: ' Chế độ Review Code đã sẵn sàng! Paste code của bạn để tôi phân tích và đưa ra gợi ý cải thiện.',
-        assessment: ' Chế độ Đánh giá năng lực đã kích hoạt! Mô tả những gì bạn đã học để tôi đánh giá và đề xuất lộ trình.',
-        quiz: ' Chế độ Tạo Quiz đã sẵn sàng! Cho tôi biết chủ đề để tạo câu hỏi và bài tập phù hợp.'
+        chat: 'Chế độ Hỗ trợ học tập đã được kích hoạt! Hỏi tôi bất cứ điều gì về Python và Perl.',
+        review: 'Chế độ Review Code đã sẵn sàng! Paste code của bạn để tôi phân tích và đưa ra gợi ý cải thiện.',
+        assessment: 'Chế độ Đánh giá năng lực đã kích hoạt! Mô tả những gì bạn đã học để tôi đánh giá và đề xuất lộ trình.',
+        quiz: 'Chế độ Tạo Quiz đã sẵn sàng! Cho tôi biết chủ đề để tạo câu hỏi và bài tập phù hợp.'
     };
     
-    // Only add intro if chat is empty
-    if (chatMessages.children.length === 0) {
+    
+    if (chatMessages && chatMessages.children.length === 0) {
         addMessageToChat(modeIntros[mode], 'ai');
     }
     
     // Focus input
-    messageInput.focus();
-}
-
-// Toggle features panel
-function toggleFeatures() {
-    const panel = document.getElementById('featuresPanel');
-    panel.style.display = panel.style.display === 'none' ? 'block' : 'none';
-}
-
-// Switch tabs in features panel
-function switchTab(tab) {
-    selectMode(tab);
-    
-    // Update tab buttons
-    document.querySelectorAll('.tab-btn').forEach(btn => {
-        btn.classList.remove('active');
-    });
-    
-    event.target.classList.add('active');
-}
-
-// Attach code function
-function attachCode() {
-    selectMode('review');
-    
-    // Add code template if input is empty
-    if (!messageInput.value.trim()) {
-        messageInput.value = '```python\n# Paste your code here\n\n```';
-        // Position cursor between the code blocks
-        messageInput.setSelectionRange(20, 20);
+    if (messageInput) {
+        messageInput.focus();
     }
 }
 
-// Send to AI function
+
 async function sendToAI(message) {
     console.log('sendToAI called with:', message);
     console.log('window.API_KEY available:', typeof window.API_KEY !== 'undefined');
     
-    if (typeof window.API_KEY === 'undefined' || !window.API_KEY) {
-        console.error('API_KEY is not defined!');
-        addMessageToChat('Lỗi: API_KEY chưa được cấu hình!', 'ai');
+    // Check if API key is available
+    if (typeof window.API_KEY === 'undefined' || !window.API_KEY || window.API_KEY === 'demo-mode') {
+        console.warn('API_KEY is not available, showing demo response');
+        showTypingIndicator();
+        
+        // Demo response after a short delay
+        setTimeout(() => {
+            hideTypingIndicator();
+            const demoResponse = ` **Demo Mode Response**
+
+Xin chào! Tôi là AI Assistant hỗ trợ học tập Python và Perl.
+
+**Tin nhắn của bạn:** "${message}"
+
+**Chế độ hiện tại:** ${currentMode}
+
+ **Lưu ý:** Đây là chế độ demo. Để sử dụng AI thực, vui lòng:
+1. Cấu hình API key Groq hợp lệ
+2. Kiểm tra kết nối internet
+3. Liên hệ quản trị viên nếu vấn đề vẫn tiếp tục
+
+**Các tính năng có sẵn trong demo:**
+-  Giao diện chatbot
+-  Chuyển đổi chế độ
+-  AI thực tế (cần API key)`;
+            
+            addFormattedMessageToChat(demoResponse, 'ai');
+            setTimeout(() => addFollowUpSuggestions(currentMode), 1000);
+        }, 1500);
         return;
     }
     
@@ -290,7 +409,7 @@ async function sendToAI(message) {
             hideTypingIndicator();
             addFormattedMessageToChat(aiResponse, 'ai');
             
-            // Add follow-up suggestions
+            
             setTimeout(() => addFollowUpSuggestions(currentMode), 1000);
         } else if (data.error) {
             throw new Error(`API Error: ${data.error.message || data.error.type || JSON.stringify(data.error)}`);
@@ -314,17 +433,18 @@ async function sendToAI(message) {
     }
 }
 
-// Test API connection (Groq) - Enhanced debugging
+
 async function testAPIConnection() {
-    const testButton = document.querySelector('.status-indicator');
-    if (!testButton) return;
+    console.log('Testing API connection...');
     
-    testButton.textContent = ' Testing...';
-    testButton.className = 'status-indicator loading';
+    // Skip test if in demo mode
+    if (!window.API_KEY || window.API_KEY === 'demo-mode') {
+        console.log('Demo mode detected, skipping API test');
+        addMessageToChat(' Chế độ demo được kích hoạt. Hãy thử gửi tin nhắn!', 'ai');
+        return;
+    }
     
     try {
-        console.log('Testing Groq API connection...', { url: window.API_URL, key: window.API_KEY.substring(0, 10) + '...', model: window.MODEL_NAME });
-        
         const response = await fetch(window.API_URL, {
             method: 'POST',
             headers: {
@@ -344,36 +464,36 @@ async function testAPIConnection() {
             })
         });
         
-        console.log('Test response status:', response.status);
         const data = await response.json();
-        console.log('Test response data:', data);
         
         if (response.ok && data.choices && data.choices[0]) {
-            testButton.textContent = ' Llama 3.1-8B';
-            testButton.className = 'status-indicator online';
-            console.log(' API connection successful!');
+            console.log('API connection successful!');
             addMessageToChat(' AI đã sẵn sàng! Bạn có thể bắt đầu trò chuyện.', 'ai');
+            updateAPIStatus('success', 'API connection successful');
         } else {
-            throw new Error(`API Error: ${data.error?.message || JSON.stringify(data)}`);
+            const errorMsg = data.error?.message || data.error?.type || 'Unknown error';
+            throw new Error(`API Error: ${errorMsg}`);
         }
     } catch (error) {
-        console.error(' API test failed:', error);
-        testButton.textContent = ' Lỗi API';
-        testButton.className = 'status-indicator offline';
+        console.error('API test failed:', error);
         
-        // Show helpful error message
-        let errorMessage = 'Không thể kết nối API. ';
-        if (error.message.includes('model')) {
-            errorMessage += 'Lỗi model đã được sửa, hãy refresh trang.';
-        } else if (error.message.includes('401')) {
-            errorMessage += 'API key không hợp lệ.';
-        } else if (error.message.includes('429')) {
-            errorMessage += 'Đã vượt quá giới hạn requests.';
+        let userMessage = ' Không thể kết nối API. ';
+        if (error.message.includes('Invalid API Key') || error.message.includes('401')) {
+            userMessage += 'API Key không hợp lệ hoặc đã hết hạn. Vui lòng kiểm tra lại API key.';
+        } else if (error.message.includes('rate_limit') || error.message.includes('429')) {
+            userMessage += 'Đã vượt quá giới hạn API. Vui lòng thử lại sau.';
+        } else if (error.message.includes('network') || error.name === 'TypeError') {
+            userMessage += 'Lỗi kết nối mạng. Vui lòng kiểm tra internet.';
         } else {
-            errorMessage += error.message;
+            userMessage += `Lỗi: ${error.message}`;
         }
         
-        addMessageToChat(`🔍 ${errorMessage}`, 'ai');
+        addMessageToChat(userMessage, 'ai');
+        
+        // Update API status and switch to demo mode on API failure
+        updateAPIStatus('error', `API Error: ${error.message}`);
+        window.API_KEY = 'demo-mode';
+        console.log('Switched to demo mode due to API failure');
     }
 }
 
@@ -381,9 +501,15 @@ async function testAPIConnection() {
 function validateAPIKey() {
     console.log('Validating API key...');
     
-    if (typeof window.API_KEY === 'undefined' || !window.API_KEY) {
+    if (typeof window.API_KEY === 'undefined') {
         console.error('API_KEY is not defined!');
         return false;
+    }
+    
+    // Allow demo mode
+    if (window.API_KEY === 'demo-mode') {
+        console.log('Demo mode detected');
+        return true;
     }
     
     console.log('- Key length:', window.API_KEY.length);
@@ -402,7 +528,7 @@ function validateAPIKey() {
     return true;
 }
 
-// Add follow-up suggestions based on mode
+// Add follow-up suggestions
 function addFollowUpSuggestions(mode) {
     const suggestions = {
         chat: [
@@ -430,7 +556,7 @@ function addFollowUpSuggestions(mode) {
     const followUpDiv = document.createElement('div');
     followUpDiv.className = 'follow-up-suggestions';
     followUpDiv.innerHTML = `
-        <p><strong> Tiếp tục với:</strong></p>
+        <p><strong>Tiếp tục với:</strong></p>
         <div class="suggestion-buttons">
             ${suggestions[mode].map(suggestion => 
                 `<button class="suggestion-btn small" onclick="sendQuickMessage('${suggestion}')">${suggestion}</button>`
@@ -442,7 +568,7 @@ function addFollowUpSuggestions(mode) {
     scrollToBottom();
 }
 
-// Enhanced message display with code highlighting
+// Enhanced message display
 function addFormattedMessageToChat(message, sender) {
     const messageDiv = document.createElement('div');
     messageDiv.className = `message ${sender}-message`;
@@ -465,36 +591,30 @@ function addFormattedMessageToChat(message, sender) {
     scrollToBottom();
 }
 
-// Advanced message formatting with syntax highlighting
+
 function formatMessageAdvanced(text) {
-    // Convert code blocks with language detection
+    
     text = text.replace(/```(\w+)?\n([\s\S]*?)```/g, (match, lang, code) => {
         const language = lang || 'text';
         return `<div class="code-block">
             <div class="code-header">
                 <span class="code-lang">${language}</span>
-                <button class="copy-btn" onclick="copyCode(this)"> Copy</button>
+                <button class="copy-btn" onclick="copyCode(this)">Copy</button>
             </div>
             <pre><code class="language-${language}">${code.trim()}</code></pre>
         </div>`;
     });
     
-    // Convert inline code
+    
     text = text.replace(/`([^`]+)`/g, '<code class="inline-code">$1</code>');
     
-    // Convert bold text
+    
     text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
     
-    // Convert italic text
+    
     text = text.replace(/\*(.*?)\*/g, '<em>$1</em>');
     
-    // Convert numbered lists
-    text = text.replace(/^\d+\.\s(.+)$/gm, '<li class="numbered-item">$1</li>');
     
-    // Convert bullet points
-    text = text.replace(/^[-•]\s(.+)$/gm, '<li class="bullet-item">$1</li>');
-    
-    // Convert line breaks
     text = text.replace(/\n/g, '<br>');
     
     return text;
@@ -506,34 +626,97 @@ function copyCode(button) {
     const code = codeBlock.textContent;
     
     navigator.clipboard.writeText(code).then(() => {
-        button.textContent = ' Copied!';
+        button.textContent = 'Copied!';
         setTimeout(() => {
-            button.innerHTML = ' Copy';
+            button.textContent = 'Copy';
         }, 2000);
     });
 }
 
 // Show typing indicator
 function showTypingIndicator() {
-    typingIndicator.style.display = 'flex';
-    scrollToBottom();
+    if (typingIndicator) {
+        typingIndicator.style.display = 'flex';
+        scrollToBottom();
+    }
 }
 
 // Hide typing indicator
 function hideTypingIndicator() {
-    typingIndicator.style.display = 'none';
+    if (typingIndicator) {
+        typingIndicator.style.display = 'none';
+    }
 }
 
 // Get current time
 function getCurrentTime() {
-    const now = new Date();
-    return now.toLocaleTimeString('vi-VN', {
-        hour: '2-digit',
-        minute: '2-digit'
-    });
+    try {
+        const now = new Date();
+        return now.toLocaleTimeString('vi-VN', {
+            hour: '2-digit',
+            minute: '2-digit'
+        });
+    } catch (error) {
+        console.error('Error getting current time:', error);
+        const now = new Date();
+        return now.getHours().toString().padStart(2, '0') + ':' + 
+               now.getMinutes().toString().padStart(2, '0');
+    }
 }
 
 // Scroll to bottom
 function scrollToBottom() {
-    chatMessages.scrollTop = chatMessages.scrollHeight;
+    if (chatMessages) {
+        chatMessages.scrollTop = chatMessages.scrollHeight;
+    }
+}
+
+console.log('Chatbot script loaded successfully!');
+
+// Global error handler
+window.addEventListener('error', function(event) {
+    console.error('Global JavaScript Error:', event.error);
+    console.error('Error details:', {
+        message: event.message,
+        filename: event.filename,
+        lineno: event.lineno,
+        colno: event.colno
+    });
+    
+    // Show user-friendly error message
+    if (typeof addErrorMessage === 'function') {
+        addErrorMessage('Đã xảy ra lỗi JavaScript. Vui lòng refresh trang và thử lại.');
+    }
+});
+
+// Global function to make selectMode available
+window.selectMode = selectMode;
+window.sendMessage = sendMessage;
+window.sendQuickMessage = sendQuickMessage;
+
+// API Status Indicator
+function updateAPIStatus(status, message) {
+    const statusColors = {
+        'success': '#4CAF50',
+        'error': '#f44336',
+        'warning': '#ff9800',
+        'info': '#2196F3'
+    };
+    
+    const testApiButton = document.getElementById('testApiButton');
+    if (testApiButton) {
+        testApiButton.style.background = statusColors[status] || '#666';
+        if (message) {
+            testApiButton.title = message;
+        }
+    }
+}
+
+// Initialize API status on load
+function initializeAPIStatus() {
+    if (window.API_KEY && window.API_KEY !== 'demo-mode') {
+        updateAPIStatus('info', 'API Key loaded, click to test connection');
+    } else {
+        updateAPIStatus('warning', 'Demo mode - No API key available');
+    }
 }
