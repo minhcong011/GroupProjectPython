@@ -205,3 +205,10 @@ Dự án này được phát hành dưới MIT License. Xem file LICENSE để b
 - Email: phuockhoamai@gmail.com
 - GitHub: https://github.com/minhcong011/GroupProjectPython
 - Issues: https://github.com/minhcong011/GroupProjectPython/issues
+
+## Tài khoản mẫu
+
+Vai trò	      Tài khoản	Mật khẩu
+Quản trị viên	admin	      123
+Giảng viên	   hoang	      1
+Sinh viên	   khoa	      123

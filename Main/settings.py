@@ -112,12 +112,11 @@ EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
-EMAIL_HOST_USER = 'phuockhoamai@gmail.com'        # <-- Thay bằng Gmail của bạn
-EMAIL_HOST_PASSWORD = 'ajxzihidyzkcfrsa'         # <-- App Password của bạn
+EMAIL_HOST_USER = 'phuockhoamai@gmail.com'
+EMAIL_HOST_PASSWORD = 'ajxzihidyzkcfrsa'        
 
 # ==================== GROQ AI API CONFIGURATION ====================
-# Use the new valid API key that user provided
-# Should be moved to environment variables
+
 
 
 # ==================== MEDIA FILES ====================

@@ -1,0 +1,98 @@
+# ==================== CORE DEPENDENCIES ====================
+# Django framework và các dependencies cơ bản
+Django==5.2.3
+python-decouple==3.8
+
+# ==================== DATABASE ====================
+# SQLite đã được bao gồm trong Python standard library
+
+# ==================== IMAGE PROCESSING ====================
+# Để xử lý ImageField trong models (avatar uploads)
+Pillow==10.2.0
+
+# ==================== DEVELOPMENT TOOLS ====================
+# Code formatting và linting
+black==24.2.0
+flake8==7.0.0
+isort==5.13.2
+
+# Testing framework
+pytest==8.0.0
+pytest-django==4.8.0
+pytest-cov==4.0.0
+
+# ==================== AI/API INTEGRATIONS ====================
+# Groq AI API client
+groq==0.4.1
+
+# Flask (được sử dụng trong random_question_ai.py)
+Flask==3.0.1
+
+# OpenAI (được import trong random_question_ai.py)
+openai==1.12.0
+
+# Requests cho API calls
+requests==2.31.0
+
+# ==================== STATIC FILES & FRONTEND ====================
+# Whitenoise để serve static files trong production
+whitenoise==6.6.0
+
+# ==================== UTILITIES ====================
+# Timezone handling
+pytz==2024.1
+
+# JSON handling improvements
+simplejson==3.19.2
+
+# ==================== PRODUCTION ====================
+# WSGI server
+gunicorn==21.2.0
+
+# Environment variables
+python-dotenv==1.0.1
+
+# ==================== DEVELOPMENT ONLY ====================
+# Django debug toolbar
+django-debug-toolbar==4.2.0
+
+# Django extensions
+django-extensions==3.2.3
+
+# Factory boy cho testing
+factory-boy==3.3.0
+
+# ==================== SECURITY ====================
+# Cryptography cho mã hóa
+cryptography==42.0.2
+
+# ==================== EMAIL ====================
+# Django email dependencies (SMTP Gmail đã được cấu hình)
+# Không cần thêm package nào
+
+# ==================== LOCALE & INTERNATIONALIZATION ====================
+# Babel cho locale support
+Babel==2.14.0
+
+# ==================== PERFORMANCE ====================
+# Redis cho caching (tùy chọn)
+# redis==5.0.1
+# django-redis==5.4.0
+
+# ==================== MONITORING ====================
+# Sentry cho error tracking (tùy chọn)
+# sentry-sdk==1.40.0
+
+# ==================== FILE HANDLING ====================
+# Để xử lý file uploads tốt hơn
+django-cleanup==8.0.0
+
+# ==================== FORMS ====================
+# Django widget tweaks cho form styling
+django-widget-tweaks==1.5.0
+
+# ==================== VERSION INFO ====================
+# Generated for GroupProjectPython Education Management System
+# Python version: 3.13+
+# Django version: 5.2.3
+# Last updated: July 23, 2025

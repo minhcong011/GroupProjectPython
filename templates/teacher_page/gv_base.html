@@ -39,7 +39,7 @@
             <a href="{% url 'lecture_list' %}">Quản lý bài giảng</a>
             <a href="{% url 'assignment_list' %}">Quản lý bài tập</a>
             <a href="{% url 'cham_diem' %}">Chấm điểm</a>
-            <a href="#">Thống kê</a>
+            <li><a href="{% url 'thong_ke_bao_cao' %}">Thống kê</a></li>
             <a href="{% url 'AIapp:ai_page' %}">Chatbot AI</a>
             <span class="lang">
                 Xin chào, {{ user.first_name }} |

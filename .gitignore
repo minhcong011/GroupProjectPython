@@ -1,0 +1,363 @@
+# ==================== PYTHON ====================
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# C extensions
+*.so
+
+# Distribution / packaging
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+pip-wheel-metadata/
+share/python-wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+MANIFEST
+
+# PyInstaller
+*.manifest
+*.spec
+
+# Installer logs
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Unit test / coverage reports
+htmlcov/
+.tox/
+.nox/
+.coverage
+.coverage.*
+.cache
+nosetests.xml
+coverage.xml
+*.cover
+*.py,cover
+.hypothesis/
+.pytest_cache/
+
+# Translations
+*.mo
+*.pot
+
+# Sphinx documentation
+docs/_build/
+
+# PyBuilder
+target/
+
+# Jupyter Notebook
+.ipynb_checkpoints
+
+# IPython
+profile_default/
+ipython_config.py
+
+# pyenv
+.python-version
+
+# pipenv
+Pipfile.lock
+
+# PEP 582
+__pypackages__/
+
+# Celery stuff
+celerybeat-schedule
+celerybeat.pid
+
+# SageMath parsed files
+*.sage.py
+
+# Environments
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+.venv
+env/
+venv/
+ENV/
+env.bak/
+venv.bak/
+
+# Spyder project settings
+.spyderproject
+.spyproject
+
+# Rope project settings
+.ropeproject
+
+# mkdocs documentation
+/site
+
+# mypy
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pyre type checker
+.pyre/
+
+# ==================== DJANGO ====================
+# Database
+*.sqlite3
+*.sqlite3-journal
+db.sqlite3
+db.sqlite3-journal
+
+# Django migrations (uncomment to ignore)
+# */migrations/*.py
+# */migrations/*.pyc
+# !*/migrations/__init__.py
+
+# Django static files
+staticfiles/
+static_root/
+static_collected/
+
+# Django media files
+media/
+uploads/
+user_uploads/
+
+# Django logs
+*.log
+logs/
+django.log
+
+# Django secret key
+secret_key.txt
+
+# Django collected static files
+/static/
+/staticfiles/
+
+# Django cache
+django_cache/
+
+# ==================== IDE & EDITORS ====================
+# Visual Studio Code
+.vscode/
+*.code-workspace
+
+# PyCharm
+.idea/
+*.iml
+*.iws
+*.ipr
+
+# Sublime Text
+*.sublime-project
+*.sublime-workspace
+
+# Vim
+*.swp
+*.swo
+*~
+
+# Emacs
+*~
+\#*\#
+/.emacs.desktop
+/.emacs.desktop.lock
+*.elc
+auto-save-list
+tramp
+.\#*
+
+# ==================== OPERATING SYSTEM ====================
+# Windows
+Thumbs.db
+Thumbs.db:encryptable
+ehthumbs.db
+ehthumbs_vista.db
+*.stackdump
+[Dd]esktop.ini
+$RECYCLE.BIN/
+*.cab
+*.msi
+*.msix
+*.msm
+*.msp
+*.lnk
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+Icon
+._*
+.DocumentRevisions-V100
+.fseventsd
+.Spotlight-V100
+.TemporaryItems
+.Trashes
+.VolumeIcon.icns
+.com.apple.timemachine.donotpresent
+.AppleDB
+.AppleDesktop
+Network Trash Folder
+Temporary Items
+.apdisk
+
+# Linux
+*~
+.fuse_hidden*
+.directory
+.Trash-*
+.nfs*
+
+# ==================== VERSION CONTROL ====================
+# Git
+.git/
+*.orig
+*.rej
+
+# SVN
+.svn/
+
+# Mercurial
+.hg/
+.hgignore
+.hgtags
+
+# ==================== DEPENDENCIES ====================
+# Node.js
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+
+# Bower
+bower_components/
+
+# ==================== DEPLOYMENT ====================
+# Docker
+docker-compose.override.yml
+.dockerignore
+
+# Heroku
+.heroku/
+
+# AWS
+.aws/
+
+# Google Cloud
+.gcloud/
+
+# Azure
+.azure/
+
+# ==================== SECURITY ====================
+# API Keys and sensitive data
+.env
+.env.local
+.env.development
+.env.test
+.env.production
+secrets.json
+config.json
+private_key.pem
+*.key
+*.pem
+*.p12
+*.pfx
+
+# SSL Certificates
+*.crt
+*.cer
+*.der
+*.p7b
+*.p7c
+*.p7r
+*.spc
+
+# ==================== TEMPORARY FILES ====================
+# Temporary files
+*.tmp
+*.temp
+*.bak
+*.backup
+*.old
+*.orig
+*.save
+*.swp
+*.swo
+
+# Cache files
+*.cache
+.cache/
+cache/
+
+# ==================== PROJECT SPECIFIC ====================
+# Custom project files
+*.local
+local_settings.py
+settings_local.py
+local.py
+
+# Backups
+backup/
+backups/
+*.backup
+*.bak
+
+# User uploaded files
+user_files/
+student_uploads/
+teacher_uploads/
+
+# Test files
+test_files/
+test_data/
+fixtures/test_*.json
+
+# Development database dumps
+*.dump
+*.sql
+database_backup.*
+
+# AI model files (if any)
+*.model
+*.weights
+*.h5
+*.pkl
+*.joblib
+
+# Generated reports
+reports/
+*.pdf
+*.xlsx
+*.csv
+
+# ==================== COMMENTS ====================
+# This .gitignore file is configured for:
+# - Django Education Management System
+# - Python development environment
+# - Multiple IDE support
+# - Security best practices
+# - Cross-platform compatibility
+
+# Remember to:
+# 1. Never commit .env files with real credentials
+# 2. Keep database files local for development
+# 3. Ignore uploaded user files
+# 4. Always review before committing
